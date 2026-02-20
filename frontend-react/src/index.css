@@ -456,21 +456,10 @@ body {
         gap: 0;
     }
 
-    /* Hide location text on mobile, show only icon */
+    /* Hide location text on mobile, show only icon — modal handled separately */
     .location-btn .location-text,
     .location-btn .location-arrow {
         display: none;
-    }
-
-    .location-btn {
-        padding: 6px 8px;
-        min-width: 36px;
-        justify-content: center;
-    }
-
-    .location-modal {
-        left: -10px;
-        width: 280px;
     }
 
     /* Logo smaller on mobile */
@@ -1098,18 +1087,28 @@ body {
     padding: 8px 12px;
 }
 
-/* Hide location on very small screens */
+/* Location — Mobile Fix */
 @media (max-width: 768px) {
-    .location-btn .location-text {
-        display: none;
-    }
 
+    .location-btn .location-text,
     .location-btn .location-arrow {
         display: none;
     }
 
+    .location-btn {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 6px 10px;
+    }
+
+    /* On mobile: fixed centered modal instead of absolute */
     .location-modal {
-        left: -60px;
-        width: 280px;
+        position: fixed;
+        top: 72px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100vw - 32px);
+        max-width: 340px;
+        z-index: 99999;
     }
 }
