@@ -558,3 +558,348 @@ footer p {
         max-width: 100%;
     }
 }
+
+/* =========================================
+   AUTH PAGES (Amazon/Flipkart Style)
+   ========================================= */
+.auth-page {
+    min-height: 100vh;
+    background: #f3f3f3;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 30px 16px 60px;
+}
+
+.auth-wrapper {
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.auth-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--dark);
+    margin-bottom: 8px;
+}
+
+.auth-logo img {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+}
+
+.auth-logo span {
+    font-size: 1.5rem;
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.auth-logo span b {
+    color: var(--primary);
+}
+
+.clerk-embed {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.auth-terms {
+    font-size: 0.78rem;
+    color: #555;
+    text-align: center;
+    max-width: 380px;
+    line-height: 1.6;
+}
+
+.auth-terms a {
+    color: #007185;
+    text-decoration: underline;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 12px;
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #ccc;
+}
+
+.auth-create-btn {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    padding: 11px;
+    background: white;
+    border: 1px solid #adb1b8;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--dark);
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07);
+}
+
+.auth-create-btn:hover {
+    background: #f7f7f7;
+    border-color: #888;
+}
+
+/* =========================================
+   LOCATION PICKER (Amazon Style)
+   ========================================= */
+.location-wrapper {
+    position: relative;
+}
+
+.location-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: border-color 0.2s, background 0.2s;
+    color: var(--dark);
+    white-space: nowrap;
+}
+
+.location-btn:hover {
+    border-color: var(--primary);
+    background: #fff8f5;
+}
+
+.location-icon {
+    color: var(--primary);
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.location-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    line-height: 1.2;
+}
+
+.location-label {
+    font-size: 0.68rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.location-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--dark);
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.location-arrow {
+    font-size: 0.6rem;
+    color: #888;
+    margin-left: 2px;
+}
+
+/* Modal */
+.location-modal {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    z-index: 9999;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    width: 300px;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.location-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.location-modal-header h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: 'Work Sans', sans-serif;
+    color: var(--dark);
+}
+
+.location-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #999;
+    padding: 4px;
+    transition: color 0.2s;
+}
+
+.location-modal-close:hover {
+    color: var(--dark);
+}
+
+.location-gps-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px;
+    background: #e8f4fd;
+    border: 1px solid #bee3f8;
+    border-radius: 6px;
+    color: #2271b3;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: inherit;
+}
+
+.location-gps-btn:hover:not(:disabled) {
+    background: #d0eaf8;
+}
+
+.location-gps-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.location-or {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #aaa;
+    font-size: 0.8rem;
+    margin: 14px 0;
+}
+
+.location-or::before,
+.location-or::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e5e5e5;
+}
+
+.location-form {
+    display: flex;
+    gap: 8px;
+}
+
+.location-input {
+    flex: 1;
+    padding: 9px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.location-input:focus {
+    border-color: var(--primary);
+}
+
+.location-apply-btn {
+    padding: 9px 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+
+.location-apply-btn:hover:not(:disabled) {
+    background: #b84600;
+}
+
+.location-apply-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.location-error {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #e74c3c;
+}
+
+.location-current {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: #27ae60;
+    background: #f0fff4;
+    border: 1px solid #c3e6cb;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+/* Hide location on very small screens */
+@media (max-width: 768px) {
+    .location-btn .location-text {
+        display: none;
+    }
+
+    .location-btn .location-arrow {
+        display: none;
+    }
+
+    .location-modal {
+        left: -60px;
+        width: 280px;
+    }
+}

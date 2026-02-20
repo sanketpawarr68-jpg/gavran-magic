@@ -1,101 +1,68 @@
-
 import React from 'react';
 import { SignUp } from '@clerk/clerk-react';
+import { Link } from 'react-router-dom';
+import '../index.css';
 
 export default function Signup() {
     return (
-        <div style={{
-            minHeight: 'calc(100vh - 80px)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            background: 'var(--bg-accent)',
-            backgroundImage: 'radial-gradient(circle at 10% 20%, rgb(254, 253, 245) 0%, rgb(255, 246, 233) 90.2%)',
-            padding: '20px'
-        }}>
-            <div style={{
-                maxWidth: '450px',
-                width: '100%',
-                background: 'transparent',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-            }}>
-                <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                    <h1 className="logo" style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Gavran <span>Magic</span></h1>
-                    <p style={{ color: '#666', fontSize: '1.1rem' }}>Join the family & taste the magic.</p>
+        <div className="auth-page">
+            <div className="auth-wrapper">
+                {/* Logo */}
+                <Link to="/" className="auth-logo">
+                    <img src="/images/logo.jpg" alt="Gavran Magic" />
+                    <span>Gavran <b>Magic</b></span>
+                </Link>
+
+                {/* Clerk Embedded Sign Up */}
+                <div className="clerk-embed">
+                    <SignUp
+                        routing="hash"
+                        afterSignUpUrl={window.location.origin + '/#/shop'}
+                        afterSignInUrl={window.location.origin + '/#/shop'}
+                        appearance={{
+                            elements: {
+                                rootBox: { width: '100%' },
+                                card: {
+                                    boxShadow: 'none',
+                                    border: '1px solid #e0e0e0',
+                                    borderRadius: '8px',
+                                    padding: '24px',
+                                    width: '100%',
+                                    maxWidth: '420px',
+                                },
+                                headerTitle: { fontSize: '1.4rem', fontWeight: '700', color: '#2c3e50' },
+                                headerSubtitle: { color: '#777' },
+                                socialButtonsBlockButton: {
+                                    border: '1px solid #ddd',
+                                    borderRadius: '6px',
+                                    fontWeight: '600',
+                                },
+                                formButtonPrimary: {
+                                    backgroundColor: '#d35400',
+                                    borderRadius: '6px',
+                                    fontWeight: '700',
+                                    fontSize: '1rem',
+                                    padding: '12px',
+                                },
+                                formFieldInput: {
+                                    borderRadius: '6px',
+                                    border: '1px solid #ccc',
+                                    padding: '10px 14px',
+                                },
+                                footerActionLink: { color: '#d35400', fontWeight: '600' },
+                            }
+                        }}
+                    />
                 </div>
 
-                <style>{`
-                    .cl-formButtonPrimary {
-                         background-color: var(--primary) !important;
-                         color: white !important;
-                         text-transform: uppercase;
-                         letter-spacing: 1px;
-                         font-weight: 600;
-                         padding: 12px;
-                         border-radius: 4px;
-                     }
-                     .cl-formButtonPrimary:hover {
-                         background-color: #e67e22 !important;
-                     }
-                `}</style>
-                <SignUp
-                    appearance={{
-                        elements: {
-                            rootBox: {
-                                width: "100%",
-                                boxShadow: "none",
-                            },
-                            card: {
-                                width: "100%",
-                                boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
-                                border: "1px solid #eee",
-                                borderRadius: "12px",
-                                padding: "40px 30px"
-                            },
-                            headerTitle: {
-                                fontSize: "1.5rem",
-                                fontFamily: "'Unbounded', sans-serif",
-                                color: "var(--dark)"
-                            },
-                            headerSubtitle: {
-                                color: "#888",
-                                fontSize: "0.95rem"
-                            },
-                            formButtonPrimary: {
-                                backgroundColor: "var(--primary)",
-                                textTransform: "uppercase",
-                                letterSpacing: "1px",
-                                fontWeight: "600",
-                                padding: "12px",
-                                borderRadius: "4px"
-                            },
-                            formFieldInput: {
-                                padding: "12px",
-                                borderRadius: "4px",
-                                border: "1px solid #ddd",
-                                fontSize: "1rem",
-                                color: "#000" // Ensure input text is visible
-                            },
-                            footerActionLink: {
-                                color: "var(--primary)",
-                                fontWeight: "600"
-                            }
-                        },
-                        variables: {
-                            colorPrimary: "#d35400",
-                            colorText: "#2c3e50",
-                            fontFamily: "'Work Sans', sans-serif",
-                            borderRadius: "4px"
-                        }
-                    }}
-                    mdRouting
-                    path="/signup"
-                    routing="path"
-                    signInUrl="/login"
-                    afterSignUpUrl="/shop"
-                />
+                {/* Footer */}
+                <p className="auth-terms">
+                    By creating an account, you agree to Gavran Magic's{' '}
+                    <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>.
+                </p>
+
+                <div className="auth-divider"><span>Already have an account?</span></div>
+                <Link to="/login" className="auth-create-btn">Sign in to your account</Link>
             </div>
         </div>
     );
