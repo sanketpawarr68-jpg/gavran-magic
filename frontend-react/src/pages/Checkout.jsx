@@ -3,7 +3,7 @@ import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useCart } from '../context/CartContext';
-import { useUser, RedirectToSignIn } from '@clerk/clerk-react';
+import { useUser, useClerk } from '@clerk/clerk-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
@@ -20,6 +20,7 @@ const CheckoutSchema = Yup.object().shape({
 export default function Checkout() {
     const { cart, total, clearCart } = useCart();
     const { user, isLoaded, isSignedIn } = useUser();
+    const { openSignIn } = useClerk();
     const navigate = useNavigate();
 
     const formik = useFormik({
@@ -69,10 +70,13 @@ export default function Checkout() {
         },
     });
 
-    if (!isLoaded) return <div>Loading...</div>;
+    if (!isLoaded) return <div style={{ textAlign: 'center', padding: '80px' }}><div className="spinner"></div></div>;
 
     if (!isSignedIn) {
-        return <RedirectToSignIn />;
+        openSignIn({
+            afterSignInUrl: '/checkout',
+        });
+        return <div style={{ textAlign: 'center', padding: '80px' }}><div className="spinner"></div><p>Please sign in to checkout...</p></div>;
     }
 
     return (
@@ -103,7 +107,7 @@ export default function Checkout() {
                         {formik.touched.address && formik.errors.address ? <div style={{ color: 'red' }}>{formik.errors.address}</div> : null}
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div className="city-pincode-grid">
                         <div className="form-group">
                             <label htmlFor="city">City</label>
                             <input id="city" type="text" {...formik.getFieldProps('city')} />
