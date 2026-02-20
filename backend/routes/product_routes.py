@@ -5,7 +5,7 @@ from bson import ObjectId
 product_bp = Blueprint('product_bp', __name__)
 
 # Base URL for images — served from Netlify frontend /public/images/
-IMAGE_BASE = "https://garvran-magic.netlify.app/images"
+IMAGE_BASE = "https://gavran-magic.netlify.app/images"
 
 DEFAULTS = [
     {
