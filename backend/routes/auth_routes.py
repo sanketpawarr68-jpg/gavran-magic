@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from extensions import mongo
+from extensions import get_db
 from config import Config
 import jwt
 import datetime
@@ -14,7 +14,7 @@ def register():
         if not data:
             return jsonify({'message': 'Invalid input'}), 400
         
-        users = mongo.db.users
+        users = get_db().users
         existing_user = users.find_one({'email': data['email']})
         
         if existing_user:
@@ -42,7 +42,7 @@ def login():
     if not data or not data.get('email') or not data.get('password'):
         return jsonify({'message': 'Missing email or password'}), 400
         
-    user = mongo.db.users.find_one({'email': data['email']})
+    user = get_db().users.find_one({'email': data['email']})
     
     if user and check_password_hash(user['password'], data['password']):
         token = jwt.encode({

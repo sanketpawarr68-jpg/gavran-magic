@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, jsonify
-from extensions import mongo
+from extensions import get_db
 from shiprocket import ShiprocketAPI
 from bson import ObjectId
 import datetime
@@ -80,7 +80,7 @@ def create_order():
         "tracking_id": "PENDING"
     }
     
-    order_id = mongo.db.orders.insert_one(order).inserted_id
+    order_id = get_db().orders.insert_one(order).inserted_id
 
     # Create Shipment in Shiprocket (Order Creation)
     # Prepare Shiprocket Order Payload
@@ -126,14 +126,14 @@ def create_order():
         # Assuming we get a tracking ID or use Internal ID.
     
     # Update Tracking ID
-    mongo.db.orders.update_one({'_id': order_id}, {'$set': {'tracking_id': tracking_id}})
+    get_db().orders.update_one({'_id': order_id}, {'$set': {'tracking_id': tracking_id}})
 
     return jsonify({'message': 'Order placed successfully', 'order_id': str(order_id), 'tracking_id': tracking_id}), 201
 
 @order_bp.route('/<order_id>', methods=['GET'])
 def get_order(order_id):
     try:
-        order = mongo.db.orders.find_one({'_id': ObjectId(order_id)})
+        order = get_db().orders.find_one({'_id': ObjectId(order_id)})
         if order:
             order['_id'] = str(order['_id'])
             order['user_id'] = str(order['user_id'])
@@ -148,14 +148,14 @@ def cancel_order(order_id):
         data = request.json
         cancellation_reason = data.get('reason', 'Not specified')
         
-        order = mongo.db.orders.find_one({'_id': ObjectId(order_id)})
+        order = get_db().orders.find_one({'_id': ObjectId(order_id)})
         if not order:
              return jsonify({'message': 'Order not found'}), 404
              
         if order['order_status'] in ['Delivered', 'Cancelled']:
              return jsonify({'message': f'Order cannot be cancelled. Current status: {order["order_status"]}'}), 400
              
-        mongo.db.orders.update_one(
+        get_db().orders.update_one(
             {'_id': ObjectId(order_id)},
             {'$set': {
                 'order_status': 'Cancelled',
@@ -174,7 +174,7 @@ def cancel_order(order_id):
 
 @order_bp.route('/user/<user_id>', methods=['GET'])
 def get_user_orders(user_id):
-    orders_cursor = mongo.db.orders.find({'user_id': user_id}).sort('created_at', -1)
+    orders_cursor = get_db().orders.find({'user_id': user_id}).sort('created_at', -1)
     orders = []
     for order in orders_cursor:
         order['_id'] = str(order['_id'])
