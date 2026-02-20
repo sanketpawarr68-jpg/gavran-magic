@@ -1,36 +1,30 @@
-from flask_pymongo import PyMongo
 from pymongo import MongoClient
 import os
 
-mongo = PyMongo()
+_client = None
+_db = None
 
-# Cache the direct client so we only create it once
-_direct_client = None
-_direct_db = None
-
-def get_db():
-    """Returns a valid database object, with fallback to direct PyMongo connection."""
-    global _direct_client, _direct_db
-
-    # Try flask-pymongo first
-    if mongo.db is not None:
-        return mongo.db
-
-    # Fallback: direct connection (cached)
-    if _direct_db is not None:
-        return _direct_db
-
+def connect_db():
+    """Initialize the MongoDB connection once at app startup."""
+    global _client, _db
     uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/gavran_magic')
-    _direct_client = MongoClient(
+    _client = MongoClient(
         uri,
-        serverSelectionTimeoutMS=30000,  # 30 second timeout
+        serverSelectionTimeoutMS=30000,
         connectTimeoutMS=30000,
         socketTimeoutMS=30000
     )
-    # Extract db name from URI or use default
-    db_name = uri.split('/')[-1].split('?')[0].strip()
-    if not db_name:
+    # Extract DB name from URI (e.g. /gavran_magic?...) or default
+    try:
+        path_part = uri.split('/')[-1].split('?')[0].strip()
+        db_name = path_part if path_part else 'gavran_magic'
+    except Exception:
         db_name = 'gavran_magic'
-    _direct_db = _direct_client[db_name]
-    return _direct_db
+    _db = _client[db_name]
+    print(f"[DB] Connected to MongoDB database: '{db_name}'")
 
+def get_db():
+    """Return the database instance."""
+    if _db is None:
+        connect_db()
+    return _db

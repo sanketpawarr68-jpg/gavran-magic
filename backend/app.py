@@ -1,7 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from config import Config
-from extensions import mongo
+from extensions import connect_db
 
 # Import Blueprints
 from routes.auth_routes import auth_bp
@@ -9,10 +8,10 @@ from routes.product_routes import product_bp
 from routes.order_routes import order_bp
 
 app = Flask(__name__)
-app.config.from_object(Config)
-
-mongo.init_app(app)
 CORS(app)
+
+# Connect to MongoDB at startup
+connect_db()
 
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(product_bp, url_prefix='/api/products')
