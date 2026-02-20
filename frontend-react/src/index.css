@@ -99,6 +99,15 @@ nav {
     font-weight: 700;
     color: var(--dark);
     letter-spacing: -1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1;
+}
+
+.logo img {
+    display: inline-block;
+    flex-shrink: 0;
 }
 
 .logo span {
