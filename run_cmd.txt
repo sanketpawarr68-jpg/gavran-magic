@@ -7,12 +7,12 @@ This handles the database and API logic.
 
 Open Terminal 1:
 ```bash
-cd backend
-
+# In root directory
 # Install dependencies (if not already installed)
 pip install -r requirements.txt
 
 # Run the server
+cd backend
 python app.py
 ```
 > The backend will run on: **http://localhost:5000**
