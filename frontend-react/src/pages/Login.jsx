@@ -16,9 +16,10 @@ export default function Login() {
                 {/* Clerk Embedded Sign In */}
                 <div className="clerk-embed">
                     <SignIn
-                        routing="hash"
-                        afterSignInUrl={window.location.origin + '/#/shop'}
-                        afterSignUpUrl={window.location.origin + '/#/shop'}
+                        routing="path"
+                        path="/login"
+                        afterSignInUrl="/shop"
+                        afterSignUpUrl="/shop"
                         appearance={{
                             elements: {
                                 rootBox: { width: '100%' },

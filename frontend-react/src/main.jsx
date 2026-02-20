@@ -4,7 +4,7 @@ import App from './App.jsx'
 import './index.css'
 import 'leaflet/dist/leaflet.css'
 import { ClerkProvider } from '@clerk/clerk-react'
-import { HashRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import { CartProvider } from './context/CartContext.jsx'
 
 const PUBLISHABLE_KEY = "pk_test_aW1tdW5lLWFuZW1vbmUtMjMuY2xlcmsuYWNjb3VudHMuZGV2JA"
@@ -17,15 +17,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ClerkProvider
       publishableKey={PUBLISHABLE_KEY}
-      afterSignInUrl={window.location.origin + '/#/shop'}
-      afterSignUpUrl={window.location.origin + '/#/shop'}
-      afterSignOutUrl={window.location.origin + '/'}
+      afterSignInUrl="/shop"
+      afterSignUpUrl="/shop"
+      afterSignOutUrl="/"
     >
-      <HashRouter>
+      <BrowserRouter>
         <CartProvider>
           <App />
         </CartProvider>
-      </HashRouter>
+      </BrowserRouter>
     </ClerkProvider>
   </React.StrictMode>,
 )

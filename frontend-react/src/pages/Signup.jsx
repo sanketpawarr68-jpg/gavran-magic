@@ -16,9 +16,10 @@ export default function Signup() {
                 {/* Clerk Embedded Sign Up */}
                 <div className="clerk-embed">
                     <SignUp
-                        routing="hash"
-                        afterSignUpUrl={window.location.origin + '/#/shop'}
-                        afterSignInUrl={window.location.origin + '/#/shop'}
+                        routing="path"
+                        path="/signup"
+                        afterSignUpUrl="/shop"
+                        afterSignInUrl="/shop"
                         appearance={{
                             elements: {
                                 rootBox: { width: '100%' },
