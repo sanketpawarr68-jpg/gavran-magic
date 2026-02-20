@@ -1,0 +1,39 @@
+# Gavran Magic Website - Run Instructions
+
+Follow these steps to run the project locally. You will need two separate terminal windows.
+
+### 1. Backend (Flask API)
+This handles the database and API logic.
+
+Open Terminal 1:
+```bash
+cd backend
+
+# Install dependencies (if not already installed)
+pip install -r requirements.txt
+
+# Run the server
+python app.py
+```
+> The backend will run on: **http://localhost:5000**
+
+
+### 2. Frontend (React App)
+This handles the user interface.
+
+Open Terminal 2:
+```bash
+cd frontend-react
+
+# Install dependencies (only needed first time)
+npm install
+
+# Run the development server
+npm run dev
+```
+> The frontend will run on: **http://localhost:5173** (or similar port)
+
+
+### 3. Additional Notes
+- **Config**: API URL is configured in `frontend-react/src/config.js`.
+- **Deployment**: See `DEPLOY_TO_NETLIFY.md` for deployment instructions.

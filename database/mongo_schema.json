@@ -1,0 +1,36 @@
+{
+  "Users": {
+    "name": "String",
+    "phone": "String",
+    "email": "String",
+    "password": "String (Hashed)",
+    "address": "String",
+    "city": "String",
+    "pincode": "String"
+  },
+  "Products": {
+    "name": "String",
+    "description": "String",
+    "price": "Number",
+    "weight": "String (e.g., 500g)",
+    "image": "String (URL or Path)"
+  },
+  "Orders": {
+    "user_id": "ObjectId",
+    "products": [
+      {
+        "product_id": "ObjectId",
+        "quantity": "Number",
+        "price": "Number"
+      }
+    ],
+    "total_price": "Number",
+    "address": "String",
+    "city": "String",
+    "pincode": "String",
+    "order_status": "String (Placed, Packed, Shipped, Delivered)",
+    "tracking_id": "String",
+    "courier_name": "String",
+    "created_at": "ISODate"
+  }
+}
