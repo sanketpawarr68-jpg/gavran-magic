@@ -25,8 +25,33 @@ export default function Shop() {
         fetchProducts();
     }, []);
 
-    if (loading) return <div className="container" style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</div>;
-    if (error) return <div className="container" style={{ textAlign: 'center', marginTop: '50px', color: 'red' }}>Error: {error}</div>;
+    if (loading) {
+        return (
+            <div className="container" style={{ textAlign: 'center', marginTop: '50px' }}>
+                <div className="spinner" style={{ marginBottom: '20px' }}></div>
+                <h3>Loading tasty products...</h3>
+                <p style={{ color: '#666' }}>
+                    (Please wait up to 60 seconds if the free server is waking up)
+                </p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="container" style={{ textAlign: 'center', marginTop: '50px', color: 'red' }}>
+                <h3>Error loading products</h3>
+                <p>Ensure the backend is running and reachable.</p>
+                <p>Check console for details ({error})</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    style={{ padding: '8px 16px', marginTop: '10px', cursor: 'pointer' }}
+                >
+                    Retry
+                </button>
+            </div>
+        );
+    }
 
     return (
         <main className="container">

@@ -2,6 +2,13 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
+
+const getImageUrl = (imgPath) => {
+    if (!imgPath) return 'https://via.placeholder.com/150';
+    if (imgPath.startsWith('http')) return imgPath;
+    return `${API_BASE_URL}/${imgPath}`;
+};
 
 export default function CartPage() {
     const { cart, removeFromCart, updateQuantity, total } = useCart();
@@ -45,9 +52,10 @@ export default function CartPage() {
                                                 overflow: 'hidden', background: '#f9f9f9', flexShrink: 0
                                             }}>
                                                 <img
-                                                    src={item.image || 'https://via.placeholder.com/150'}
+                                                    src={getImageUrl(item.image)}
                                                     alt={item.name}
                                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                    onError={(e) => { e.target.src = 'https://via.placeholder.com/150'; }}
                                                 />
                                             </div>
                                             <div>
