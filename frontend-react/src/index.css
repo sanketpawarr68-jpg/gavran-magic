@@ -288,12 +288,26 @@ nav {
 
 .product-meta {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 10px;
     margin-top: auto;
     border-top: 1px solid #f9f9f9;
     padding-top: 15px;
 }
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.card-actions .btn {
+    flex: 1;
+    padding: 10px 8px;
+    font-size: 0.78rem;
+    text-align: center;
+}
+
+
 
 .price {
     font-size: 1.3rem;
@@ -535,9 +549,9 @@ body {
 
     /* === PRODUCTS GRID === */
     .products-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        padding: 30px 0;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 14px;
+        padding: 24px 0;
     }
 
     .product-img-wrapper {
@@ -643,6 +657,33 @@ body {
     /* === CONTAINER PADDING === */
     .container {
         width: 95%;
+    }
+}
+
+/* === SMALL PHONES (≤420px) — 1 column layout === */
+@media (max-width: 420px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .product-img-wrapper {
+        height: 220px;
+    }
+
+    .product-info h3 {
+        font-size: 1rem;
+    }
+
+    .card-actions {
+        flex-direction: row;
+    }
+
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
     }
 }
 
