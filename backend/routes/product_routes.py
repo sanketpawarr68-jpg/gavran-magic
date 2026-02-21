@@ -52,46 +52,24 @@ DEFAULTS = [
     }
 ]
 
-# Migrate ALL old / wrong image URLs to new correct Netlify URLs
-IMAGE_FIXES = {
-    # Old relative paths
-    "images/vermicelli.jpg":  f"{IMAGE_BASE}/Vermicelli-500g.jpg",
-    "images/kurdai.jpg":      f"{IMAGE_BASE}/kurdai-250g.jpg",
-    "images/papad.jpg":       f"{IMAGE_BASE}/papad-250g.jpg",
-    # Old GitHub Pages full URLs (generic filenames)
-    "https://sanketpawarr68-jpg.github.io/gavran-magic/images/Vermicelli.jpg":  f"{IMAGE_BASE}/Vermicelli-500g.jpg",
-    "https://sanketpawarr68-jpg.github.io/gavran-magic/images/kurdai.avif":     f"{IMAGE_BASE}/kurdai-250g.jpg",
-    "https://sanketpawarr68-jpg.github.io/gavran-magic/images/papad.jpg":       f"{IMAGE_BASE}/papad-250g.jpg",
-    # Old GitHub Pages full URLs (weight-specific but wrong extension)
-    "https://sanketpawarr68-jpg.github.io/gavran-magic/images/Vermicelli-500g.jpg":  f"{IMAGE_BASE}/Vermicelli-500g.jpg",
-    "https://sanketpawarr68-jpg.github.io/gavran-magic/images/Vermicelli-1000g.jpg": f"{IMAGE_BASE}/Vermicelli-1000g.jpg",
-    "https://sanketpawarr68-jpg.github.io/gavran-magic/images/kurdai-250g.avif":     f"{IMAGE_BASE}/kurdai-250g.jpg",
-    "https://sanketpawarr68-jpg.github.io/gavran-magic/images/kurdai-500g.avif":     f"{IMAGE_BASE}/kurdai-500g.jpg",
-    "https://sanketpawarr68-jpg.github.io/gavran-magic/images/papad-250g.jpg":       f"{IMAGE_BASE}/papad-250g.jpg",
-    "https://sanketpawarr68-jpg.github.io/gavran-magic/images/papad-500g.jpg":       f"{IMAGE_BASE}/papad-500g.jpg",
-}
-
 @product_bp.route('/', methods=['GET'])
 def get_products():
+    """Fetch all products. Seeding occurs only if the collection is empty."""
     db = get_db()
     products_coll = db.products
 
+    # Seed if empty
     if products_coll.count_documents({}) == 0:
-        # Fresh DB — seed with defaults
         products_coll.insert_many(DEFAULTS)
-    else:
-        # Migrate existing products with any old/wrong image paths
-        for old_url, new_url in IMAGE_FIXES.items():
-            products_coll.update_many(
-                {"image": old_url},
-                {"$set": {"image": new_url}}
-            )
-
-    products = []
-    for p in products_coll.find():
+    
+    # Return all products (migration logic removed for performance; use migrate_images.py if needed)
+    products = list(products_coll.find())
+    for p in products:
         p['_id'] = str(p['_id'])
-        products.append(p)
-    return jsonify(products), 200
+    
+    response = jsonify(products)
+    response.headers['Cache-Control'] = 'public, max-age=3600'
+    return response, 200
 
 
 @product_bp.route('/<id>', methods=['GET'])

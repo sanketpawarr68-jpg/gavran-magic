@@ -11,13 +11,29 @@ export default function Shop() {
 
     useEffect(() => {
         const fetchProducts = async () => {
+            // Try to load from cache first for "instant" feel
+            const cachedProducts = localStorage.getItem('products_cache');
+            if (cachedProducts) {
+                try {
+                    setProducts(JSON.parse(cachedProducts));
+                    setLoading(false); // Hide loading if we have cached data
+                } catch (e) {
+                    console.error("Cache parse error", e);
+                }
+            }
+
             try {
-                const response = await axios.get(`${API_BASE_URL}/api/products/`);
-                // Handle array or wrapped response like { products: [] }
+                const response = await axios.get(`${API_BASE_URL}/api/products/`, {
+                    timeout: 20000 // 20s timeout
+                });
                 const data = Array.isArray(response.data) ? response.data : response.data.products || [];
                 setProducts(data);
+                localStorage.setItem('products_cache', JSON.stringify(data));
             } catch (err) {
-                setError(err.message);
+                // Only show error if we don't even have cached data
+                if (!products.length) {
+                    setError(err.message);
+                }
             } finally {
                 setLoading(false);
             }
