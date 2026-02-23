@@ -61,12 +61,23 @@ def get_products():
     # Seed if empty
     if products_coll.count_documents({}) == 0:
         products_coll.insert_many(DEFAULTS)
-    
-    # Return all products (migration logic removed for performance; use migrate_images.py if needed)
+
+    # Auto-fix: update any stale image URLs in DB (old typo or localhost URLs)
+    wrong_url_patterns = ["garvran-magic.netlify.app", "localhost:5000"]
+    for pattern in wrong_url_patterns:
+        stale = list(products_coll.find({"image": {"$regex": pattern}}))
+        for p in stale:
+            correct_image = str(p['image']).replace(pattern, "gavran-magic.netlify.app")
+            products_coll.update_one({"_id": p["_id"]}, {"$set": {"image": correct_image}})
+
+    # Return all products with corrected URLs
     products = list(products_coll.find())
     for p in products:
         p['_id'] = str(p['_id'])
-    
+        # Fallback: ensure image URL is always correct even if DB fix missed something
+        if p.get('image'):
+            p['image'] = p['image'].replace("garvran-magic.netlify.app", "gavran-magic.netlify.app")
+
     response = jsonify(products)
     response.headers['Cache-Control'] = 'public, max-age=3600'
     return response, 200
