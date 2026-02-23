@@ -5,4 +5,4 @@ pyjwt
 requests
 python-dotenv
 dnspython
-gunicorn; platform_system != "Windows"
+gunicorn
