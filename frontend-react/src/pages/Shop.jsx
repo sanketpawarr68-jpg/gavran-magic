@@ -4,6 +4,10 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import ProductCard from '../components/ProductCard';
 
+const CACHE_KEY = 'products_cache';
+const CACHE_VERSION_KEY = 'products_cache_version';
+const CURRENT_VERSION = 'v3'; // bump this to bust cache
+
 export default function Shop() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -11,12 +15,25 @@ export default function Shop() {
 
     useEffect(() => {
         const fetchProducts = async () => {
+            // Clear stale cache if version mismatch
+            const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
+            if (cachedVersion !== CURRENT_VERSION) {
+                localStorage.removeItem(CACHE_KEY);
+                localStorage.setItem(CACHE_VERSION_KEY, CURRENT_VERSION);
+            }
+
             // Try to load from cache first for "instant" feel
-            const cachedProducts = localStorage.getItem('products_cache');
+            const cachedProducts = localStorage.getItem(CACHE_KEY);
             if (cachedProducts) {
                 try {
-                    setProducts(JSON.parse(cachedProducts));
-                    setLoading(false); // Hide loading if we have cached data
+                    const parsed = JSON.parse(cachedProducts);
+                    // Client-side URL fix for any stale cached data
+                    const fixed = parsed.map(p => ({
+                        ...p,
+                        image: p.image?.replace('garvran-magic.netlify.app', 'gavran-magic.netlify.app')
+                    }));
+                    setProducts(fixed);
+                    setLoading(false);
                 } catch (e) {
                     console.error("Cache parse error", e);
                 }
@@ -27,8 +44,13 @@ export default function Shop() {
                     timeout: 20000 // 20s timeout
                 });
                 const data = Array.isArray(response.data) ? response.data : response.data.products || [];
-                setProducts(data);
-                localStorage.setItem('products_cache', JSON.stringify(data));
+                // Client-side URL fix as safety net
+                const fixed = data.map(p => ({
+                    ...p,
+                    image: p.image?.replace('garvran-magic.netlify.app', 'gavran-magic.netlify.app')
+                }));
+                setProducts(fixed);
+                localStorage.setItem(CACHE_KEY, JSON.stringify(fixed));
             } catch (err) {
                 // Only show error if we don't even have cached data
                 if (!products.length) {
