@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
 
 // Fix for Leaflet default icon not showing
@@ -40,7 +40,7 @@ function ChangeView({ bounds }) {
 
 export default function Tracking() {
     const { id } = useParams();
-    const { user, isSignedIn } = useUser();
+    const { user, isSignedIn } = useAuth();
     const [orderId, setOrderId] = useState(id || '');
     const [orderStatus, setOrderStatus] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -86,7 +86,8 @@ export default function Tracking() {
         if (isSignedIn && user) {
             const fetchRecentOrders = async () => {
                 try {
-                    const response = await axios.get(`${API_BASE_URL}/api/orders/user/${user.id}`);
+                    const userId = user.id || user._id; // Handle both id and _id
+                    const response = await axios.get(`${API_BASE_URL}/api/orders/user/${userId}`);
                     if (Array.isArray(response.data)) {
                         setRecentOrders(response.data);
                     }

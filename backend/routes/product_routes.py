@@ -10,45 +10,30 @@ IMAGE_BASE = "https://gavran-magic.netlify.app/images"
 DEFAULTS = [
     {
         "name": "Vermicelli",
-        "description": "Handmade traditional vermicelli",
+        "category": "Traditional Snacks",
+        "description": "Handmade traditional vermicelli crafted with premium wheat.",
         "weight": "500g",
         "price": 80,
-        "image": f"{IMAGE_BASE}/Vermicelli-500g.jpg"
-    },
-    {
-        "name": "Vermicelli",
-        "description": "Handmade traditional vermicelli (Bulk)",
-        "weight": "1kg",
-        "price": 150,
-        "image": f"{IMAGE_BASE}/Vermicelli-1000g.jpg"
+        "image": f"{IMAGE_BASE}/Vermicelli-500g.jpg",
+        "images": [f"{IMAGE_BASE}/Vermicelli-500g.jpg", f"{IMAGE_BASE}/Vermicelli-1000g.jpg"]
     },
     {
         "name": "Kurdai",
-        "description": "Sun-dried Maharashtrian snack",
+        "category": "Handmade Classics",
+        "description": "Sun-dried Maharashtrian snack made from fermented wheat. Crispy and delicious!",
         "weight": "250g",
         "price": 70,
-        "image": f"{IMAGE_BASE}/kurdai-250g.jpg"
-    },
-    {
-        "name": "Kurdai",
-        "description": "Sun-dried Maharashtrian snack (Bulk)",
-        "weight": "500g",
-        "price": 130,
-        "image": f"{IMAGE_BASE}/kurdai-500g.jpg"
+        "image": f"{IMAGE_BASE}/kurdai-250g.jpg",
+        "images": [f"{IMAGE_BASE}/kurdai-250g.jpg", f"{IMAGE_BASE}/kurdai-500g.jpg"]
     },
     {
         "name": "Papad",
-        "description": "Homemade crispy papad",
+        "category": "Traditional Snacks",
+        "description": "Homemade crispy papad with classic spices and traditional flavor.",
         "weight": "250g",
         "price": 90,
-        "image": f"{IMAGE_BASE}/papad-250g.jpg"
-    },
-    {
-        "name": "Papad",
-        "description": "Homemade crispy papad (Bulk)",
-        "weight": "500g",
-        "price": 170,
-        "image": f"{IMAGE_BASE}/papad-500g.jpg"
+        "image": f"{IMAGE_BASE}/papad-250g.jpg",
+        "images": [f"{IMAGE_BASE}/papad-250g.jpg", f"{IMAGE_BASE}/papad-500g.jpg"]
     }
 ]
 
@@ -58,29 +43,18 @@ def get_products():
     db = get_db()
     products_coll = db.products
 
-    # Seed if empty
+    # Seed if empty or force update if we want to ensure multi-image
     if products_coll.count_documents({}) == 0:
         products_coll.insert_many(DEFAULTS)
 
-    # Auto-fix: update any stale image URLs in DB (old typo or localhost URLs)
-    wrong_url_patterns = ["garvran-magic.netlify.app", "localhost:5000"]
-    for pattern in wrong_url_patterns:
-        stale = list(products_coll.find({"image": {"$regex": pattern}}))
-        for p in stale:
-            correct_image = str(p['image']).replace(pattern, "gavran-magic.netlify.app")
-            products_coll.update_one({"_id": p["_id"]}, {"$set": {"image": correct_image}})
-
-    # Return all products with corrected URLs
     products = list(products_coll.find())
     for p in products:
         p['_id'] = str(p['_id'])
-        # Fallback: ensure image URL is always correct even if DB fix missed something
-        if p.get('image'):
-            p['image'] = p['image'].replace("garvran-magic.netlify.app", "gavran-magic.netlify.app")
-
-    response = jsonify(products)
-    response.headers['Cache-Control'] = 'public, max-age=3600'
-    return response, 200
+        # Ensure 'images' exists as a fallback
+        if 'images' not in p:
+            p['images'] = [p.get('image')] if p.get('image') else []
+            
+    return jsonify(products), 200
 
 
 @product_bp.route('/<id>', methods=['GET'])
@@ -89,8 +63,37 @@ def get_product(id):
     product = db.products.find_one({'_id': ObjectId(id)})
     if product:
         product['_id'] = str(product['_id'])
+        if 'images' not in product:
+            product['images'] = [product.get('image')] if product.get('image') else []
         return jsonify(product), 200
     return jsonify({'message': 'Product not found'}), 404
+
+# --- Review Routes ---
+
+@product_bp.route('/<id>/reviews', methods=['GET'])
+def get_reviews(id):
+    db = get_db()
+    reviews = list(db.reviews.find({'product_id': id}).sort('timestamp', -1))
+    for r in reviews:
+        r['_id'] = str(r['_id'])
+    return jsonify(reviews), 200
+
+@product_bp.route('/<id>/reviews', methods=['POST'])
+def add_review(id):
+    db = get_db()
+    data = request.json
+    review = {
+        "product_id": id,
+        "user_name": data.get("user_name", "Anonymous"),
+        "user_id": data.get("user_id", "guest"),
+        "rating": int(data.get("rating", 5)),
+        "title": data.get("title", ""),
+        "comment": data.get("comment", ""),
+        "photo": data.get("photo"), # base64 string
+        "timestamp": data.get("timestamp") or ""
+    }
+    db.reviews.insert_one(review)
+    return jsonify({"message": "Review added successfully"}), 201
 
 
 # Admin Routes

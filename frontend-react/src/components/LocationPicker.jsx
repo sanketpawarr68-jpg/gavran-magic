@@ -11,7 +11,12 @@ export default function LocationPicker() {
     // Load saved location from localStorage on mount
     useEffect(() => {
         const saved = localStorage.getItem('gavran_location');
-        if (saved) setLocation(JSON.parse(saved));
+        if (saved) {
+            setLocation(JSON.parse(saved));
+        } else {
+            // Auto-trigger detection on first visit
+            detectLocation(true);
+        }
     }, []);
 
     // Close modal on outside click
@@ -26,11 +31,11 @@ export default function LocationPicker() {
     }, [showModal]);
 
     // Auto-detect location via browser GPS
-    const detectLocation = () => {
-        setLoading(true);
+    const detectLocation = (silent = false) => {
+        if (!silent) setLoading(true);
         setError('');
         if (!navigator.geolocation) {
-            setError('Geolocation not supported by your browser.');
+            if (!silent) setError('Geolocation not supported by your browser.');
             setLoading(false);
             return;
         }
@@ -42,27 +47,39 @@ export default function LocationPicker() {
                         `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
                     );
                     const data = await res.json();
+
                     const city =
                         data.address.city ||
                         data.address.town ||
                         data.address.village ||
-                        data.address.county ||
+                        data.address.district ||
                         'Your Location';
+
+                    // Get a more specific address if available
+                    const address = data.display_name.split(',').slice(0, 3).join(',').trim();
                     const postcode = data.address.postcode || '';
-                    const loc = { city, pincode: postcode };
+
+                    const loc = {
+                        city,
+                        pincode: postcode,
+                        address: address, // Store specific address
+                        raw: data.address
+                    };
+
                     setLocation(loc);
                     localStorage.setItem('gavran_location', JSON.stringify(loc));
-                    setShowModal(false);
-                } catch {
-                    setError('Could not fetch location details. Try entering pincode.');
+                    if (!silent) setShowModal(false);
+                } catch (err) {
+                    if (!silent) setError('Could not fetch location details. Try entering pincode.');
                 } finally {
                     setLoading(false);
                 }
             },
             () => {
-                setError('Location access denied. Please enter your pincode manually.');
+                if (!silent) setError('Location access denied. Please allow location in your browser settings or enter your pincode manually.');
                 setLoading(false);
-            }
+            },
+            { enableHighAccuracy: true } // Request device location high accuracy
         );
     };
 
@@ -103,7 +120,7 @@ export default function LocationPicker() {
                 <div className="location-text">
                     <span className="location-label">Deliver to</span>
                     <span className="location-value">
-                        {location ? location.city : 'Select location'}
+                        {location ? (location.address || location.city) : 'Select location'}
                     </span>
                 </div>
                 <i className="fas fa-chevron-down location-arrow"></i>
@@ -113,11 +130,15 @@ export default function LocationPicker() {
             {showModal && (
                 <div className="location-modal" ref={modalRef}>
                     <div className="location-modal-header">
-                        <h3>Choose your delivery location</h3>
-                        <button onClick={() => setShowModal(false)} className="location-modal-close">
-                            <i className="fas fa-times"></i>
+                        <h3>Delivery Location</h3>
+                        <button onClick={() => setShowModal(false)} className="location-modal-close" id="close-location-modal">
+                            ✕
                         </button>
                     </div>
+
+                    <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '15px' }}>
+                        Select a delivery location to see product availability and delivery speeds.
+                    </p>
 
                     {/* GPS Detect Button */}
                     <button
@@ -126,8 +147,8 @@ export default function LocationPicker() {
                         disabled={loading}
                         id="detect-location-btn"
                     >
-                        <i className="fas fa-crosshairs"></i>
-                        {loading ? 'Detecting...' : 'Use my current location'}
+                        <i className="fas fa-location-arrow" style={{ marginRight: '8px' }}></i>
+                        {loading ? 'Detecting...' : 'Use Current Location'}
                     </button>
 
                     <div className="location-or">

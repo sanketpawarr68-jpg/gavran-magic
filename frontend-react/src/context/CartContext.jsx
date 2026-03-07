@@ -17,18 +17,17 @@ export function CartProvider({ children }) {
         localStorage.setItem('cart', JSON.stringify(cart));
     }, [cart]);
 
-    function addToCart(product) {
+    function addToCart(product, qty = 1) {
         setCart(prevCart => {
             const existing = prevCart.find(item => item._id === product._id);
             if (existing) {
-                alert('Added to cart!');
                 return prevCart.map(item =>
-                    item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item
+                    item._id === product._id ? { ...item, quantity: item.quantity + qty } : item
                 );
             }
-            alert('Added to cart!');
-            return [...prevCart, { ...product, quantity: 1 }];
+            return [...prevCart, { ...product, quantity: qty }];
         });
+        // Removed alert to improve UX, can add a notification system later
     }
 
     function removeFromCart(id) {

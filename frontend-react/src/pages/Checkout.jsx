@@ -1,12 +1,12 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useCart } from '../context/CartContext';
-import { useUser, useClerk } from '@clerk/clerk-react';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
+
 
 const CheckoutSchema = Yup.object().shape({
     name: Yup.string().required('Required'),
@@ -19,18 +19,39 @@ const CheckoutSchema = Yup.object().shape({
 
 export default function Checkout() {
     const { cart, total, clearCart } = useCart();
-    const { user, isLoaded, isSignedIn } = useUser();
-    const { openSignIn } = useClerk();
+    const { user, isSignedIn, loading } = useAuth();
     const navigate = useNavigate();
+
+    const [shippingInfo, setShippingInfo] = useState(null);
+    const [loadingShipping, setLoadingShipping] = useState(false);
+
+    const fetchShippingCost = async (pincode, isCOD) => {
+        if (!/^[4][0-9]{5}$/.test(pincode)) return;
+
+        setLoadingShipping(true);
+        try {
+            const response = await axios.post(`${API_BASE_URL}/api/orders/shipping-cost`, {
+                pincode: pincode,
+                weight: 0.5,
+                cod: isCOD ? 1 : 0
+            });
+            setShippingInfo(response.data);
+        } catch (error) {
+            console.error("Shipping Rate Error:", error);
+            setShippingInfo(null);
+        } finally {
+            setLoadingShipping(false);
+        }
+    };
 
     const formik = useFormik({
         initialValues: {
-            name: user ? user.fullName || '' : '',
-            phone: user ? (user.primaryPhoneNumber ? user.primaryPhoneNumber.phoneNumber : '') : '',
+            name: user ? user.name || '' : '',
+            phone: user ? user.phone || '' : '',
             address: '',
             city: '',
             pincode: '',
-            paymentMethod: 'COD', // Default
+            paymentMethod: 'COD',
         },
         enableReinitialize: true,
         validationSchema: CheckoutSchema,
@@ -49,10 +70,9 @@ export default function Checkout() {
                         quantity: item.quantity,
                         price: item.price
                     })),
-                    total_price: total
+                    total_price: total + (shippingInfo ? shippingInfo.total_shipping : 0)
                 };
 
-                // In a real app, if UPI/Card is selected, we'd redirect to payment gateway here.
                 const response = await axios.post(`${API_BASE_URL}/api/orders/`, orderData);
 
                 if (response.data && response.data.order_id) {
@@ -70,104 +90,86 @@ export default function Checkout() {
         },
     });
 
-    if (!isLoaded) return <div style={{ textAlign: 'center', padding: '80px' }}><div className="spinner"></div></div>;
+    useEffect(() => {
+        if (formik.values.pincode.length === 6) {
+            fetchShippingCost(formik.values.pincode, formik.values.paymentMethod === 'COD');
+        }
+    }, [formik.values.pincode, formik.values.paymentMethod]);
+
+    if (loading) return <div className="loader"></div>;
 
     if (!isSignedIn) {
-        openSignIn({
-            afterSignInUrl: '/checkout',
-        });
-        return <div style={{ textAlign: 'center', padding: '80px' }}><div className="spinner"></div><p>Please sign in to checkout...</p></div>;
+        navigate('/login?redirect=/checkout');
+        return <p>Please sign in to checkout...</p>;
     }
 
     return (
-        <main className="container" style={{ padding: '40px 0' }}>
+        <main className="container section-padding">
+            <h1 className="section-title">Checkout</h1>
             <div className="form-container">
-                <h2>Checkout</h2>
-                {formik.status && <div className="alert alert-error">{formik.status}</div>}
-
                 <form onSubmit={formik.handleSubmit}>
-                    {/* --- Personal Details --- */}
-                    <h3 style={{ fontSize: '1.2rem', marginBottom: '20px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Shipping Details</h3>
-
                     <div className="form-group">
                         <label htmlFor="name">Full Name</label>
-                        <input id="name" type="text" {...formik.getFieldProps('name')} />
-                        {formik.touched.name && formik.errors.name ? <div style={{ color: 'red' }}>{formik.errors.name}</div> : null}
+                        <input type="text" id="name" {...formik.getFieldProps('name')} />
+                        {formik.touched.name && formik.errors.name ? <div className="alert-error">{formik.errors.name}</div> : null}
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="phone">Phone Number</label>
-                        <input id="phone" type="tel" placeholder="10-digit mobile number" {...formik.getFieldProps('phone')} />
-                        {formik.touched.phone && formik.errors.phone ? <div style={{ color: 'red' }}>{formik.errors.phone}</div> : null}
+                        <input type="text" id="phone" {...formik.getFieldProps('phone')} />
+                        {formik.touched.phone && formik.errors.phone ? <div className="alert-error">{formik.errors.phone}</div> : null}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="address">Address</label>
-                        <textarea id="address" rows="3" {...formik.getFieldProps('address')} />
-                        {formik.touched.address && formik.errors.address ? <div style={{ color: 'red' }}>{formik.errors.address}</div> : null}
+                        <label htmlFor="address">Shipping Address</label>
+                        <textarea id="address" {...formik.getFieldProps('address')} rows="3" />
+                        {formik.touched.address && formik.errors.address ? <div className="alert-error">{formik.errors.address}</div> : null}
                     </div>
 
                     <div className="city-pincode-grid">
                         <div className="form-group">
                             <label htmlFor="city">City</label>
-                            <input id="city" type="text" {...formik.getFieldProps('city')} />
-                            {formik.touched.city && formik.errors.city ? <div style={{ color: 'red' }}>{formik.errors.city}</div> : null}
+                            <input type="text" id="city" {...formik.getFieldProps('city')} />
+                            {formik.touched.city && formik.errors.city ? <div className="alert-error">{formik.errors.city}</div> : null}
                         </div>
+
                         <div className="form-group">
                             <label htmlFor="pincode">Pincode</label>
-                            <input id="pincode" type="text" placeholder="4xxxxx" {...formik.getFieldProps('pincode')} />
-                            {formik.touched.pincode && formik.errors.pincode ? <div style={{ color: 'red' }}>{formik.errors.pincode}</div> : null}
+                            <input type="text" id="pincode" {...formik.getFieldProps('pincode')} />
+                            {formik.touched.pincode && formik.errors.pincode ? <div className="alert-error">{formik.errors.pincode}</div> : null}
                         </div>
                     </div>
-
-                    {/* --- Payment Method --- */}
-                    <h3 style={{ fontSize: '1.2rem', margin: '30px 0 20px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Payment Method</h3>
 
                     <div className="form-group">
-                        <div style={{ display: 'flex', gap: '20px', flexDirection: 'column' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '15px', border: '1px solid #ddd', cursor: 'pointer', borderRadius: '4px', background: formik.values.paymentMethod === 'COD' ? '#f9f9f9' : 'white' }}>
-                                <input type="radio" name="paymentMethod" value="COD"
+                        <label>Payment Method</label>
+                        <div style={{ marginTop: '10px' }}>
+                            <label style={{ marginRight: '20px', cursor: 'pointer' }}>
+                                <input type="radio" value="COD" name="paymentMethod"
                                     checked={formik.values.paymentMethod === 'COD'}
                                     onChange={formik.handleChange}
-                                />
-                                <span>
-                                    <strong>Cash on Delivery (COD)</strong>
-                                    <br /><small style={{ fontWeight: 'normal', color: '#666' }}>Pay when your order arrives.</small>
-                                </span>
+                                /> Cash on Delivery (COD)
                             </label>
-
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '15px', border: '1px solid #ddd', cursor: 'pointer', borderRadius: '4px', background: formik.values.paymentMethod === 'UPI' ? '#f9f9f9' : 'white' }}>
-                                <input type="radio" name="paymentMethod" value="UPI"
+                            <label style={{ cursor: 'pointer' }}>
+                                <input type="radio" value="UPI" name="paymentMethod"
                                     checked={formik.values.paymentMethod === 'UPI'}
                                     onChange={formik.handleChange}
-                                />
-                                <span>
-                                    <strong>UPI (GPay, PhonePe, Paytm)</strong>
-                                    <br /><small style={{ fontWeight: 'normal', color: '#666' }}>Pay instantly via UPI app.</small>
-                                </span>
-                            </label>
-
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '15px', border: '1px solid #ddd', cursor: 'pointer', borderRadius: '4px', background: formik.values.paymentMethod === 'CARD' ? '#f9f9f9' : 'white' }}>
-                                <input type="radio" name="paymentMethod" value="CARD"
-                                    checked={formik.values.paymentMethod === 'CARD'}
-                                    onChange={formik.handleChange}
-                                />
-                                <span>
-                                    <strong>Credit / Debit Card</strong>
-                                    <br /><small style={{ fontWeight: 'normal', color: '#666' }}>Secure payment via Visa/Mastercard.</small>
-                                </span>
+                                /> UPI / Online Payment
                             </label>
                         </div>
-                        {formik.errors.paymentMethod ? <div style={{ color: 'red', marginTop: '5px' }}>{formik.errors.paymentMethod}</div> : null}
                     </div>
 
-                    <div style={{ marginTop: '30px', padding: '15px', background: '#f8f9fa', borderRadius: '4px', textAlign: 'center' }}>
-                        <strong>Total Payable: ₹{total}</strong>
-                    </div>
+                    {shippingInfo && (
+                        <div style={{ background: '#f9f9f9', padding: '15px', borderRadius: '4px', marginBottom: '20px' }}>
+                            <p>Subtotal: ₹{total}</p>
+                            <p>Shipping Cost: ₹{shippingInfo.total_shipping}</p>
+                            <p style={{ fontWeight: 'bold' }}>Total: ₹{(total + shippingInfo.total_shipping).toFixed(2)}</p>
+                        </div>
+                    )}
 
-                    <button type="submit" className="btn" style={{ width: '100%', marginTop: '20px' }} disabled={formik.isSubmitting}>
-                        {formik.isSubmitting ? 'Processing Order...' : 'Place Order'}
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={formik.isSubmitting || loadingShipping}>
+                        {formik.isSubmitting ? 'Placing Order...' : 'Place Order'}
                     </button>
+                    {formik.status && <div className="alert-error" style={{ marginTop: '10px' }}>{formik.status}</div>}
                 </form>
             </div>
         </main>

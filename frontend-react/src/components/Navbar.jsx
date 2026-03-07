@@ -1,14 +1,36 @@
-import React, { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { useUser, UserButton } from '@clerk/clerk-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import LocationPicker from './LocationPicker';
 import '../index.css';
 
 export default function Navbar() {
-    const { isSignedIn, isLoaded } = useUser();
+    const { isSignedIn, user, logout } = useAuth();
     const { cartCount } = useCart();
     const [isOpen, setIsOpen] = useState(false);
+    const [showUserDropdown, setShowUserDropdown] = useState(false);
+    const dropdownRef = useRef(null);
+    const navigate = useNavigate();
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowUserDropdown(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleLogout = () => {
+        logout();
+        setShowUserDropdown(false);
+        navigate('/');
+    };
+
+    const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : (user?.phone ? '#' : 'U');
 
     return (
         <header>
@@ -19,9 +41,9 @@ export default function Navbar() {
                         <img
                             src="/images/logo.jpg"
                             alt="Gavran Magic"
-                            style={{ height: '48px', width: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #c0392b' }}
+                            style={{ height: '40px', width: 'auto', borderRadius: '50%' }}
                         />
-                        <span style={{ marginLeft: '8px' }}>Gavran <span>Magic</span></span>
+                        <span>Gavran <span>Magic</span></span>
                     </Link>
 
                     {/* Location Picker — Amazon style */}
@@ -42,10 +64,30 @@ export default function Navbar() {
                             </NavLink>
                         </li>
                         <li><NavLink to="/tracking" className={({ isActive }) => isActive ? "active" : ""}>Track Order</NavLink></li>
-                        {!isLoaded ? (
-                            <li><div style={{ width: '32px', height: '32px', background: '#eee', borderRadius: '50%' }}></div></li>
-                        ) : isSignedIn ? (
-                            <li><UserButton /></li>
+
+                        {isSignedIn ? (
+                            <li className="user-profile-item" ref={dropdownRef}>
+                                <div
+                                    className="user-avatar-circle"
+                                    onClick={() => setShowUserDropdown(!showUserDropdown)}
+                                >
+                                    {userInitial}
+                                </div>
+                                {showUserDropdown && (
+                                    <div className="user-dropdown-menu">
+                                        <div className="dropdown-header">
+                                            <strong>{user.name || 'User'}</strong>
+                                            <span>{user.phone}</span>
+                                        </div>
+                                        <Link to="/profile" className="dropdown-item" onClick={() => setShowUserDropdown(false)}>
+                                            <i className="fas fa-user-edit"></i> Profile
+                                        </Link>
+                                        <button onClick={handleLogout} className="dropdown-item logout-item">
+                                            <i className="fas fa-sign-out-alt"></i> Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </li>
                         ) : (
                             <li>
                                 <Link to="/login" className="btn btn-primary" id="navbar-signin-btn">Sign In</Link>

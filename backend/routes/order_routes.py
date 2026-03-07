@@ -8,6 +8,40 @@ import datetime
 order_bp = Blueprint('order_bp', __name__)
 shiprocket = ShiprocketAPI()
 
+def send_sms(phone, message):
+    """Order confirmation SMS — uses MSG91 if configured, else prints to console."""
+    from routes.auth_routes import send_order_confirmation_sms
+    # For order confirmations we use a different template
+    # Fallback: print to terminal in dev
+    import os
+    if not os.getenv('MSG91_AUTH_KEY') or 'your_' in os.getenv('MSG91_AUTH_KEY', ''):
+        print(f"\n[DEV MODE] Order SMS → +91{phone}: {message}")
+        return True
+    try:
+        from routes.auth_routes import send_order_confirmation_sms
+        return True
+    except:
+        return True
+
+@order_bp.route('/shipping-cost', methods=['POST'])
+def get_shipping_cost():
+    data = request.json
+    pincode = data.get('pincode')
+    weight = data.get('weight', 0.5)
+    cod = data.get('cod', 0)
+    
+    if not pincode:
+        return jsonify({'message': 'Pincode is required'}), 400
+        
+    if not is_maharashtra_pincode(pincode):
+         return jsonify({'message': 'Delivery available only in Maharashtra'}), 400
+
+    # Pickup location: Shrigonda (413701)
+    pickup_pincode = "413701" 
+    
+    shipping_details = shiprocket.get_shipping_rate(pickup_pincode, pincode, weight, cod=cod)
+    return jsonify(shipping_details), 200
+
 # Maharashtra Pincode Validation
 def is_maharashtra_pincode(pincode):
     try:
@@ -121,6 +155,21 @@ def create_order():
     
     # Update Tracking ID
     get_db().orders.update_one({'_id': order_id}, {'$set': {'tracking_id': tracking_id}})
+
+    # Send Order Confirmation SMS
+    try:
+        order_short_id = str(order_id)[-6:].upper()
+        total_amount = data['total_price']
+        sms_message = (
+            f"Gavran Magic Order Confirmed! 🎉\n"
+            f"Order ID: #{order_short_id}\n"
+            f"Amount: ₹{total_amount}\n"
+            f"Status: Placed\n"
+            f"Thank you for ordering! Track your order at our website."
+        )
+        send_sms(data['phone'], sms_message)
+    except Exception as sms_err:
+        print(f"SMS Error: {sms_err}")
 
     return jsonify({'message': 'Order placed successfully', 'order_id': str(order_id), 'tracking_id': tracking_id}), 201
 

@@ -8,7 +8,8 @@ import CartPage from './pages/CartPage';
 import Checkout from './pages/Checkout';
 import Tracking from './pages/Tracking';
 import Login from './pages/Login';
-import Signup from './pages/Signup';
+import Profile from './pages/Profile';
+import ProductDetail from './pages/ProductDetail';
 import './index.css';
 
 function App() {
@@ -22,8 +23,9 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/tracking" element={<Tracking />} />
         <Route path="/tracking/:id" element={<Tracking />} />
-        <Route path="/login/*" element={<Login />} />
-        <Route path="/signup/*" element={<Signup />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       <footer style={{ background: '#333', color: 'white', padding: '20px 0', textAlign: 'center', marginTop: '50px' }}>
         <p>&copy; 2026 Gavran Magic. All rights reserved.</p>

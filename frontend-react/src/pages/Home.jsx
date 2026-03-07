@@ -1,18 +1,12 @@
-
 import React from 'react';
 import Hero from '../components/Hero';
-import Profile from '../components/Profile';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Home() {
-    const { isSignedIn, isLoaded } = useUser();
+    const { loading } = useAuth();
 
-    if (!isLoaded) {
+    if (loading) {
         return <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Loading...</div>;
-    }
-
-    if (isSignedIn) {
-        return <Profile />;
     }
 
     return (

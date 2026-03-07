@@ -6,8 +6,11 @@ import { API_BASE_URL } from '../config';
 
 const getImageUrl = (imgPath) => {
     if (!imgPath) return 'https://via.placeholder.com/150';
-    if (imgPath.startsWith('http')) return imgPath;
-    return `${API_BASE_URL}/${imgPath}`;
+    if (imgPath.startsWith('http')) {
+        const filename = imgPath.split('/').pop();
+        return `/images/${filename}`;
+    }
+    return `/images/${imgPath}`;
 };
 
 export default function CartPage() {
@@ -109,7 +112,7 @@ export default function CartPage() {
                     </div>
                     <div className="summary-row">
                         <span>Shipping</span>
-                        <span style={{ color: 'var(--secondary)' }}>Free</span>
+                        <span style={{ color: '#666', fontSize: '0.85rem' }}>Calculated at checkout</span>
                     </div>
 
                     <div className="summary-divider"></div>
