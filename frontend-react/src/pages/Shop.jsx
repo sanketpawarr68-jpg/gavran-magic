@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
@@ -6,11 +5,27 @@ import ProductCard from '../components/ProductCard';
 
 const CACHE_KEY = 'products_cache';
 const CACHE_VERSION_KEY = 'products_cache_version';
-const CURRENT_VERSION = 'v3'; // bump this to bust cache
+const CURRENT_VERSION = 'v4';
+
+// Skeleton card shown while products load
+function SkeletonCard() {
+    return (
+        <div className="skeleton-card">
+            <div className="skeleton-img skeleton-pulse"></div>
+            <div className="skeleton-body">
+                <div className="skeleton-line skeleton-pulse" style={{ width: '70%' }}></div>
+                <div className="skeleton-line skeleton-pulse" style={{ width: '50%', marginTop: '8px' }}></div>
+                <div className="skeleton-line skeleton-pulse" style={{ width: '40%', marginTop: '16px' }}></div>
+            </div>
+            
+        </div>
+    );
+}
 
 export default function Shop() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [serverWaking, setServerWaking] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -22,12 +37,11 @@ export default function Shop() {
                 localStorage.setItem(CACHE_VERSION_KEY, CURRENT_VERSION);
             }
 
-            // Try to load from cache first for "instant" feel
+            // Load from cache instantly — no white flash
             const cachedProducts = localStorage.getItem(CACHE_KEY);
             if (cachedProducts) {
                 try {
                     const parsed = JSON.parse(cachedProducts);
-                    // Client-side URL fix for any stale cached data
                     const fixed = parsed.map(p => ({
                         ...p,
                         image: p.image?.replace('garvran-magic.netlify.app', 'gavran-magic.netlify.app')
@@ -39,12 +53,16 @@ export default function Shop() {
                 }
             }
 
+            // Show "server waking" notice only if no cache after 3 seconds
+            const wakingTimer = setTimeout(() => {
+                setServerWaking(true);
+            }, 3000);
+
             try {
                 const response = await axios.get(`${API_BASE_URL}/api/products/`, {
-                    timeout: 20000 // 20s timeout
+                    timeout: 60000 // 60s — Render free tier can take up to 50s to wake
                 });
                 const data = Array.isArray(response.data) ? response.data : response.data.products || [];
-                // Client-side URL fix as safety net
                 const fixed = data.map(p => ({
                     ...p,
                     image: p.image?.replace('garvran-magic.netlify.app', 'gavran-magic.netlify.app')
@@ -52,40 +70,28 @@ export default function Shop() {
                 setProducts(fixed);
                 localStorage.setItem(CACHE_KEY, JSON.stringify(fixed));
             } catch (err) {
-                // Only show error if we don't even have cached data
                 if (!products.length) {
                     setError(err.message);
                 }
             } finally {
+                clearTimeout(wakingTimer);
+                setServerWaking(false);
                 setLoading(false);
             }
         };
         fetchProducts();
     }, []);
 
-    if (loading) {
-        return (
-            <div className="container" style={{ textAlign: 'center', marginTop: '50px' }}>
-                <div className="spinner" style={{ marginBottom: '20px' }}></div>
-                <h3>Loading tasty products...</h3>
-                <p style={{ color: '#666' }}>
-                    (Please wait up to 60 seconds if the free server is waking up)
-                </p>
-            </div>
-        );
-    }
-
     if (error) {
         return (
-            <div className="container" style={{ textAlign: 'center', marginTop: '50px', color: 'red' }}>
-                <h3>Error loading products</h3>
-                <p>Ensure the backend is running and reachable.</p>
-                <p>Check console for details ({error})</p>
-                <button
-                    onClick={() => window.location.reload()}
-                    style={{ padding: '8px 16px', marginTop: '10px', cursor: 'pointer' }}
-                >
-                    Retry
+            <div className="container" style={{ textAlign: 'center', marginTop: '80px' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '16px' }}>😕</div>
+                <h3 style={{ marginBottom: '8px' }}>Could not load products</h3>
+                <p style={{ color: '#888', marginBottom: '20px' }}>
+                    The server might be down. Please try again.
+                </p>
+                <button className="btn btn-primary" onClick={() => { setError(null); setLoading(true); window.location.reload(); }}>
+                    Try Again
                 </button>
             </div>
         );
@@ -94,10 +100,25 @@ export default function Shop() {
     return (
         <main className="container">
             <h2 className="section-title">Our Homemade Products</h2>
+
+            {/* Server waking banner — only shows after 3 seconds of waiting */}
+            {serverWaking && !products.length && (
+                <div className="server-waking-banner">
+                    <div className="waking-spinner"></div>
+                    <div>
+                        <strong>Server is starting up...</strong>
+                        <p>Free server takes ~30 seconds to wake. Please wait ☕</p>
+                    </div>
+                </div>
+            )}
+
             <div className="products-grid">
-                {products.map(product => (
-                    <ProductCard key={product._id} product={product} />
-                ))}
+                {loading && !products.length
+                    ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+                    : products.map(product => (
+                        <ProductCard key={product._id} product={product} />
+                    ))
+                }
             </div>
         </main>
     );

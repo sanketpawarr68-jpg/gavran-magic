@@ -27,7 +27,14 @@ export default function Navbar() {
     const handleLogout = () => {
         logout();
         setShowUserDropdown(false);
+        setIsOpen(false);
         navigate('/');
+    };
+
+    // Close nav when a normal link is clicked (but NOT for avatar li)
+    const handleNavLinkClick = () => {
+        setIsOpen(false);
+        setShowUserDropdown(false);
     };
 
     const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : (user?.phone ? '#' : 'U');
@@ -37,7 +44,7 @@ export default function Navbar() {
             <div className="container">
                 <nav>
                     {/* Logo */}
-                    <Link to="/" className="logo" onClick={() => setIsOpen(false)}>
+                    <Link to="/" className="logo" onClick={handleNavLinkClick}>
                         <img
                             src="/images/logo.jpg"
                             alt="Gavran Magic"
@@ -54,43 +61,53 @@ export default function Navbar() {
                         <i className={`fas ${isOpen ? 'fa-times' : 'fa-bars'}`}></i>
                     </div>
 
-                    {/* Nav Links */}
-                    <ul className={`nav-links ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(false)}>
-                        <li><NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>Home</NavLink></li>
-                        <li><NavLink to="/shop" className={({ isActive }) => isActive ? "active" : ""}>Shop</NavLink></li>
+                    {/* Nav Links — NO onClick on the ul itself */}
+                    <ul className={`nav-links ${isOpen ? 'open' : ''}`}>
+                        <li><NavLink to="/" className={({ isActive }) => isActive ? "active" : ""} onClick={handleNavLinkClick}>Home</NavLink></li>
+                        <li><NavLink to="/shop" className={({ isActive }) => isActive ? "active" : ""} onClick={handleNavLinkClick}>Shop</NavLink></li>
                         <li>
-                            <NavLink to="/cart" className={({ isActive }) => isActive ? "active" : ""}>
+                            <NavLink to="/cart" className={({ isActive }) => isActive ? "active" : ""} onClick={handleNavLinkClick}>
                                 Cart {cartCount > 0 && <span id="cart-count">{cartCount}</span>}
                             </NavLink>
                         </li>
-                        <li><NavLink to="/tracking" className={({ isActive }) => isActive ? "active" : ""}>Track Order</NavLink></li>
+                        <li><NavLink to="/tracking" className={({ isActive }) => isActive ? "active" : ""} onClick={handleNavLinkClick}>Track Order</NavLink></li>
 
                         {isSignedIn ? (
                             <li className="user-profile-item" ref={dropdownRef}>
+                                {/* Avatar row — clicking avatar toggles the dropdown */}
                                 <div
-                                    className="user-avatar-circle"
-                                    onClick={() => setShowUserDropdown(!showUserDropdown)}
+                                    className="mobile-user-row"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowUserDropdown(prev => !prev);
+                                    }}
                                 >
-                                    {userInitial}
+                                    <div className="user-avatar-circle">{userInitial}</div>
+                                    <span className="mobile-user-name">{user?.name || user?.phone || 'My Account'}</span>
+                                    <i className={`fas fa-chevron-${showUserDropdown ? 'up' : 'down'} mobile-chevron`}></i>
                                 </div>
-                                {showUserDropdown && (
-                                    <div className="user-dropdown-menu">
-                                        <div className="dropdown-header">
-                                            <strong>{user.name || 'User'}</strong>
-                                            <span>{user.phone}</span>
-                                        </div>
-                                        <Link to="/profile" className="dropdown-item" onClick={() => setShowUserDropdown(false)}>
-                                            <i className="fas fa-user-edit"></i> Profile
-                                        </Link>
-                                        <button onClick={handleLogout} className="dropdown-item logout-item">
-                                            <i className="fas fa-sign-out-alt"></i> Logout
-                                        </button>
+
+                                {/* Dropdown — always rendered, shown/hidden by CSS */}
+                                <div className={`user-dropdown-menu ${showUserDropdown ? 'show' : ''}`}>
+                                    <div className="dropdown-header">
+                                        <strong>{user.name || 'User'}</strong>
+                                        <span>{user.phone}</span>
                                     </div>
-                                )}
+                                    <Link
+                                        to="/profile"
+                                        className="dropdown-item"
+                                        onClick={handleNavLinkClick}
+                                    >
+                                        <i className="fas fa-user-edit"></i> Profile
+                                    </Link>
+                                    <button onClick={handleLogout} className="dropdown-item logout-item">
+                                        <i className="fas fa-sign-out-alt"></i> Logout
+                                    </button>
+                                </div>
                             </li>
                         ) : (
                             <li>
-                                <Link to="/login" className="btn btn-primary" id="navbar-signin-btn">Sign In</Link>
+                                <Link to="/login" className="btn btn-primary" id="navbar-signin-btn" onClick={handleNavLinkClick}>Sign In</Link>
                             </li>
                         )}
                     </ul>
