@@ -18,7 +18,7 @@ const CheckoutSchema = Yup.object().shape({
 });
 
 export default function Checkout() {
-    const { cart, total, clearCart } = useCart();
+    const { cart, total, clearCart, getEffectivePrice } = useCart();
     const { user, isSignedIn, loading } = useAuth();
     const navigate = useNavigate();
 
@@ -68,7 +68,8 @@ export default function Checkout() {
                     products: cart.map(item => ({
                         product_id: item._id,
                         quantity: item.quantity,
-                        price: item.price
+                        price: getEffectivePrice(item),
+                        name: item.name
                     })),
                     total_price: total + (shippingInfo ? shippingInfo.total_shipping : 0)
                 };

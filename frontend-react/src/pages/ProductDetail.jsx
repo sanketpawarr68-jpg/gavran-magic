@@ -255,7 +255,7 @@ const ProductDetail = () => {
             {/* Reviews Section */}
             <section className="feedback-section">
                 <div className="section-header">
-                    <h2>Customer Feedack</h2>
+                    <h2>Customer Feedback</h2>
                     <p>Total {reviews.length} reviews for this product</p>
                 </div>
 

@@ -17,17 +17,33 @@ export function CartProvider({ children }) {
         localStorage.setItem('cart', JSON.stringify(cart));
     }, [cart]);
 
+    // Helper to get discounted price
+    const getEffectivePrice = (item) => {
+        if (item.discount > 0) {
+            return Math.round(item.price * (1 - item.discount / 100));
+        }
+        return item.price;
+    };
+
     function addToCart(product, qty = 1) {
         setCart(prevCart => {
             const existing = prevCart.find(item => item._id === product._id);
+            const currentQty = existing ? existing.quantity : 0;
+            const newQty = currentQty + qty;
+
+            // Check stock
+            if (product.stock !== undefined && newQty > product.stock) {
+                alert(`Sorry, only ${product.stock} units available.`);
+                return prevCart;
+            }
+
             if (existing) {
                 return prevCart.map(item =>
-                    item._id === product._id ? { ...item, quantity: item.quantity + qty } : item
+                    item._id === product._id ? { ...item, quantity: newQty } : item
                 );
             }
             return [...prevCart, { ...product, quantity: qty }];
         });
-        // Removed alert to improve UX, can add a notification system later
     }
 
     function removeFromCart(id) {
@@ -39,10 +55,19 @@ export function CartProvider({ children }) {
             removeFromCart(id);
             return;
         }
+
         setCart(prevCart =>
-            prevCart.map(item =>
-                item._id === id ? { ...item, quantity: parseInt(quantity) } : item
-            )
+            prevCart.map(item => {
+                if (item._id === id) {
+                    // Check stock during manual update
+                    if (item.stock !== undefined && quantity > item.stock) {
+                        alert(`Only ${item.stock} available`);
+                        return item;
+                    }
+                    return { ...item, quantity: parseInt(quantity) };
+                }
+                return item;
+            })
         );
     }
 
@@ -50,7 +75,7 @@ export function CartProvider({ children }) {
         setCart([]);
     }
 
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const total = cart.reduce((sum, item) => sum + (getEffectivePrice(item) * item.quantity), 0);
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
@@ -61,7 +86,8 @@ export function CartProvider({ children }) {
             updateQuantity,
             clearCart,
             total,
-            cartCount
+            cartCount,
+            getEffectivePrice
         }}>
             {children}
         </CartContext.Provider>

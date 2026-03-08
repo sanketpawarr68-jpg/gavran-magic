@@ -6,8 +6,7 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../config';
 
 export default function Login() {
     const [phone, setPhone] = useState('');         // full number with country code e.g. 917823879053
