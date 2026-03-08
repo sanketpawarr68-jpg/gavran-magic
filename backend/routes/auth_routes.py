@@ -261,3 +261,14 @@ def update_profile():
         'message': 'Profile updated successfully',
         'user': updated_user
     }), 200
+
+# ADMIN: Get all users
+@auth_bp.route('/users', methods=['GET'])
+def get_all_users():
+    db = get_db()
+    users_cursor = db.users.find().sort('created_at', -1)
+    users = []
+    for user in users_cursor:
+        user['_id'] = str(user['_id'])
+        users.append(user)
+    return jsonify(users), 200

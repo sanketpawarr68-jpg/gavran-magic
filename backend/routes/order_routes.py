@@ -221,9 +221,37 @@ def get_user_orders(user_id):
     orders = []
     for order in orders_cursor:
         order['_id'] = str(order['_id'])
-        # user_id is stored as string from Clerk now, not ObjectId necessarily, 
-        # but if we stored it as ObjectId previously we'd need conversion.
-        # In create_order we used ObjectId(data['user_id']) which might fail if Clerk ID is string.
-        # Let's fix create_order to allow string user_id for Clerk.
         orders.append(order)
     return jsonify(orders), 200
+
+# ADMIN: Get all orders
+@order_bp.route('/', methods=['GET'])
+def get_all_orders():
+    # In production, check for admin token
+    orders_cursor = get_db().orders.find().sort('created_at', -1)
+    orders = []
+    for order in orders_cursor:
+        order['_id'] = str(order['_id'])
+        orders.append(order)
+    return jsonify(orders), 200
+
+# ADMIN: Update order status
+@order_bp.route('/<order_id>/status', methods=['PUT'])
+def update_order_status(order_id):
+    try:
+        data = request.json
+        new_status = data.get('status')
+        if not new_status:
+            return jsonify({'message': 'Status is required'}), 400
+            
+        result = get_db().orders.update_one(
+            {'_id': ObjectId(order_id)},
+            {'$set': {'order_status': new_status}}
+        )
+        
+        if result.matched_count == 0:
+            return jsonify({'message': 'Order not found'}), 404
+            
+        return jsonify({'message': 'Order status updated successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 400
