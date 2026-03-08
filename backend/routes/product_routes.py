@@ -105,6 +105,15 @@ def add_product():
     return jsonify({'message': 'Product added'}), 201
 
 
+@product_bp.route('/<id>', methods=['PUT'])
+def update_product(id):
+    db = get_db()
+    data = request.json
+    # MongoDB update requires $set if we only want to update specific fields
+    db.products.update_one({'_id': ObjectId(id)}, {'$set': data})
+    return jsonify({'message': 'Product updated'}), 200
+
+
 @product_bp.route('/<id>', methods=['DELETE'])
 def delete_product(id):
     db = get_db()
