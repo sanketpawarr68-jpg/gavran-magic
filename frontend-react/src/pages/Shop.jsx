@@ -5,7 +5,7 @@ import ProductCard from '../components/ProductCard';
 
 const CACHE_KEY = 'products_cache';
 const CACHE_VERSION_KEY = 'products_cache_version';
-const CURRENT_VERSION = 'v4';
+const CURRENT_VERSION = 'v5';
 
 // Skeleton card shown while products load
 function SkeletonCard() {
@@ -17,7 +17,7 @@ function SkeletonCard() {
                 <div className="skeleton-line skeleton-pulse" style={{ width: '50%', marginTop: '8px' }}></div>
                 <div className="skeleton-line skeleton-pulse" style={{ width: '40%', marginTop: '16px' }}></div>
             </div>
-            
+
         </div>
     );
 }

@@ -66,12 +66,12 @@ export default function Tracking() {
     const sourcePosition = [18.6186, 74.6975];
 
     const navigate = useNavigate();
-    const steps = ['Placed', 'Shipped', 'Out for Delivery', 'Delivered'];
+    const steps = ['Placed', 'Confirmed', 'Shipped', 'Out for Delivery', 'Delivered'];
 
     const getCurrentStep = (status) => {
         if (!status) return -1;
-        if (status === 'Cancelled') return -1;
-        return steps.indexOf(status) !== -1 ? steps.indexOf(status) : 0;
+        if (status === 'Cancelled' || status === 'Declined') return -1;
+        return steps.indexOf(status) !== -1 ? steps.indexOf(status) : steps.indexOf('Placed');
     };
 
     useEffect(() => {
@@ -335,7 +335,7 @@ export default function Tracking() {
                         )}
 
                         {/* Timeline */}
-                        {orderStatus.order_status !== 'Cancelled' ? (
+                        {orderStatus.order_status !== 'Cancelled' && orderStatus.order_status !== 'Declined' ? (
                             <div className="status-timeline" style={{ position: 'relative', marginBottom: '50px' }}>
                                 <div style={{ position: 'absolute', top: '15px', left: '0', height: '4px', width: '100%', background: '#eee', zIndex: 0, borderRadius: '4px' }}></div>
                                 <div style={{
@@ -363,10 +363,10 @@ export default function Tracking() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="alert alert-error" style={{ marginBottom: '30px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <span><i className="fas fa-times-circle"></i> This Order has been Cancelled.</span>
+                            <div className="alert alert-error" style={{ marginBottom: '30px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff1f0', border: '1px solid #ffa39e', color: '#cf1322' }}>
+                                <span><i className="fas fa-times-circle"></i> This Order has been {orderStatus.order_status}.</span>
                                 {orderStatus.cancellation_reason && (
-                                    <span style={{ fontSize: '0.9rem', opacity: 0.9 }}>Reason: {orderStatus.cancellation_reason}</span>
+                                    <span style={{ fontSize: '0.9rem', fontWeight: '600' }}>Reason: {orderStatus.cancellation_reason}</span>
                                 )}
                             </div>
                         )}
@@ -482,8 +482,8 @@ export default function Tracking() {
                                                         <i className="fas fa-box"></i>
                                                     </div>
                                                     <div>
-                                                        <div style={{ fontWeight: '600', color: 'var(--dark)' }}>Product {p.product_id ? (typeof p.product_id === 'string' ? `#${p.product_id.slice(-6)}` : '#ID') : ''}</div>
-                                                        <small style={{ color: '#999' }}>Quantity: {p.quantity}</small>
+                                                        <div style={{ fontWeight: '600', color: 'var(--dark)' }}>{p.name || 'Product'}</div>
+                                                        <small style={{ color: '#999' }}>Quantity: {p.quantity || 1}</small>
                                                     </div>
                                                 </div>
                                                 <span style={{ fontWeight: '600' }}>₹{(p.price || 0) * (p.quantity || 1)}</span>

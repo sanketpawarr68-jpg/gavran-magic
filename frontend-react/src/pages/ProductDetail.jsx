@@ -172,19 +172,30 @@ const ProductDetail = () => {
                         <p className="weight-info">{product.weight} - {product.category || 'Pure Handmade'}</p>
 
                         <div className="price-box">
-                            <span className="current-price">₹{product.price}</span>
-                            <span className="old-price">₹{product.price * 2}</span>
-                            <span className="discount-badge">SAVE 50%</span>
+                            <span className="current-price">₹{product.discount > 0 ? Math.round(product.price * (1 - product.discount / 100)) : product.price}</span>
+                            {product.discount > 0 && (
+                                <>
+                                    <span className="old-price">₹{product.price}</span>
+                                    <span className="discount-badge">SAVE {product.discount}%</span>
+                                </>
+                            )}
                         </div>
 
                         <div className="quick-specs">
                             <div className="spec-item">
                                 <span className="label">Availability</span>
-                                <span className="val" style={{ color: '#27ae60' }}>In Stock</span>
+                                <span className="val" style={{
+                                    color: product.stock > 5 ? '#27ae60' : '#e74c3c',
+                                    fontWeight: '700'
+                                }}>
+                                    {product.stock <= 0
+                                        ? 'Out of Stock'
+                                        : (product.stock <= 5 ? `Only ${product.stock} left!` : `In Stock (${product.stock} available)`)}
+                                </span>
                             </div>
                             <div className="spec-item">
-                                <span className="label">Shipping</span>
-                                <span className="val">Fast Delivery</span>
+                                <span className="label">Weight</span>
+                                <span className="val">{product.weight || '500g'}</span>
                             </div>
                         </div>
 
@@ -198,9 +209,9 @@ const ProductDetail = () => {
                             <div className="quantity-box">
                                 <label>Select Quantity</label>
                                 <div className="qty-input">
-                                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+                                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={product.stock <= 0}>-</button>
                                     <span>{quantity}</span>
-                                    <button onClick={() => setQuantity(quantity + 1)}>+</button>
+                                    <button onClick={() => setQuantity(quantity + 1)} disabled={product.stock <= 0 || quantity >= product.stock}>+</button>
                                 </div>
                             </div>
 
@@ -208,11 +219,11 @@ const ProductDetail = () => {
                                 <button
                                     className={`btn-add ${added ? 'added' : ''}`}
                                     onClick={() => handleAddToCart('add')}
-                                    disabled={added}
+                                    disabled={added || product.stock <= 0}
                                 >
-                                    {added ? 'Added ✓' : 'Add to Cart'}
+                                    {product.stock <= 0 ? 'Out of Stock' : (added ? 'Added ✓' : 'Add to Cart')}
                                 </button>
-                                <button className="btn-buy" onClick={() => handleAddToCart('buy')}>
+                                <button className="btn-buy" onClick={() => handleAddToCart('buy')} disabled={product.stock <= 0}>
                                     Buy Now
                                 </button>
                             </div>

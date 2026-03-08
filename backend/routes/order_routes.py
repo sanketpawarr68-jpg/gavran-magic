@@ -92,8 +92,32 @@ def create_order():
             # Allow through for demo - in production, uncomment the line below:
             # return jsonify({'message': 'Service not available for this pincode'}), 400
 
+    # Stock Check & Update
+    db = get_db()
+    products_to_update = []
+    
+    for item in data['products']:
+        p_id = item.get('product_id')
+        qty = item.get('quantity', 1)
+        
+        product = db.products.find_one({'_id': ObjectId(p_id)})
+        if not product:
+            return jsonify({'message': f'Product {p_id} not found'}), 404
+            
+        current_stock = int(product.get('stock', 0))
+        if current_stock < qty:
+            return jsonify({'message': f'Insufficient stock for {product.get("name")}. Only {current_stock} available.'}), 400
+            
+        products_to_update.append((p_id, qty))
+
+    # All products have enough stock, now decrement
+    for p_id, qty in products_to_update:
+        db.products.update_one(
+            {'_id': ObjectId(p_id)},
+            {'$inc': {'stock': -qty}}
+        )
+
     # Create Order in MongoDB
-    # user_id from Clerk is a string, not ObjectId
     order = {
         "user_id": data['user_id'], # Store as string
         "products": data['products'],
@@ -108,7 +132,7 @@ def create_order():
         "tracking_id": "PENDING"
     }
     
-    order_id = get_db().orders.insert_one(order).inserted_id
+    order_id = db.orders.insert_one(order).inserted_id
 
     # Create Shipment in Shiprocket (Order Creation)
     # Prepare Shiprocket Order Payload
@@ -235,18 +259,29 @@ def get_all_orders():
         orders.append(order)
     return jsonify(orders), 200
 
-# ADMIN: Update order status
+# ADMIN: Update order status & metadata
 @order_bp.route('/<order_id>/status', methods=['PUT'])
 def update_order_status(order_id):
     try:
         data = request.json
         new_status = data.get('status')
+        reason = data.get('reason')
+        admin_note = data.get('admin_note')
+
         if not new_status:
             return jsonify({'message': 'Status is required'}), 400
             
+        update_data = {'order_status': new_status}
+        if reason:
+            update_data['cancellation_reason'] = reason
+        if admin_note:
+            update_data['admin_note'] = admin_note
+        if new_status == 'Cancelled' or new_status == 'Declined':
+            update_data['cancelled_at'] = datetime.datetime.utcnow()
+
         result = get_db().orders.update_one(
             {'_id': ObjectId(order_id)},
-            {'$set': {'order_status': new_status}}
+            {'$set': update_data}
         )
         
         if result.matched_count == 0:

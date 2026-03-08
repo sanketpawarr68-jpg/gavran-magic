@@ -15,7 +15,9 @@ DEFAULTS = [
         "weight": "500g",
         "price": 80,
         "image": f"{IMAGE_BASE}/Vermicelli-500g.jpg",
-        "images": [f"{IMAGE_BASE}/Vermicelli-500g.jpg", f"{IMAGE_BASE}/Vermicelli-1000g.jpg"]
+        "images": [f"{IMAGE_BASE}/Vermicelli-500g.jpg", f"{IMAGE_BASE}/Vermicelli-1000g.jpg"],
+        "stock": 100,
+        "discount": 0
     },
     {
         "name": "Kurdai",
@@ -24,7 +26,9 @@ DEFAULTS = [
         "weight": "250g",
         "price": 70,
         "image": f"{IMAGE_BASE}/kurdai-250g.jpg",
-        "images": [f"{IMAGE_BASE}/kurdai-250g.jpg", f"{IMAGE_BASE}/kurdai-500g.jpg"]
+        "images": [f"{IMAGE_BASE}/kurdai-250g.jpg", f"{IMAGE_BASE}/kurdai-500g.jpg"],
+        "stock": 100,
+        "discount": 0
     },
     {
         "name": "Papad",
@@ -33,7 +37,9 @@ DEFAULTS = [
         "weight": "250g",
         "price": 90,
         "image": f"{IMAGE_BASE}/papad-250g.jpg",
-        "images": [f"{IMAGE_BASE}/papad-250g.jpg", f"{IMAGE_BASE}/papad-500g.jpg"]
+        "images": [f"{IMAGE_BASE}/papad-250g.jpg", f"{IMAGE_BASE}/papad-500g.jpg"],
+        "stock": 100,
+        "discount": 0
     }
 ]
 
@@ -44,15 +50,20 @@ def get_products():
     products_coll = db.products
 
     # Seed if empty or force update if we want to ensure multi-image
-    if products_coll.count_documents({}) == 0:
+    # Seed only if "Vermicelli" doesn't exist to prevent multi-insert race conditions
+    if products_coll.count_documents({"name": "Vermicelli"}) == 0:
         products_coll.insert_many(DEFAULTS)
 
     products = list(products_coll.find())
     for p in products:
         p['_id'] = str(p['_id'])
-        # Ensure 'images' exists as a fallback
+        # Fallbacks for existing products
         if 'images' not in p:
             p['images'] = [p.get('image')] if p.get('image') else []
+        if 'stock' not in p:
+            p['stock'] = 100
+        if 'discount' not in p:
+            p['discount'] = 0
             
     return jsonify(products), 200
 
@@ -65,6 +76,10 @@ def get_product(id):
         product['_id'] = str(product['_id'])
         if 'images' not in product:
             product['images'] = [product.get('image')] if product.get('image') else []
+        if 'stock' not in product:
+            product['stock'] = 100
+        if 'discount' not in product:
+            product['discount'] = 0
         return jsonify(product), 200
     return jsonify({'message': 'Product not found'}), 404
 
