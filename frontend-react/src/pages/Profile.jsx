@@ -72,8 +72,12 @@ export default function Profile() {
                     <div className="user-avatar-circle" style={{ width: '80px', height: '80px', fontSize: '2.5rem', margin: '0 auto 15px' }}>
                         {user.name ? user.name.charAt(0).toUpperCase() : '#'}
                     </div>
-                    <h2>Complete Your Profile</h2>
-                    <p style={{ color: '#666' }}>Help us deliver your magic treats better!</p>
+                    <h2>{user.name && !user.name.startsWith('User ') ? 'My Profile' : 'Complete Your Profile'}</h2>
+                    <p style={{ color: '#666' }}>
+                        {user.name && !user.name.startsWith('User ')
+                            ? `Welcome back, ${user.name.split(' ')[0]}! 👋`
+                            : 'Help us deliver your magic treats better!'}
+                    </p>
                 </div>
 
                 <form onSubmit={handleSubmit}>

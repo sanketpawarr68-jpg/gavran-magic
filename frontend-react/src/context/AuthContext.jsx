@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
                 phone: phone
             });
             loginWithToken(res.data.token, res.data.user);
-            return { success: true };
+            return { success: true, user: res.data.user };
         } catch (err) {
             return {
                 success: false,

@@ -137,7 +137,13 @@ export default function Login() {
                 const idToken = await result.user.getIdToken();
                 const res = await loginWithFirebase(idToken, cleanPhone);
                 if (res?.success) {
-                    navigate('/profile');
+                    // If profile already complete, go home. Otherwise fill profile.
+                    const userData = res.user;
+                    if (userData?.name && userData.name.trim() && !userData.name.startsWith('User ')) {
+                        navigate('/');
+                    } else {
+                        navigate('/profile');
+                    }
                 } else {
                     setError(res?.error || 'Login failed. Please try again.');
                 }
@@ -158,7 +164,13 @@ export default function Login() {
                     otp: otpString
                 });
                 loginWithToken(res.data.token, res.data.user);
-                navigate('/profile');
+                // Smart redirect: if name is already filled, skip profile page
+                const userData = res.data.user;
+                if (userData?.name && userData.name.trim() && !userData.name.startsWith('User ')) {
+                    navigate('/');
+                } else {
+                    navigate('/profile');
+                }
             } catch (err) {
                 setError(err.response?.data?.message || 'Incorrect OTP. Please try again.');
             }

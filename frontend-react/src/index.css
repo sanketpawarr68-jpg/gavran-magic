@@ -518,6 +518,7 @@ body {
     nav {
         height: 64px;
         gap: 0;
+        position: relative;
     }
 
     /* Hide location text on mobile, show only icon — modal handled separately */
@@ -546,8 +547,8 @@ body {
         height: calc(100vh - 64px);
         background: white;
         flex-direction: column;
-        padding: 30px 24px;
-        gap: 20px;
+        padding: 20px 24px 40px;
+        gap: 4px;
         border-top: 1px solid #eee;
         display: none;
         z-index: 999;
@@ -559,10 +560,16 @@ body {
         display: flex;
     }
 
+    .nav-links li {
+        width: 100%;
+    }
+
     .nav-links a {
         font-size: 1rem;
-        padding: 10px 0;
+        padding: 14px 0;
         border-bottom: 1px solid #f0f0f0;
+        display: block;
+        width: 100%;
     }
 
     .nav-links li:last-child a {
@@ -574,6 +581,31 @@ body {
         font-size: 1.4rem;
         padding: 8px;
         color: var(--dark);
+        z-index: 1001;
+    }
+
+    /* Avatar inside mobile nav drawer — full width row */
+    .user-profile-item {
+        margin-left: 0;
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* Dropdown menu becomes a flat box inside drawer */
+    .user-dropdown-menu {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+        border: 1px solid #f0f0f0;
+        padding: 6px 0;
+        animation: none;
+        background: #fdfdfd;
+        border-radius: 10px;
+        margin-top: 10px;
     }
 
     /* === HERO === */
