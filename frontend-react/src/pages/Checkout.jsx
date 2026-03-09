@@ -210,45 +210,45 @@ export default function Checkout() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                                 {/* Profile Address */}
                                 {user && user.address && (
-                                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer' }}>
-                                        <input type="radio" name="addressMode" checked={addressMode === 'profile'} onChange={() => handleAddressModeChange('profile')} style={{ marginTop: '3px' }} />
-                                        <div>
-                                            <span style={{ fontWeight: 'bold', display: 'block', color: addressMode === 'profile' ? 'var(--primary)' : '#333' }}>★ Home (Profile Default)</span>
-                                            <span style={{ fontSize: '0.85rem', color: '#666' }}>{user.address}, {user.city} - {user.pincode}</span>
+                                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', textAlign: 'left', textTransform: 'none', margin: 0, width: '100%' }}>
+                                        <input type="radio" name="addressMode" checked={addressMode === 'profile'} onChange={() => handleAddressModeChange('profile')} style={{ marginTop: '4px', transform: 'scale(1.2)' }} />
+                                        <div style={{ flex: 1 }}>
+                                            <span style={{ fontWeight: 'bold', display: 'block', color: addressMode === 'profile' ? 'var(--primary)' : '#333', textTransform: 'none' }}>★ Home (Profile Default)</span>
+                                            <span style={{ fontSize: '0.9rem', color: '#555', display: 'block', marginTop: '4px', textTransform: 'none' }}>{user.address}, {user.city} - {user.pincode}</span>
                                         </div>
                                     </label>
                                 )}
 
                                 {/* Additional Saved Addresses */}
                                 {user?.saved_addresses?.map((addr, idx) => (
-                                    <label key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer' }}>
-                                        <input type="radio" name="addressMode" checked={addressMode === `saved_${idx}`} onChange={() => handleAddressModeChange(`saved_${idx}`, addr)} style={{ marginTop: '3px' }} />
-                                        <div>
-                                            <span style={{ fontWeight: 'bold', display: 'block', color: addressMode === `saved_${idx}` ? 'var(--primary)' : '#333' }}>Saved Address {idx + 1}</span>
-                                            <span style={{ fontSize: '0.85rem', color: '#666' }}>{addr.address}, {addr.city} - {addr.pincode}</span>
+                                    <label key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', textAlign: 'left', textTransform: 'none', margin: 0, width: '100%' }}>
+                                        <input type="radio" name="addressMode" checked={addressMode === `saved_${idx}`} onChange={() => handleAddressModeChange(`saved_${idx}`, addr)} style={{ marginTop: '4px', transform: 'scale(1.2)' }} />
+                                        <div style={{ flex: 1 }}>
+                                            <span style={{ fontWeight: 'bold', display: 'block', color: addressMode === `saved_${idx}` ? 'var(--primary)' : '#333', textTransform: 'none' }}>Saved Address {idx + 1}</span>
+                                            <span style={{ fontSize: '0.9rem', color: '#555', display: 'block', marginTop: '4px', textTransform: 'none' }}>{addr.address}, {addr.city} - {addr.pincode}</span>
                                         </div>
                                     </label>
                                 ))}
 
                                 {/* Detect Location */}
-                                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer' }}>
-                                    <input type="radio" name="addressMode" checked={addressMode === 'current'} onChange={() => handleAddressModeChange('current')} style={{ marginTop: '3px' }} />
-                                    <div>
-                                        <span style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', color: addressMode === 'current' ? 'var(--primary)' : '#333' }}>
+                                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', textAlign: 'left', textTransform: 'none', margin: 0, width: '100%' }}>
+                                    <input type="radio" name="addressMode" checked={addressMode === 'current'} onChange={() => handleAddressModeChange('current')} style={{ marginTop: '4px', transform: 'scale(1.2)' }} />
+                                    <div style={{ flex: 1 }}>
+                                        <span style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', color: addressMode === 'current' ? 'var(--primary)' : '#333', textTransform: 'none' }}>
                                             Use Current Device Location
-                                            {gpsLoading && <span className="auth-spinner" style={{ width: '12px', height: '12px', marginLeft: '8px', borderColor: 'var(--primary) transparent var(--primary) transparent' }}></span>}
+                                            {gpsLoading && <span className="auth-spinner" style={{ width: '14px', height: '14px', marginLeft: '10px', borderColor: 'var(--primary) transparent var(--primary) transparent' }}></span>}
                                         </span>
-                                        <span style={{ fontSize: '0.85rem', color: '#666' }}>Automatically detect using browser GPS</span>
-                                        {gpsError && <span style={{ fontSize: '0.8rem', color: '#e53935', display: 'block', marginTop: '2px' }}>{gpsError}</span>}
+                                        <span style={{ fontSize: '0.9rem', color: '#555', display: 'block', marginTop: '4px', textTransform: 'none' }}>Automatically detect using browser GPS</span>
+                                        {gpsError && <span style={{ fontSize: '0.85rem', color: '#e53935', display: 'block', marginTop: '4px', textTransform: 'none' }}>{gpsError}</span>}
                                     </div>
                                 </label>
 
                                 {/* Manual Entry */}
-                                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer' }}>
-                                    <input type="radio" name="addressMode" checked={addressMode === 'manual'} onChange={() => handleAddressModeChange('manual')} style={{ marginTop: '3px' }} />
-                                    <div>
-                                        <span style={{ fontWeight: 'bold', display: 'block', color: addressMode === 'manual' ? 'var(--primary)' : '#333' }}>+ Add New Address Manually</span>
-                                        <span style={{ fontSize: '0.85rem', color: '#666' }}>Type out a fresh delivery address below</span>
+                                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', textAlign: 'left', textTransform: 'none', margin: 0, width: '100%' }}>
+                                    <input type="radio" name="addressMode" checked={addressMode === 'manual'} onChange={() => handleAddressModeChange('manual')} style={{ marginTop: '4px', transform: 'scale(1.2)' }} />
+                                    <div style={{ flex: 1 }}>
+                                        <span style={{ fontWeight: 'bold', display: 'block', color: addressMode === 'manual' ? 'var(--primary)' : '#333', textTransform: 'none' }}>+ Add New Address Manually</span>
+                                        <span style={{ fontSize: '0.9rem', color: '#555', display: 'block', marginTop: '4px', textTransform: 'none' }}>Type out a fresh delivery address below</span>
                                     </div>
                                 </label>
                             </div>
@@ -276,19 +276,23 @@ export default function Checkout() {
                     </div>
 
                     <div className="form-group">
-                        <label>Payment Method</label>
-                        <div style={{ marginTop: '10px' }}>
-                            <label style={{ marginRight: '20px', cursor: 'pointer' }}>
+                        <label style={{ marginBottom: '10px' }}>Payment Method</label>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '5px' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0, textTransform: 'none', fontWeight: '500' }}>
                                 <input type="radio" value="COD" name="paymentMethod"
                                     checked={formik.values.paymentMethod === 'COD'}
                                     onChange={formik.handleChange}
-                                /> Cash on Delivery (COD)
+                                    style={{ margin: 0, transform: 'scale(1.2)' }}
+                                />
+                                <span style={{ textTransform: 'none' }}>Cash on Delivery (COD)</span>
                             </label>
-                            <label style={{ cursor: 'pointer' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0, textTransform: 'none', fontWeight: '500' }}>
                                 <input type="radio" value="UPI" name="paymentMethod"
                                     checked={formik.values.paymentMethod === 'UPI'}
                                     onChange={formik.handleChange}
-                                /> UPI / Online Payment
+                                    style={{ margin: 0, transform: 'scale(1.2)' }}
+                                />
+                                <span style={{ textTransform: 'none' }}>UPI / Online Payment</span>
                             </label>
                         </div>
                     </div>
