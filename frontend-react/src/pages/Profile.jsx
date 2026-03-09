@@ -70,8 +70,13 @@ export default function Profile() {
             });
 
             if (response.data.user) {
+                const wasIncomplete = !user.name || user.name.startsWith('User ');
                 loginWithToken(token, response.data.user);
                 setMessage('Profile saved successfully!');
+
+                if (wasIncomplete) {
+                    setTimeout(() => navigate('/'), 1200);
+                }
             }
         } catch (err) {
             console.error(err);

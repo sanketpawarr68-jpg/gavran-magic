@@ -48,10 +48,11 @@ export default function Checkout() {
         initialValues: {
             name: user ? user.name || '' : '',
             phone: user ? user.phone || '' : '',
-            address: '',
-            city: '',
-            pincode: '',
+            address: user ? user.address || '' : '',
+            city: user ? user.city || '' : '',
+            pincode: user ? user.pincode || '' : '',
             paymentMethod: 'COD',
+            saveAddressToProfile: true,
         },
         enableReinitialize: true,
         validationSchema: CheckoutSchema,
@@ -73,6 +74,23 @@ export default function Checkout() {
                     })),
                     total_price: total + (shippingInfo ? shippingInfo.total_shipping : 0)
                 };
+
+                if (values.saveAddressToProfile && user) {
+                    const token = localStorage.getItem('gavran_token');
+                    if (token) {
+                        try {
+                            await axios.post(`${API_BASE_URL}/api/auth/update-profile`, {
+                                phone: user.phone,
+                                name: values.name,
+                                address: values.address,
+                                city: values.city,
+                                pincode: values.pincode
+                            }, { headers: { Authorization: `Bearer ${token}` } });
+                        } catch (err) {
+                            console.error('Silent profile update error:', err);
+                        }
+                    }
+                }
 
                 const response = await axios.post(`${API_BASE_URL}/api/orders/`, orderData);
 
@@ -158,6 +176,22 @@ export default function Checkout() {
                             </label>
                         </div>
                     </div>
+
+                    {user && (
+                        <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '15px', marginBottom: '15px' }}>
+                            <input
+                                type="checkbox"
+                                id="saveAddress"
+                                name="saveAddressToProfile"
+                                checked={formik.values.saveAddressToProfile}
+                                onChange={formik.handleChange}
+                                style={{ width: 'auto', outline: 'none', cursor: 'pointer' }}
+                            />
+                            <label htmlFor="saveAddress" style={{ marginBottom: 0, fontWeight: 'normal', cursor: 'pointer' }}>
+                                Save this info as my default address for future orders
+                            </label>
+                        </div>
+                    )}
 
                     {shippingInfo && (
                         <div style={{ background: '#f9f9f9', padding: '15px', borderRadius: '4px', marginBottom: '20px' }}>
