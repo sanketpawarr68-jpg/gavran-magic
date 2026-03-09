@@ -7,41 +7,7 @@ product_bp = Blueprint('product_bp', __name__)
 # Base URL for images — served from Netlify frontend /public/images/
 IMAGE_BASE = "https://gavran-magic.netlify.app/images"
 
-DEFAULTS = [
-    {
-        "name": "Vermicelli",
-        "category": "Traditional Snacks",
-        "description": "Handmade traditional vermicelli crafted with premium wheat.",
-        "weight": "500g",
-        "price": 80,
-        "image": f"{IMAGE_BASE}/Vermicelli-500g.jpg",
-        "images": [f"{IMAGE_BASE}/Vermicelli-500g.jpg", f"{IMAGE_BASE}/Vermicelli-1000g.jpg"],
-        "stock": 100,
-        "discount": 0
-    },
-    {
-        "name": "Kurdai",
-        "category": "Handmade Classics",
-        "description": "Sun-dried Maharashtrian snack made from fermented wheat. Crispy and delicious!",
-        "weight": "250g",
-        "price": 70,
-        "image": f"{IMAGE_BASE}/kurdai-250g.jpg",
-        "images": [f"{IMAGE_BASE}/kurdai-250g.jpg", f"{IMAGE_BASE}/kurdai-500g.jpg"],
-        "stock": 100,
-        "discount": 0
-    },
-    {
-        "name": "Papad",
-        "category": "Traditional Snacks",
-        "description": "Homemade crispy papad with classic spices and traditional flavor.",
-        "weight": "250g",
-        "price": 90,
-        "image": f"{IMAGE_BASE}/papad-250g.jpg",
-        "images": [f"{IMAGE_BASE}/papad-250g.jpg", f"{IMAGE_BASE}/papad-500g.jpg"],
-        "stock": 100,
-        "discount": 0
-    }
-]
+# Removed DEFAULTS array as requested by user - all products will only be added through admin dashboard.
 
 @product_bp.route('/', methods=['GET'])
 def get_products():
