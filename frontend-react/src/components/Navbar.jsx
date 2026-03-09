@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import LocationPicker from './LocationPicker';
 import '../index.css';
 
 export default function Navbar() {
@@ -52,9 +51,6 @@ export default function Navbar() {
                         />
                         <span>Gavran <span>Magic</span></span>
                     </Link>
-
-                    {/* Location Picker — Amazon style */}
-                    <LocationPicker />
 
                     {/* Hamburger */}
                     <div className="hamburger" onClick={() => setIsOpen(!isOpen)}>

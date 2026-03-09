@@ -25,6 +25,70 @@ export default function Checkout() {
     const [shippingInfo, setShippingInfo] = useState(null);
     const [loadingShipping, setLoadingShipping] = useState(false);
 
+    const [addressMode, setAddressMode] = useState(user && user.address ? 'profile' : 'manual');
+    const [gpsLoading, setGpsLoading] = useState(false);
+    const [gpsError, setGpsError] = useState('');
+
+    const handleLocationDetect = () => {
+        setGpsLoading(true);
+        setGpsError('');
+        if (!navigator.geolocation) {
+            setGpsError('Geolocation not supported by your browser.');
+            setGpsLoading(false);
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                try {
+                    const { latitude, longitude } = pos.coords;
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                    const data = await res.json();
+
+                    const city = data.address.city || data.address.town || data.address.village || data.address.district || '';
+                    const address = data.display_name.split(',').slice(0, 3).join(',').trim();
+                    const postcode = data.address.postcode || '';
+
+                    formik.setFieldValue('address', address);
+                    formik.setFieldValue('city', city);
+                    formik.setFieldValue('pincode', postcode);
+                } catch (err) {
+                    setGpsError('Could not auto-fill location. Please check internet.');
+                } finally {
+                    setGpsLoading(false);
+                }
+            },
+            () => {
+                setGpsError('Location access denied. Please enter manually.');
+                setGpsLoading(false);
+            },
+            { enableHighAccuracy: true }
+        );
+    };
+
+    const handleAddressModeChange = (mode, addrObj = null) => {
+        setAddressMode(mode);
+        setGpsError('');
+
+        if (mode === 'profile' && user) {
+            formik.setFieldValue('address', user.address || '');
+            formik.setFieldValue('city', user.city || '');
+            formik.setFieldValue('pincode', user.pincode || '');
+        } else if (mode.startsWith('saved_') && addrObj) {
+            formik.setFieldValue('address', addrObj.address);
+            formik.setFieldValue('city', addrObj.city);
+            formik.setFieldValue('pincode', addrObj.pincode);
+        } else if (mode === 'current') {
+            formik.setFieldValue('address', '');
+            formik.setFieldValue('city', '');
+            formik.setFieldValue('pincode', '');
+            handleLocationDetect();
+        } else if (mode === 'manual') {
+            formik.setFieldValue('address', '');
+            formik.setFieldValue('city', '');
+            formik.setFieldValue('pincode', '');
+        }
+    };
+
     const fetchShippingCost = async (pincode, isCOD) => {
         if (!/^[4][0-9]{5}$/.test(pincode)) return;
 
@@ -139,74 +203,74 @@ export default function Checkout() {
                         {formik.touched.phone && formik.errors.phone ? <div className="alert-error">{formik.errors.phone}</div> : null}
                     </div>
 
-                    {user && (user.address || (user.saved_addresses && user.saved_addresses.length > 0)) && (
-                        <div className="saved-addresses" style={{ marginBottom: '20px', background: '#f5f7fa', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
-                            <h3 style={{ fontSize: '0.9rem', marginBottom: '10px', color: '#555', textTransform: 'uppercase', fontWeight: 'bold' }}>Select a Delivery Address</h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
-                                {/* Primary Address */}
-                                {user.address && (
-                                    <div
-                                        onClick={() => {
-                                            formik.setFieldValue('address', user.address);
-                                            formik.setFieldValue('city', user.city);
-                                            formik.setFieldValue('pincode', user.pincode);
-                                        }}
-                                        style={{ padding: '12px', background: 'white', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s', ...(formik.values.address === user.address ? { borderColor: 'var(--primary)', borderWidth: '2px', background: '#eaf4ff' } : {}) }}
-                                    >
-                                        <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.95rem', color: 'var(--primary)' }}>★ Home (Profile)</p>
-                                        <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#666', lineHeight: '1.4' }}>{user.address}<br />{user.city} - {user.pincode}</p>
-                                    </div>
+                    <div className="form-group" style={{ marginBottom: '25px' }}>
+                        <div style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+                            <h3 style={{ fontSize: '1.05rem', margin: '0 0 15px 0', color: '#444', fontWeight: 'bold' }}>Delivery Address</h3>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                {/* Profile Address */}
+                                {user && user.address && (
+                                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer' }}>
+                                        <input type="radio" name="addressMode" checked={addressMode === 'profile'} onChange={() => handleAddressModeChange('profile')} style={{ marginTop: '3px' }} />
+                                        <div>
+                                            <span style={{ fontWeight: 'bold', display: 'block', color: addressMode === 'profile' ? 'var(--primary)' : '#333' }}>★ Home (Profile Default)</span>
+                                            <span style={{ fontSize: '0.85rem', color: '#666' }}>{user.address}, {user.city} - {user.pincode}</span>
+                                        </div>
+                                    </label>
                                 )}
+
                                 {/* Additional Saved Addresses */}
-                                {user.saved_addresses?.map((addr, index) => (
-                                    <div
-                                        key={index}
-                                        onClick={() => {
-                                            formik.setFieldValue('address', addr.address);
-                                            formik.setFieldValue('city', addr.city);
-                                            formik.setFieldValue('pincode', addr.pincode);
-                                        }}
-                                        style={{ padding: '12px', background: 'white', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s', ...(formik.values.address === addr.address ? { borderColor: 'var(--primary)', borderWidth: '2px', background: '#eaf4ff' } : {}) }}
-                                    >
-                                        <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.95rem' }}>Saved Address {index + 1}</p>
-                                        <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#666', lineHeight: '1.4' }}>{addr.address}<br />{addr.city} - {addr.pincode}</p>
-                                    </div>
+                                {user?.saved_addresses?.map((addr, idx) => (
+                                    <label key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer' }}>
+                                        <input type="radio" name="addressMode" checked={addressMode === `saved_${idx}`} onChange={() => handleAddressModeChange(`saved_${idx}`, addr)} style={{ marginTop: '3px' }} />
+                                        <div>
+                                            <span style={{ fontWeight: 'bold', display: 'block', color: addressMode === `saved_${idx}` ? 'var(--primary)' : '#333' }}>Saved Address {idx + 1}</span>
+                                            <span style={{ fontSize: '0.85rem', color: '#666' }}>{addr.address}, {addr.city} - {addr.pincode}</span>
+                                        </div>
+                                    </label>
                                 ))}
+
+                                {/* Detect Location */}
+                                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer' }}>
+                                    <input type="radio" name="addressMode" checked={addressMode === 'current'} onChange={() => handleAddressModeChange('current')} style={{ marginTop: '3px' }} />
+                                    <div>
+                                        <span style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', color: addressMode === 'current' ? 'var(--primary)' : '#333' }}>
+                                            Use Current Device Location
+                                            {gpsLoading && <span className="auth-spinner" style={{ width: '12px', height: '12px', marginLeft: '8px', borderColor: 'var(--primary) transparent var(--primary) transparent' }}></span>}
+                                        </span>
+                                        <span style={{ fontSize: '0.85rem', color: '#666' }}>Automatically detect using browser GPS</span>
+                                        {gpsError && <span style={{ fontSize: '0.8rem', color: '#e53935', display: 'block', marginTop: '2px' }}>{gpsError}</span>}
+                                    </div>
+                                </label>
+
+                                {/* Manual Entry */}
+                                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer' }}>
+                                    <input type="radio" name="addressMode" checked={addressMode === 'manual'} onChange={() => handleAddressModeChange('manual')} style={{ marginTop: '3px' }} />
+                                    <div>
+                                        <span style={{ fontWeight: 'bold', display: 'block', color: addressMode === 'manual' ? 'var(--primary)' : '#333' }}>+ Add New Address Manually</span>
+                                        <span style={{ fontSize: '0.85rem', color: '#666' }}>Type out a fresh delivery address below</span>
+                                    </div>
+                                </label>
                             </div>
                         </div>
-                    )}
+                    </div>
 
                     <div className="form-group">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                            <label htmlFor="address" style={{ marginBottom: 0 }}>Shipping Address</label>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    formik.setFieldValue('address', '');
-                                    formik.setFieldValue('city', '');
-                                    formik.setFieldValue('pincode', '');
-                                    formik.setFieldValue('saveAddressToProfile', false);
-                                    setTimeout(() => document.getElementById('address')?.focus(), 50);
-                                }}
-                                style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', textDecoration: 'underline', padding: 0 }}
-                            >
-                                + Add New Address
-                            </button>
-                        </div>
-                        <textarea id="address" {...formik.getFieldProps('address')} rows="3" />
+                        <label htmlFor="address">Address Details</label>
+                        <textarea id="address" {...formik.getFieldProps('address')} rows="3" disabled={addressMode !== 'manual' && addressMode !== 'current'} style={{ background: (addressMode !== 'manual' && addressMode !== 'current') ? '#f0f0f0' : 'white', cursor: (addressMode !== 'manual' && addressMode !== 'current') ? 'not-allowed' : 'text' }} />
                         {formik.touched.address && formik.errors.address ? <div className="alert-error">{formik.errors.address}</div> : null}
                     </div>
 
                     <div className="city-pincode-grid">
                         <div className="form-group">
                             <label htmlFor="city">City</label>
-                            <input type="text" id="city" {...formik.getFieldProps('city')} />
+                            <input type="text" id="city" {...formik.getFieldProps('city')} disabled={addressMode !== 'manual' && addressMode !== 'current'} style={{ background: (addressMode !== 'manual' && addressMode !== 'current') ? '#f0f0f0' : 'white', cursor: (addressMode !== 'manual' && addressMode !== 'current') ? 'not-allowed' : 'text' }} />
                             {formik.touched.city && formik.errors.city ? <div className="alert-error">{formik.errors.city}</div> : null}
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="pincode">Pincode</label>
-                            <input type="text" id="pincode" {...formik.getFieldProps('pincode')} />
+                            <input type="text" id="pincode" {...formik.getFieldProps('pincode')} disabled={addressMode !== 'manual' && addressMode !== 'current'} style={{ background: (addressMode !== 'manual' && addressMode !== 'current') ? '#f0f0f0' : 'white', cursor: (addressMode !== 'manual' && addressMode !== 'current') ? 'not-allowed' : 'text' }} />
                             {formik.touched.pincode && formik.errors.pincode ? <div className="alert-error">{formik.errors.pincode}</div> : null}
                         </div>
                     </div>
@@ -229,18 +293,18 @@ export default function Checkout() {
                         </div>
                     </div>
 
-                    {user && (
-                        <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '15px', marginBottom: '15px' }}>
+                    {(addressMode === 'manual' || addressMode === 'current') && user && (
+                        <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '15px', marginBottom: '15px', background: '#fffbeb', padding: '12px', border: '1px solid #fde68a', borderRadius: '6px' }}>
                             <input
                                 type="checkbox"
                                 id="saveAddress"
                                 name="saveAddressToProfile"
                                 checked={formik.values.saveAddressToProfile}
                                 onChange={formik.handleChange}
-                                style={{ width: 'auto', outline: 'none', cursor: 'pointer' }}
+                                style={{ width: 'auto', outline: 'none', cursor: 'pointer', margin: 0 }}
                             />
-                            <label htmlFor="saveAddress" style={{ marginBottom: 0, fontWeight: 'normal', cursor: 'pointer' }}>
-                                Save this delivery address for future orders
+                            <label htmlFor="saveAddress" style={{ marginBottom: 0, fontWeight: '600', cursor: 'pointer', color: '#92400e', fontSize: '0.9rem' }}>
+                                Save this new delivery address for future orders
                             </label>
                         </div>
                     )}
