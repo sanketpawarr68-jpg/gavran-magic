@@ -59,7 +59,7 @@ export default function Checkout() {
         onSubmit: async (values, { setSubmitting, setStatus }) => {
             try {
                 const orderData = {
-                    user_id: user ? user.id : 'guest',
+                    user_id: user ? (user._id || user.id) : 'guest',
                     name: values.name,
                     phone: values.phone,
                     address: values.address,
@@ -140,7 +140,22 @@ export default function Checkout() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="address">Shipping Address</label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                            <label htmlFor="address" style={{ marginBottom: 0 }}>Shipping Address</label>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    formik.setFieldValue('address', '');
+                                    formik.setFieldValue('city', '');
+                                    formik.setFieldValue('pincode', '');
+                                    formik.setFieldValue('saveAddressToProfile', false);
+                                    setTimeout(() => document.getElementById('address')?.focus(), 50);
+                                }}
+                                style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', textDecoration: 'underline', padding: 0 }}
+                            >
+                                + Add New Address
+                            </button>
+                        </div>
                         <textarea id="address" {...formik.getFieldProps('address')} rows="3" />
                         {formik.touched.address && formik.errors.address ? <div className="alert-error">{formik.errors.address}</div> : null}
                     </div>
