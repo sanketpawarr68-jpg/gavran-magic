@@ -45,14 +45,12 @@ DEFAULTS = [
 
 @product_bp.route('/', methods=['GET'])
 def get_products():
-    """Fetch all products. Seeding occurs only if the collection is empty."""
+    """Fetch all products."""
     db = get_db()
     products_coll = db.products
 
-    # Seed if empty or force update if we want to ensure multi-image
-    # Seed only if "Vermicelli" doesn't exist to prevent multi-insert race conditions
-    if products_coll.count_documents({"name": "Vermicelli"}) == 0:
-        products_coll.insert_many(DEFAULTS)
+    # Note: Removed auto-seeding logic here because it was causing deleted items 
+    # (like Vermicelli) to instantly respawn when visiting the admin or shop page.
 
     products = list(products_coll.find())
     for p in products:
