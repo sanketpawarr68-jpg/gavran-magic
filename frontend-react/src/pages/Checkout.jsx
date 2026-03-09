@@ -187,146 +187,179 @@ export default function Checkout() {
     }
 
     return (
-        <main className="container section-padding">
-            <h1 className="section-title">Checkout</h1>
-            <div className="form-container">
-                <form onSubmit={formik.handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="name">Full Name</label>
-                        <input type="text" id="name" {...formik.getFieldProps('name')} />
-                        {formik.touched.name && formik.errors.name ? <div className="alert-error">{formik.errors.name}</div> : null}
-                    </div>
+        <main className="container section-padding" style={{ maxWidth: '1200px', margin: '0 auto', background: '#fff', textAlign: 'left' }}>
+            {/* Header Area */}
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', borderBottom: '1px solid #ddd', paddingBottom: '15px', marginBottom: '30px' }}>
+                <h1 style={{ fontSize: '1.8rem', fontWeight: '400', margin: 0, textAlign: 'center' }}>Secure Checkout <i className="fas fa-lock" style={{ fontSize: '1.2rem', color: '#555', verticalAlign: 'middle', marginLeft: '5px' }}></i></h1>
+            </div>
 
-                    <div className="form-group">
-                        <label htmlFor="phone">Phone Number</label>
-                        <input type="text" id="phone" {...formik.getFieldProps('phone')} />
-                        {formik.touched.phone && formik.errors.phone ? <div className="alert-error">{formik.errors.phone}</div> : null}
-                    </div>
+            <form onSubmit={formik.handleSubmit}>
+                <div style={{ display: 'flex', gap: '30px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
 
-                    <div className="form-group" style={{ marginBottom: '25px' }}>
-                        <div style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
-                            <h3 style={{ fontSize: '1.05rem', margin: '0 0 15px 0', color: '#444', fontWeight: 'bold' }}>Delivery Address</h3>
+                    {/* LEFT COLUMN: Steps */}
+                    <div style={{ flex: '1 1 600px' }}>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                                {/* Profile Address */}
-                                {user && user.address && (
-                                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', textAlign: 'left', textTransform: 'none', margin: 0, width: '100%' }}>
-                                        <input type="radio" name="addressMode" checked={addressMode === 'profile'} onChange={() => handleAddressModeChange('profile')} style={{ marginTop: '4px', transform: 'scale(1.2)' }} />
+                        {/* STEP 1: DELIVERY ADDRESS */}
+                        <div style={{ marginBottom: '20px', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                            <div style={{ padding: '15px 20px', background: '#f8f9fa', borderBottom: '1px solid #ddd' }}>
+                                <h2 style={{ fontSize: '1.2rem', margin: 0, color: '#c45500', fontWeight: 'bold' }}>1. Delivery address</h2>
+                            </div>
+                            <div style={{ padding: '20px' }}>
+                                {/* Personal Info inline */}
+                                <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                                    <div style={{ flex: '1 1 min-content' }}>
+                                        <label htmlFor="name" style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Full name</label>
+                                        <input type="text" id="name" {...formik.getFieldProps('name')} style={{ width: '100%', padding: '10px', border: '1px solid #a6a6a6', borderRadius: '4px', textTransform: 'none' }} />
+                                        {formik.touched.name && formik.errors.name ? <div style={{ color: '#c40000', fontSize: '0.8rem', marginTop: '4px' }}>{formik.errors.name}</div> : null}
+                                    </div>
+                                    <div style={{ flex: '1 1 min-content' }}>
+                                        <label htmlFor="phone" style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Mobile number</label>
+                                        <input type="text" id="phone" {...formik.getFieldProps('phone')} style={{ width: '100%', padding: '10px', border: '1px solid #a6a6a6', borderRadius: '4px', textTransform: 'none' }} />
+                                        {formik.touched.phone && formik.errors.phone ? <div style={{ color: '#c40000', fontSize: '0.8rem', marginTop: '4px' }}>{formik.errors.phone}</div> : null}
+                                    </div>
+                                </div>
+
+                                {/* Address Selection */}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                    {/* Profile Address */}
+                                    {user && user.address && (
+                                        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', textAlign: 'left', margin: 0, padding: '15px', border: addressMode === 'profile' ? '1px solid #fbd8b4' : '1px solid #ddd', borderRadius: '8px', background: addressMode === 'profile' ? '#fdf8f3' : 'white', transition: 'all 0.2s', width: '100%', textTransform: 'none' }}>
+                                            <input type="radio" name="addressMode" checked={addressMode === 'profile'} onChange={() => handleAddressModeChange('profile')} style={{ marginTop: '4px', transform: 'scale(1.2)' }} />
+                                            <div style={{ flex: 1 }}>
+                                                <span style={{ fontWeight: 'bold', display: 'block', color: '#111', textTransform: 'none' }}>{user.name || 'Profile Default'}</span>
+                                                <span style={{ fontSize: '0.9rem', color: '#333', display: 'block', marginTop: '2px', textTransform: 'none' }}>{user.address}, {user.city} - {user.pincode}</span>
+                                            </div>
+                                        </label>
+                                    )}
+
+                                    {/* Saved Addresses */}
+                                    {user?.saved_addresses?.map((addr, idx) => (
+                                        <label key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', textAlign: 'left', margin: 0, padding: '15px', border: addressMode === `saved_${idx}` ? '1px solid #fbd8b4' : '1px solid #ddd', borderRadius: '8px', background: addressMode === `saved_${idx}` ? '#fdf8f3' : 'white', transition: 'all 0.2s', width: '100%', textTransform: 'none' }}>
+                                            <input type="radio" name="addressMode" checked={addressMode === `saved_${idx}`} onChange={() => handleAddressModeChange(`saved_${idx}`, addr)} style={{ marginTop: '4px', transform: 'scale(1.2)' }} />
+                                            <div style={{ flex: 1 }}>
+                                                <span style={{ fontWeight: 'bold', display: 'block', color: '#111', textTransform: 'none' }}>Saved Address {idx + 1}</span>
+                                                <span style={{ fontSize: '0.9rem', color: '#333', display: 'block', marginTop: '2px', textTransform: 'none' }}>{addr.address}, {addr.city} - {addr.pincode}</span>
+                                            </div>
+                                        </label>
+                                    ))}
+
+                                    {/* Detect Location */}
+                                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', textAlign: 'left', margin: 0, padding: '15px', border: addressMode === 'current' ? '1px solid #fbd8b4' : '1px solid #ddd', borderRadius: '8px', background: addressMode === 'current' ? '#fdf8f3' : 'white', transition: 'all 0.2s', width: '100%', textTransform: 'none' }}>
+                                        <input type="radio" name="addressMode" checked={addressMode === 'current'} onChange={() => handleAddressModeChange('current')} style={{ marginTop: '4px', transform: 'scale(1.2)' }} />
                                         <div style={{ flex: 1 }}>
-                                            <span style={{ fontWeight: 'bold', display: 'block', color: addressMode === 'profile' ? 'var(--primary)' : '#333', textTransform: 'none' }}>★ Home (Profile Default)</span>
-                                            <span style={{ fontSize: '0.9rem', color: '#555', display: 'block', marginTop: '4px', textTransform: 'none' }}>{user.address}, {user.city} - {user.pincode}</span>
+                                            <span style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', color: '#111', textTransform: 'none' }}>
+                                                Use Current Device Location
+                                                {gpsLoading && <span className="auth-spinner" style={{ width: '14px', height: '14px', marginLeft: '10px', borderColor: '#c45500 transparent #c45500 transparent' }}></span>}
+                                            </span>
+                                            <span style={{ fontSize: '0.9rem', color: '#555', display: 'block', marginTop: '2px', textTransform: 'none' }}>Automatically detect using browser GPS</span>
+                                            {gpsError && <span style={{ fontSize: '0.85rem', color: '#c40000', display: 'block', marginTop: '4px', textTransform: 'none' }}>{gpsError}</span>}
                                         </div>
                                     </label>
+
+                                    {/* Manual Entry */}
+                                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', textAlign: 'left', margin: 0, padding: '15px', border: addressMode === 'manual' ? '1px solid #fbd8b4' : '1px solid #ddd', borderRadius: '8px', background: addressMode === 'manual' ? '#fdf8f3' : 'white', transition: 'all 0.2s', width: '100%', textTransform: 'none' }}>
+                                        <input type="radio" name="addressMode" checked={addressMode === 'manual'} onChange={() => handleAddressModeChange('manual')} style={{ marginTop: '4px', transform: 'scale(1.2)' }} />
+                                        <div style={{ flex: 1 }}>
+                                            <span style={{ fontWeight: 'bold', display: 'block', color: '#111', textTransform: 'none' }}>+ Add a new address</span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                {/* Form fields for Custom/Current */}
+                                {(addressMode === 'manual' || addressMode === 'current') && (
+                                    <div style={{ marginTop: '20px', padding: '15px', background: '#f8f9fa', borderRadius: '8px' }}>
+                                        <div style={{ marginBottom: '15px' }}>
+                                            <label htmlFor="address" style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Flat, House no., Building, Company, Apartment</label>
+                                            <textarea id="address" {...formik.getFieldProps('address')} rows="2" style={{ width: '100%', padding: '10px', border: '1px solid #a6a6a6', borderRadius: '4px', resize: 'vertical', textTransform: 'none' }} />
+                                            {formik.touched.address && formik.errors.address ? <div style={{ color: '#c40000', fontSize: '0.8rem', marginTop: '4px' }}>{formik.errors.address}</div> : null}
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '15px' }}>
+                                            <div style={{ flex: 1 }}>
+                                                <label htmlFor="city" style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Town/City</label>
+                                                <input type="text" id="city" {...formik.getFieldProps('city')} style={{ width: '100%', padding: '10px', border: '1px solid #a6a6a6', borderRadius: '4px', textTransform: 'none' }} />
+                                                {formik.touched.city && formik.errors.city ? <div style={{ color: '#c40000', fontSize: '0.8rem', marginTop: '4px' }}>{formik.errors.city}</div> : null}
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <label htmlFor="pincode" style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Pincode</label>
+                                                <input type="text" id="pincode" {...formik.getFieldProps('pincode')} style={{ width: '100%', padding: '10px', border: '1px solid #a6a6a6', borderRadius: '4px', textTransform: 'none' }} />
+                                                {formik.touched.pincode && formik.errors.pincode ? <div style={{ color: '#c40000', fontSize: '0.8rem', marginTop: '4px' }}>{formik.errors.pincode}</div> : null}
+                                            </div>
+                                        </div>
+                                        {user && (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '15px' }}>
+                                                <input type="checkbox" id="saveAddress" name="saveAddressToProfile" checked={formik.values.saveAddressToProfile} onChange={formik.handleChange} style={{ width: 'auto', margin: 0 }} />
+                                                <label htmlFor="saveAddress" style={{ marginBottom: 0, fontWeight: '500', cursor: 'pointer', fontSize: '0.9rem', color: '#111', textTransform: 'none' }}>Save this delivery address for future orders</label>
+                                            </div>
+                                        )}
+                                    </div>
                                 )}
+                            </div>
+                        </div>
 
-                                {/* Additional Saved Addresses */}
-                                {user?.saved_addresses?.map((addr, idx) => (
-                                    <label key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', textAlign: 'left', textTransform: 'none', margin: 0, width: '100%' }}>
-                                        <input type="radio" name="addressMode" checked={addressMode === `saved_${idx}`} onChange={() => handleAddressModeChange(`saved_${idx}`, addr)} style={{ marginTop: '4px', transform: 'scale(1.2)' }} />
-                                        <div style={{ flex: 1 }}>
-                                            <span style={{ fontWeight: 'bold', display: 'block', color: addressMode === `saved_${idx}` ? 'var(--primary)' : '#333', textTransform: 'none' }}>Saved Address {idx + 1}</span>
-                                            <span style={{ fontSize: '0.9rem', color: '#555', display: 'block', marginTop: '4px', textTransform: 'none' }}>{addr.address}, {addr.city} - {addr.pincode}</span>
+                        {/* STEP 2: PAYMENT METHOD */}
+                        <div style={{ marginBottom: '20px', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                            <div style={{ padding: '15px 20px', background: '#f8f9fa', borderBottom: '1px solid #ddd' }}>
+                                <h2 style={{ fontSize: '1.2rem', margin: 0, color: '#c45500', fontWeight: 'bold' }}>2. Payment method</h2>
+                            </div>
+                            <div style={{ padding: '20px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', margin: 0, padding: '15px', border: formik.values.paymentMethod === 'UPI' ? '1px solid #fbd8b4' : '1px solid #ddd', borderRadius: '8px', background: formik.values.paymentMethod === 'UPI' ? '#fdf8f3' : 'white', transition: 'all 0.2s', textTransform: 'none', width: '100%' }}>
+                                        <input type="radio" value="UPI" name="paymentMethod" checked={formik.values.paymentMethod === 'UPI'} onChange={formik.handleChange} style={{ margin: 0, transform: 'scale(1.2)' }} />
+                                        <span style={{ fontWeight: 'bold', color: '#111', textTransform: 'none' }}>Other UPI Apps / Online Payment</span>
+                                    </label>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', margin: 0, padding: '15px', border: formik.values.paymentMethod === 'COD' ? '1px solid #fbd8b4' : '1px solid #ddd', borderRadius: '8px', background: formik.values.paymentMethod === 'COD' ? '#fdf8f3' : 'white', transition: 'all 0.2s', textTransform: 'none', width: '100%' }}>
+                                        <input type="radio" value="COD" name="paymentMethod" checked={formik.values.paymentMethod === 'COD'} onChange={formik.handleChange} style={{ margin: 0, transform: 'scale(1.2)' }} />
+                                        <div>
+                                            <span style={{ fontWeight: 'bold', color: '#111', display: 'block', textTransform: 'none' }}>Cash on Delivery/Pay on Delivery</span>
+                                            <span style={{ fontSize: '0.85rem', color: '#555', marginTop: '2px', display: 'block', textTransform: 'none' }}>Cash, UPI and Cards accepted.</span>
                                         </div>
                                     </label>
-                                ))}
+                                </div>
+                            </div>
+                        </div>
 
-                                {/* Detect Location */}
-                                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', textAlign: 'left', textTransform: 'none', margin: 0, width: '100%' }}>
-                                    <input type="radio" name="addressMode" checked={addressMode === 'current'} onChange={() => handleAddressModeChange('current')} style={{ marginTop: '4px', transform: 'scale(1.2)' }} />
-                                    <div style={{ flex: 1 }}>
-                                        <span style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', color: addressMode === 'current' ? 'var(--primary)' : '#333', textTransform: 'none' }}>
-                                            Use Current Device Location
-                                            {gpsLoading && <span className="auth-spinner" style={{ width: '14px', height: '14px', marginLeft: '10px', borderColor: 'var(--primary) transparent var(--primary) transparent' }}></span>}
-                                        </span>
-                                        <span style={{ fontSize: '0.9rem', color: '#555', display: 'block', marginTop: '4px', textTransform: 'none' }}>Automatically detect using browser GPS</span>
-                                        {gpsError && <span style={{ fontSize: '0.85rem', color: '#e53935', display: 'block', marginTop: '4px', textTransform: 'none' }}>{gpsError}</span>}
-                                    </div>
-                                </label>
+                    </div>
 
-                                {/* Manual Entry */}
-                                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', textAlign: 'left', textTransform: 'none', margin: 0, width: '100%' }}>
-                                    <input type="radio" name="addressMode" checked={addressMode === 'manual'} onChange={() => handleAddressModeChange('manual')} style={{ marginTop: '4px', transform: 'scale(1.2)' }} />
-                                    <div style={{ flex: 1 }}>
-                                        <span style={{ fontWeight: 'bold', display: 'block', color: addressMode === 'manual' ? 'var(--primary)' : '#333', textTransform: 'none' }}>+ Add New Address Manually</span>
-                                        <span style={{ fontSize: '0.9rem', color: '#555', display: 'block', marginTop: '4px', textTransform: 'none' }}>Type out a fresh delivery address below</span>
-                                    </div>
-                                </label>
+                    {/* RIGHT COLUMN: Order Summary (Sticky) */}
+                    <div style={{ flex: '0 0 320px', width: '100%' }}>
+                        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', background: 'white', position: 'sticky', top: '90px' }}>
+                            <button type="submit" style={{ width: '100%', background: '#ffd814', padding: '12px', borderRadius: '24px', border: '1px solid #FCD200', cursor: 'pointer', fontWeight: '500', fontSize: '1rem', color: '#111', transition: 'all 0.2s', opacity: (formik.isSubmitting || loadingShipping) ? 0.7 : 1, textAlign: 'center', boxShadow: '0 2px 5px rgba(213,217,217,.5)' }} disabled={formik.isSubmitting || loadingShipping}>
+                                {formik.isSubmitting ? 'Processing...' : 'Place Your Order'}
+                            </button>
+
+                            {formik.status && <div style={{ color: '#c40000', fontSize: '0.9rem', marginTop: '10px', textAlign: 'center' }}>{formik.status}</div>}
+
+                            <p style={{ fontSize: '0.75rem', color: '#555', textAlign: 'center', marginTop: '15px', lineHeight: '1.4' }}>
+                                By placing your order, you agree to Gavran Magic's privacy notice and conditions of use.
+                            </p>
+
+                            <hr style={{ border: '0', borderTop: '1px solid #ddd', margin: '20px 0' }} />
+
+                            <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', margin: '0 0 15px 0', color: '#111' }}>Order Summary</h3>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem', color: '#333' }}>
+                                <span>Items:</span>
+                                <span>₹{total.toFixed(2)}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem', color: '#333' }}>
+                                <span>Delivery:</span>
+                                <span>{shippingInfo ? `₹${shippingInfo.total_shipping}` : '--'}</span>
+                            </div>
+
+                            <hr style={{ border: '0', borderTop: '1px solid #ddd', margin: '15px 0' }} />
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.3rem', color: '#B12704' }}>
+                                <span>Order Total:</span>
+                                <span>₹{shippingInfo ? (total + shippingInfo.total_shipping).toFixed(2) : total.toFixed(2)}</span>
+                            </div>
+
+                            <div style={{ marginTop: '20px', background: '#f0f2f2', padding: '10px', borderRadius: '4px', fontSize: '0.85rem' }}>
+                                <span style={{ color: '#007185', cursor: 'pointer', textDecoration: 'none' }}>How are delivery costs calculated?</span>
                             </div>
                         </div>
                     </div>
-
-                    <div className="form-group">
-                        <label htmlFor="address">Address Details</label>
-                        <textarea id="address" {...formik.getFieldProps('address')} rows="3" disabled={addressMode !== 'manual' && addressMode !== 'current'} style={{ background: (addressMode !== 'manual' && addressMode !== 'current') ? '#f0f0f0' : 'white', cursor: (addressMode !== 'manual' && addressMode !== 'current') ? 'not-allowed' : 'text' }} />
-                        {formik.touched.address && formik.errors.address ? <div className="alert-error">{formik.errors.address}</div> : null}
-                    </div>
-
-                    <div className="city-pincode-grid">
-                        <div className="form-group">
-                            <label htmlFor="city">City</label>
-                            <input type="text" id="city" {...formik.getFieldProps('city')} disabled={addressMode !== 'manual' && addressMode !== 'current'} style={{ background: (addressMode !== 'manual' && addressMode !== 'current') ? '#f0f0f0' : 'white', cursor: (addressMode !== 'manual' && addressMode !== 'current') ? 'not-allowed' : 'text' }} />
-                            {formik.touched.city && formik.errors.city ? <div className="alert-error">{formik.errors.city}</div> : null}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="pincode">Pincode</label>
-                            <input type="text" id="pincode" {...formik.getFieldProps('pincode')} disabled={addressMode !== 'manual' && addressMode !== 'current'} style={{ background: (addressMode !== 'manual' && addressMode !== 'current') ? '#f0f0f0' : 'white', cursor: (addressMode !== 'manual' && addressMode !== 'current') ? 'not-allowed' : 'text' }} />
-                            {formik.touched.pincode && formik.errors.pincode ? <div className="alert-error">{formik.errors.pincode}</div> : null}
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label style={{ marginBottom: '10px' }}>Payment Method</label>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '5px' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0, textTransform: 'none', fontWeight: '500' }}>
-                                <input type="radio" value="COD" name="paymentMethod"
-                                    checked={formik.values.paymentMethod === 'COD'}
-                                    onChange={formik.handleChange}
-                                    style={{ margin: 0, transform: 'scale(1.2)' }}
-                                />
-                                <span style={{ textTransform: 'none' }}>Cash on Delivery (COD)</span>
-                            </label>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0, textTransform: 'none', fontWeight: '500' }}>
-                                <input type="radio" value="UPI" name="paymentMethod"
-                                    checked={formik.values.paymentMethod === 'UPI'}
-                                    onChange={formik.handleChange}
-                                    style={{ margin: 0, transform: 'scale(1.2)' }}
-                                />
-                                <span style={{ textTransform: 'none' }}>UPI / Online Payment</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    {(addressMode === 'manual' || addressMode === 'current') && user && (
-                        <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '15px', marginBottom: '15px', background: '#fffbeb', padding: '12px', border: '1px solid #fde68a', borderRadius: '6px' }}>
-                            <input
-                                type="checkbox"
-                                id="saveAddress"
-                                name="saveAddressToProfile"
-                                checked={formik.values.saveAddressToProfile}
-                                onChange={formik.handleChange}
-                                style={{ width: 'auto', outline: 'none', cursor: 'pointer', margin: 0 }}
-                            />
-                            <label htmlFor="saveAddress" style={{ marginBottom: 0, fontWeight: '600', cursor: 'pointer', color: '#92400e', fontSize: '0.9rem' }}>
-                                Save this new delivery address for future orders
-                            </label>
-                        </div>
-                    )}
-
-                    {shippingInfo && (
-                        <div style={{ background: '#f9f9f9', padding: '15px', borderRadius: '4px', marginBottom: '20px' }}>
-                            <p>Subtotal: ₹{total}</p>
-                            <p>Shipping Cost: ₹{shippingInfo.total_shipping}</p>
-                            <p style={{ fontWeight: 'bold' }}>Total: ₹{(total + shippingInfo.total_shipping).toFixed(2)}</p>
-                        </div>
-                    )}
-
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={formik.isSubmitting || loadingShipping}>
-                        {formik.isSubmitting ? 'Placing Order...' : 'Place Order'}
-                    </button>
-                    {formik.status && <div className="alert-error" style={{ marginTop: '10px' }}>{formik.status}</div>}
-                </form>
-            </div>
+                </div>
+            </form>
         </main>
     );
 }
