@@ -213,8 +213,13 @@ def verify_otp():
             'token': token,
             'user': {
                 'id': str(user['_id']),
+                '_id': str(user['_id']),
                 'name': user.get('name', ''),
-                'phone': user['phone']
+                'phone': user['phone'],
+                'address': user.get('address', ''),
+                'city': user.get('city', ''),
+                'pincode': user.get('pincode', ''),
+                'saved_addresses': user.get('saved_addresses', [])
             }
         }), 200
 
@@ -245,10 +250,20 @@ def update_profile():
     if 'city' in data: update_data['city'] = data['city']
     if 'pincode' in data: update_data['pincode'] = data['pincode']
     
-    if not update_data:
-        return jsonify({'message': 'No data to update'}), 400
-
-    result = db.users.update_one({'phone': phone}, {'$set': update_data})
+    # If checkout form sends save_as_new_address
+    if data.get('save_as_new_address'):
+        new_addr_obj = {
+            'address': data.get('address', ''),
+            'city': data.get('city', ''),
+            'pincode': data.get('pincode', '')
+        }
+        # Push new address, ensure we don't overwrite main profile address
+        result = db.users.update_one({'phone': phone}, {'$push': {'saved_addresses': new_addr_obj}})
+    else:
+        # Normal profile update
+        if not update_data:
+            return jsonify({'message': 'No data to update'}), 400
+        result = db.users.update_one({'phone': phone}, {'$set': update_data})
     
     if result.matched_count == 0:
         return jsonify({'message': 'User not found'}), 404

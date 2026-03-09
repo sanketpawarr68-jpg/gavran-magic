@@ -81,7 +81,7 @@ export default function Checkout() {
                         try {
                             await axios.post(`${API_BASE_URL}/api/auth/update-profile`, {
                                 phone: user.phone,
-                                name: values.name,
+                                save_as_new_address: true,
                                 address: values.address,
                                 city: values.city,
                                 pincode: values.pincode
@@ -138,6 +138,43 @@ export default function Checkout() {
                         <input type="text" id="phone" {...formik.getFieldProps('phone')} />
                         {formik.touched.phone && formik.errors.phone ? <div className="alert-error">{formik.errors.phone}</div> : null}
                     </div>
+
+                    {user && (user.address || (user.saved_addresses && user.saved_addresses.length > 0)) && (
+                        <div className="saved-addresses" style={{ marginBottom: '20px', background: '#f5f7fa', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+                            <h3 style={{ fontSize: '0.9rem', marginBottom: '10px', color: '#555', textTransform: 'uppercase', fontWeight: 'bold' }}>Select a Delivery Address</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+                                {/* Primary Address */}
+                                {user.address && (
+                                    <div
+                                        onClick={() => {
+                                            formik.setFieldValue('address', user.address);
+                                            formik.setFieldValue('city', user.city);
+                                            formik.setFieldValue('pincode', user.pincode);
+                                        }}
+                                        style={{ padding: '12px', background: 'white', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s', ...(formik.values.address === user.address ? { borderColor: 'var(--primary)', borderWidth: '2px', background: '#eaf4ff' } : {}) }}
+                                    >
+                                        <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.95rem', color: 'var(--primary)' }}>★ Home (Profile)</p>
+                                        <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#666', lineHeight: '1.4' }}>{user.address}<br />{user.city} - {user.pincode}</p>
+                                    </div>
+                                )}
+                                {/* Additional Saved Addresses */}
+                                {user.saved_addresses?.map((addr, index) => (
+                                    <div
+                                        key={index}
+                                        onClick={() => {
+                                            formik.setFieldValue('address', addr.address);
+                                            formik.setFieldValue('city', addr.city);
+                                            formik.setFieldValue('pincode', addr.pincode);
+                                        }}
+                                        style={{ padding: '12px', background: 'white', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s', ...(formik.values.address === addr.address ? { borderColor: 'var(--primary)', borderWidth: '2px', background: '#eaf4ff' } : {}) }}
+                                    >
+                                        <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.95rem' }}>Saved Address {index + 1}</p>
+                                        <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#666', lineHeight: '1.4' }}>{addr.address}<br />{addr.city} - {addr.pincode}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="form-group">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -203,7 +240,7 @@ export default function Checkout() {
                                 style={{ width: 'auto', outline: 'none', cursor: 'pointer' }}
                             />
                             <label htmlFor="saveAddress" style={{ marginBottom: 0, fontWeight: 'normal', cursor: 'pointer' }}>
-                                Save this info as my default address for future orders
+                                Save this delivery address for future orders
                             </label>
                         </div>
                     )}
