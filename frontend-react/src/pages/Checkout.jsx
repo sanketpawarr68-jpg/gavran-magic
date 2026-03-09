@@ -32,36 +32,59 @@ export default function Checkout() {
     const handleLocationDetect = () => {
         setGpsLoading(true);
         setGpsError('');
-        if (!navigator.geolocation) {
-            setGpsError('Geolocation not supported by your browser.');
+
+        if (!("geolocation" in navigator)) {
+            setGpsError('Location is not supported by your browser or requires HTTPS.');
             setGpsLoading(false);
             return;
         }
+
         navigator.geolocation.getCurrentPosition(
             async (pos) => {
                 try {
                     const { latitude, longitude } = pos.coords;
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                    // Adding User-Agent like header is not possible via fetch, but nominatim requires accept-language
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=en`);
+
+                    if (!res.ok) throw new Error("Failed to fetch address details");
+
                     const data = await res.json();
+                    if (!data || !data.address) throw new Error("No address returned");
 
-                    const city = data.address.city || data.address.town || data.address.village || data.address.district || '';
-                    const address = data.display_name.split(',').slice(0, 3).join(',').trim();
-                    const postcode = data.address.postcode || '';
+                    const addr = data.address;
+                    const city = addr.city || addr.town || addr.village || addr.county || addr.state_district || '';
 
-                    formik.setFieldValue('address', address);
-                    formik.setFieldValue('city', city);
+                    // Construct a sensible detailed address line
+                    const parts = [addr.building, addr.amenity, addr.road, addr.neighbourhood, addr.suburb, addr.residential].filter(Boolean);
+                    const fallbackAddress = data.display_name ? data.display_name.split(',').slice(0, 3).join(', ').trim() : '';
+
+                    const finalAddress = parts.length > 0 ? parts.join(', ') : fallbackAddress;
+                    const postcode = addr.postcode ? addr.postcode.split('-')[0].trim() : '';
+
+                    formik.setFieldValue('address', finalAddress || 'Could not detect street, please type');
+                    formik.setFieldValue('city', city || 'Unknown City');
                     formik.setFieldValue('pincode', postcode);
                 } catch (err) {
-                    setGpsError('Could not auto-fill location. Please check internet.');
+                    console.error("Nominatim Reverse Geocoding Error:", err);
+                    setGpsError("Could not calculate address from coordinates.");
                 } finally {
                     setGpsLoading(false);
                 }
             },
-            () => {
-                setGpsError('Location access denied. Please enter manually.');
+            (geoErr) => {
+                console.warn("Geolocation API Error:", geoErr);
+                if (geoErr.code === 1) {
+                    setGpsError('Location access denied. Please approve permission in your browser settings.');
+                } else if (geoErr.code === 2) {
+                    setGpsError('Location unavailable. Check your device GPS.');
+                } else if (geoErr.code === 3) {
+                    setGpsError('Location request timed out.');
+                } else {
+                    setGpsError('Failed to get location. Please enter manually.');
+                }
                 setGpsLoading(false);
             },
-            { enableHighAccuracy: true }
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
         );
     };
 
