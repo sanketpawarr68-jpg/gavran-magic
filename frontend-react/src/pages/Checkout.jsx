@@ -189,9 +189,9 @@ export default function Checkout() {
     return (
         <main className="container section-padding" style={{ maxWidth: '1200px', margin: '0 auto', background: '#fff', textAlign: 'left' }}>
             {/* Header Area */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', borderBottom: '1px solid #ddd', paddingBottom: '15px', marginBottom: '30px' }}>
-                <h1 style={{ fontSize: '1.8rem', fontWeight: '400', margin: 0, textAlign: 'center' }}>Secure Checkout <i className="fas fa-lock" style={{ fontSize: '1.2rem', color: '#555', verticalAlign: 'middle', marginLeft: '5px' }}></i></h1>
-            </div>
+            {/* <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', borderBottom: '1px solid #ddd', paddingBottom: '15px', marginBottom: '30px' }}>
+                {/* <h1 style={{ fontSize: '1.8rem', fontWeight: '400', margin: 0, textAlign: 'center' }}>Secure Checkout <i className="fas fa-lock" style={{ fontSize: '1.2rem', color: '#555', verticalAlign: 'middle', marginLeft: '5px' }}></i></h1> */}
+            {/* </div> */}
 
             <form onSubmit={formik.handleSubmit}>
                 <div style={{ display: 'flex', gap: '30px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
@@ -360,6 +360,6 @@ export default function Checkout() {
                     </div>
                 </div>
             </form>
-        </main>
+        </main >
     );
 }
