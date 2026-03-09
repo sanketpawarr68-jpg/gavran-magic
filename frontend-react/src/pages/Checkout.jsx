@@ -188,6 +188,21 @@ export default function Checkout() {
 
     return (
         <main style={{ minHeight: '100vh', background: '#f4f6f8', padding: '60px 20px', fontFamily: '"Inter", sans-serif' }}>
+            <style>
+                {`
+                    @media (max-width: 900px) {
+                        .checkout-container { flex-direction: column !important; gap: 20px !important; }
+                        .checkout-main-column, .checkout-summary-column { flex: 1 1 100% !important; max-width: 100% !important; width: 100% !important; }
+                        .checkout-summary-card { position: static !important; }
+                    }
+                    @media (max-width: 600px) {
+                        .checkout-address-grid { grid-template-columns: 1fr !important; }
+                        .checkout-input-grid { grid-template-columns: 1fr !important; }
+                        .checkout-main-column > div { padding: 20px !important; }
+                        .checkout-summary-card { padding: 20px !important; }
+                    }
+                `}
+            </style>
             <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
                 {/* Header */}
                 <div style={{ textAlign: 'center', marginBottom: '50px' }}>
@@ -196,10 +211,10 @@ export default function Checkout() {
                 </div>
 
                 <form onSubmit={formik.handleSubmit}>
-                    <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                    <div className="checkout-container" style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
 
                         {/* LEFT COLUMN: Forms */}
-                        <div style={{ flex: '1 1 600px', display: 'flex', flexDirection: 'column', gap: '30px' }}>
+                        <div className="checkout-main-column" style={{ flex: '1 1 500px', display: 'flex', flexDirection: 'column', gap: '30px' }}>
 
                             {/* SECTION: Personal Details */}
                             <div style={{ background: '#fff', padding: '35px', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.04)' }}>
@@ -207,7 +222,7 @@ export default function Checkout() {
                                     <span style={{ width: '32px', height: '32px', background: 'var(--primary)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>1</span>
                                     Contact Information
                                 </h2>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                <div className="checkout-input-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                     <div>
                                         <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', color: '#555', marginBottom: '8px' }}>Full Name</label>
                                         <input type="text" id="name" {...formik.getFieldProps('name')} style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', border: '1px solid #e1e4e8', background: '#f9fafb', fontSize: '1rem', outline: 'none', transition: 'border 0.2s' }} placeholder="John Doe" />
@@ -228,7 +243,7 @@ export default function Checkout() {
                                     Where should we deliver?
                                 </h2>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
+                                <div className="checkout-address-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
                                     {/* Profile Default */}
                                     {user && user.address && (
                                         <div onClick={() => handleAddressModeChange('profile')} style={{ padding: '20px', borderRadius: '16px', border: addressMode === 'profile' ? '2px solid var(--primary)' : '2px solid #f0f0f0', background: addressMode === 'profile' ? '#fffbf5' : '#fff', cursor: 'pointer', transition: 'all 0.2s', position: 'relative' }}>
@@ -274,7 +289,7 @@ export default function Checkout() {
                                             <textarea id="address" {...formik.getFieldProps('address')} rows="2" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #e1e4e8', fontSize: '1rem', outline: 'none', resize: 'vertical' }} placeholder="Flat, House no., Building, Area" />
                                             {formik.touched.address && formik.errors.address && <div style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '6px' }}>{formik.errors.address}</div>}
                                         </div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                        <div className="checkout-input-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                                             <div>
                                                 <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', color: '#555', marginBottom: '8px' }}>Town/City</label>
                                                 <input type="text" id="city" {...formik.getFieldProps('city')} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #e1e4e8', fontSize: '1rem', outline: 'none' }} placeholder="Pune" />
@@ -320,8 +335,8 @@ export default function Checkout() {
                         </div>
 
                         {/* RIGHT COLUMN: Order Summary Floating Card */}
-                        <div style={{ flex: '0 0 380px', width: '100%' }}>
-                            <div style={{ background: '#fff', borderRadius: '24px', padding: '35px', boxShadow: '0 15px 50px rgba(0,0,0,0.06)', position: 'sticky', top: '100px' }}>
+                        <div className="checkout-summary-column" style={{ flex: '0 0 380px', width: '100%' }}>
+                            <div className="checkout-summary-card" style={{ background: '#fff', borderRadius: '24px', padding: '35px', boxShadow: '0 15px 50px rgba(0,0,0,0.06)', position: 'sticky', top: '100px' }}>
                                 <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '25px', color: '#1a1a1a' }}>Order Summary</h3>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '25px', maxHeight: '300px', overflowY: 'auto' }}>
