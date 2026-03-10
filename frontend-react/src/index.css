@@ -393,35 +393,28 @@ nav {
     margin-bottom: 20px;
 }
 
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
 .form-group input,
 .form-group textarea {
     width: 100%;
-    padding: 14px 18px;
-    border: 1.5px solid #eef0f2;
-    border-radius: var(--radius-sm);
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 0;
     font-family: inherit;
     font-size: 1rem;
-    color: var(--dark);
-    background-color: #fdfdfd;
-    transition: all 0.3s ease;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    background-color: #fff;
-    box-shadow: 0 0 0 4px rgba(211, 84, 0, 0.1);
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: 600;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #888;
+    outline: 1px solid var(--dark);
+    border-color: var(--dark);
 }
 
 .cart-table {
@@ -1992,12 +1985,25 @@ body {
 
 .profile-edit-form {
     background: white;
-    padding: 50px;
-    border-radius: 24px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: var(--shadow-md);
     max-width: 600px;
     margin: 0 auto;
-    border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.profile-edit-form .form-group input,
+.profile-edit-form .form-group textarea {
+    border-radius: 8px;
+    padding: 14px;
+    border: 1px solid #eee;
+    background: #fdfdfd;
+}
+
+.profile-edit-form .form-group label {
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 6px;
 }
 
 .profile-edit-form h2 {
@@ -2059,15 +2065,15 @@ body {
 
 .phone-input-container .phone-input-field {
     width: 100% !important;
-    height: 56px !important;
-    font-size: 1.1rem !important;
-    border: 1.5px solid #eef0f2 !important;
-    border-radius: 12px !important;
-    padding-left: 65px !important;
+    height: 52px !important;
+    font-size: 1rem !important;
+    border: 2px solid #e5e7eb !important;
+    border-radius: 10px !important;
+    padding-left: 60px !important;
     font-family: inherit !important;
-    color: var(--dark) !important;
-    background: #fdfdfd !important;
-    transition: all 0.3s ease !important;
+    color: #222 !important;
+    background: #fafafa !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
 }
 
 .phone-input-container .phone-input-field:focus {
@@ -2078,12 +2084,11 @@ body {
 }
 
 .phone-input-container .phone-flag-btn {
-    border: 1.5px solid #eef0f2 !important;
+    border: 2px solid #e5e7eb !important;
     border-right: none !important;
-    border-radius: 12px 0 0 12px !important;
-    background: #f8f9fa !important;
-    padding: 0 12px !important;
-    transition: all 0.3s ease !important;
+    border-radius: 10px 0 0 10px !important;
+    background: #f3f4f6 !important;
+    padding: 0 8px !important;
 }
 
 .phone-input-container .phone-flag-btn:hover {
