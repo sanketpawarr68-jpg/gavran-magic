@@ -2440,3 +2440,36 @@ body {
     animation: spin 1s linear infinite;
 }
 
+
+/* --- Product Detail Mobile Overrides --- */
+@media (max-width: 768px) {
+    .main-actions {
+        flex-direction: column !important;
+        gap: 12px;
+    }
+    .btn-add, .btn-buy {
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+    .product-visuals {
+        position: static !important;
+    }
+    .image-stage {
+        height: auto !important;
+        max-height: 400px;
+        aspect-ratio: 1/1;
+    }
+    .detail-card {
+        text-align: center;
+    }
+    .price-box {
+        justify-content: center;
+    }
+    .quick-specs {
+        grid-template-columns: 1fr !important;
+    }
+}
+
