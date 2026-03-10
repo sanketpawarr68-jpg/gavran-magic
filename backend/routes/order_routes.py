@@ -331,3 +331,72 @@ def delete_order(order_id):
         return jsonify({'message': 'Order deleted successfully'}), 200
     except Exception as e:
         return jsonify({'message': str(e)}), 400
+
+# ADMIN: Get business analytics
+@order_bp.route('/analytics/report', methods=['GET'])
+def get_analytics():
+    try:
+        db = get_db()
+        # 1. Daily Sales for last 7 days
+        today = datetime.datetime.utcnow().replace(hour=23, minute=59, second=59)
+        last_7_days = []
+        for i in range(6, -1, -1):
+            day = today - datetime.timedelta(days=i)
+            day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
+            day_end = day.replace(hour=23, minute=59, second=59, microsecond=999)
+            
+            orders = list(db.orders.find({
+                'created_at': {'$gte': day_start, '$lte': day_end},
+                'order_status': {'$nin': ['Cancelled', 'Declined']}
+            }))
+            
+            revenue = sum(float(o.get('total_price', 0)) for o in orders)
+            last_7_days.append({
+                'name': day.strftime('%a'),
+                'revenue': round(revenue, 2),
+                'orders': len(orders)
+            })
+
+        # 2. Sales by Category (All time)
+        category_stats = {}
+        all_orders = list(db.orders.find({'order_status': {'$nin': ['Cancelled', 'Declined']}}))
+        
+        for order in all_orders:
+            for item in order.get('products', []):
+                # Try to get category from orders product ref or fetch from products coll
+                # For efficiency we use a small cache or just use the category field if it was stored in the order
+                cat = item.get('category', 'Others')
+                val = float(item.get('price', 0)) * int(item.get('quantity', 1))
+                category_stats[cat] = category_stats.get(cat, 0) + val
+        
+        category_data = [
+            {'name': k, 'value': round(v, 2)} for k, v in category_stats.items()
+        ]
+        
+        # 3. Overall Metrics
+        total_revenue = sum(float(o.get('total_price', 0)) for o in all_orders)
+        avg_order_value = total_revenue / len(all_orders) if all_orders else 0
+        
+        # Calculate Repeat Customer Rate
+        user_order_counts = {}
+        for o in all_orders:
+            uid = str(o.get('user_id'))
+            user_order_counts[uid] = user_order_counts.get(uid, 0) + 1
+            
+        repeat_customers = [uid for uid, count in user_order_counts.items() if count > 1]
+        repeat_rate = (len(repeat_customers) / len(user_order_counts) * 100) if user_order_counts else 0
+
+        return jsonify({
+            'dailyData': last_7_days,
+            'categoryData': category_data,
+            'metrics': {
+                'totalRevenue': round(total_revenue, 2),
+                'avgOrderValue': round(avg_order_value, 2),
+                'orderCount': len(all_orders),
+                'repeatRate': round(repeat_rate, 1)
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"Analytics Error: {e}")
+        return jsonify({'message': str(e)}), 400

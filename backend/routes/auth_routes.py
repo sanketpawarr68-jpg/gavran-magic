@@ -16,44 +16,53 @@ auth_bp = Blueprint('auth_bp', __name__)
 # Get your API key from Dashboard → Dev API
 # Paste it in backend/.env as: FAST2SMS_API_KEY=your_key_here
 # ============================================================
+
 def send_otp_sms(phone, otp):
     """
-    Send OTP SMS via 2Factor.in using AUTOGEN mode.
-    - Uses their DLT pre-registered SMS template (guaranteed SMS, not voice)
-    - Session ID returned is stored for verification
+    Send OTP SMS via real providers (Fast2SMS or 2Factor.in).
     """
-    api_key = os.getenv('TWOFACTOR_API_KEY', '')
+    db = get_db()
+    
+    # 1. Try Fast2SMS first (User has a long valid key for this)
+    fast2sms_key = os.getenv('FAST2SMS_API_KEY', '')
+    if fast2sms_key and 'your_' not in fast2sms_key:
+        url = "https://www.fast2sms.com/dev/bulkV2"
+        headers = {"authorization": fast2sms_key}
+        payload = {
+            "route": "otp",
+            "variables_values": otp,
+            "numbers": phone,
+        }
+        try:
+            resp = requests.post(url, headers=headers, data=payload, timeout=10)
+            result = resp.json()
+            if result.get("return"):
+                print(f"✅ OTP sent to +91{phone} via Fast2SMS")
+                return True
+            print(f"❌ Fast2SMS Error: {result}")
+        except Exception as e:
+            print(f"❌ Fast2SMS Exception: {e}")
 
-    # ---- Try 2Factor.in AUTOGEN (Guaranteed SMS) ----
-    if api_key and 'your_' not in api_key:
-        # Standard AUTOGEN sends SMS using system-preapproved DLT template
-        url = f"https://2factor.in/API/V1/{api_key}/SMS/{phone}/AUTOGEN"
+    # 2. Try 2Factor.in fallback
+    tf_key = os.getenv('TWOFACTOR_API_KEY', '')
+    if tf_key and 'your_' not in tf_key:
+        url = f"https://2factor.in/API/V1/{tf_key}/SMS/{phone}/AUTOGEN"
         try:
             resp = requests.get(url, timeout=10)
             result = resp.json()
-            print(f"[2Factor] Response: {result}")
             if result.get('Status') == 'Success':
-                print(f"✅ OTP SMS sent to +91{phone} via 2Factor.in")
-                # Store session ID for verification
-                from extensions import get_db
-                db = get_db()
-                db.otps.update_one(
-                    {'phone': phone},
-                    {'$set': {'twofactor_session': result.get('Details', '')}},
-                    upsert=False
-                )
+                print(f"✅ OTP sent to +91{phone} via 2Factor.in")
+                db.otps.update_one({'phone': phone}, {'$set': {'twofactor_session': result.get('Details', '')}})
                 return True
-            else:
-                print(f"❌ 2Factor Error: {result.get('Details', result)}")
+            print(f"❌ 2Factor Error: {result}")
         except Exception as e:
             print(f"❌ 2Factor Exception: {e}")
 
-    # ---- Dev mode fallback — prints local OTP to terminal ----
+    # 3. Dev Fallback
     print(f"\n{'='*45}")
     print(f"  [DEV MODE — SMS NOT SENT]")
     print(f"  Phone : +91 {phone}")
     print(f"  OTP   : {otp}")
-    print(f"  (Add TWOFACTOR_API_KEY to .env for real SMS)")
     print(f"{'='*45}\n")
     return True
 
@@ -303,13 +312,29 @@ def admin_login():
     return jsonify({'message': 'Invalid admin credentials'}), 401
 
 
-# ADMIN: Get all users
+# ADMIN: Get all users with order stats
 @auth_bp.route('/users', methods=['GET'])
 def get_all_users():
     db = get_db()
     users_cursor = db.users.find().sort('created_at', -1)
     users = []
+    
     for user in users_cursor:
-        user['_id'] = str(user['_id'])
+        user_id_str = str(user['_id'])
+        
+        # Calculate stats for this user
+        orders_cursor = db.orders.find({'user_id': user_id_str})
+        user_orders = list(orders_cursor)
+        
+        total_spent = sum(float(o.get('total_price', 0)) for o in user_orders if o.get('order_status') != 'Cancelled')
+        
+        user['_id'] = user_id_str
+        user['order_count'] = len(user_orders)
+        user['total_spent'] = round(total_spent, 2)
+        
+        if 'created_at' in user and isinstance(user['created_at'], datetime.datetime):
+            user['created_at'] = user['created_at'].isoformat()
+            
         users.append(user)
+        
     return jsonify(users), 200
