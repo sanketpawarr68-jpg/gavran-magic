@@ -23,40 +23,56 @@ def send_otp_sms(phone, otp):
     """
     db = get_db()
     
-    # 1. Try Fast2SMS (Text Route 'q')
+    # 1. Try Fast2SMS (High Priority - Dedicated OTP Route)
     fast2sms_key = os.getenv('FAST2SMS_API_KEY', '')
     if fast2sms_key and 'your_' not in fast2sms_key:
         url = "https://www.fast2sms.com/dev/bulkV2"
         headers = {"authorization": fast2sms_key}
-        # Clear text message template
-        message = f"Gavran Magic: Your OTP is {otp}. Valid for 5 minutes."
         payload = {
-            "route": "q",
-            "message": message,
-            "language": "english",
-            "flash": 0,
+            "route": "otp",
+            "variables_values": otp,
             "numbers": phone,
         }
         try:
+            # Fast2SMS OTP route is reliable and doesn't trigger calls
             resp = requests.post(url, headers=headers, data=payload, timeout=10)
             result = resp.json()
             if result.get("return"):
-                print(f"✅ SUCCESS: OTP SMS sent to +91{phone} via Fast2SMS")
+                print(f"✅ Fast2SMS: OTP SMS sent to +91{phone}")
                 return True
             else:
-                print(f"❌ FAST2SMS API REJECTED: {result}")
+                print(f"❌ Fast2SMS Failure: {result}")
         except Exception as e:
-            print(f"❌ FAST2SMS CONNECTION ERROR: {e}")
+            print(f"❌ Fast2SMS Connection Error: {e}")
 
-    # 2. Disabled 2Factor (to avoid voice calls)
-    print("⚠️ 2Factor fallback disabled by request to prevent voice calls.")
+    # 2. Try 2Factor.in (Fallback)
+    tf_key = os.getenv('TWOFACTOR_API_KEY', '')
+    if tf_key and 'your_' not in tf_key:
+        # Using the standard SMS route
+        url = f"https://2factor.in/API/V1/{tf_key}/SMS/{phone}/AUTOGEN"
+        try:
+            resp = requests.get(url, timeout=10)
+            result = resp.json()
+            if result.get('Status') == 'Success':
+                print(f"✅ 2Factor: OTP sent to +91{phone}")
+                # Store session for verification
+                db.otps.update_one(
+                    {'phone': phone}, 
+                    {'$set': {'twofactor_session': result.get('Details', '')}},
+                    upsert=False
+                )
+                return True
+            else:
+                print(f"❌ 2Factor Failure: {result}")
+        except Exception as e:
+            print(f"❌ 2Factor Connection Error: {e}")
 
-    # 3. Dev Fallback (Only if key is missing or API fails)
-    print(f"\n{'='*45}")
-    print(f"  [SMS FAILED - CHECK FAST2SMS DASHBOARD]")
+    # 3. Dev Fallback (Only if both fail or keys are missing)
+    print(f"\n{'!'*45}")
+    print(f"  [CRITICAL: SMS NOT SENT - CHECK API BALANCES]")
     print(f"  Phone : +91 {phone}")
     print(f"  OTP   : {otp}")
-    print(f"{'='*45}\n")
+    print(f"{'!'*45}\n")
     return True
 
 
