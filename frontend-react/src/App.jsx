@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
@@ -10,11 +11,28 @@ import Tracking from './pages/Tracking';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import ProductDetail from './pages/ProductDetail';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import RefundPolicy from './pages/RefundPolicy';
+import ShippingPolicy from './pages/ShippingPolicy';
+import Terms from './pages/Terms';
+import ContactUs from './pages/ContactUs';
+import Footer from './components/Footer';
 import './index.css';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 function App() {
   return (
     <>
+      <ScrollToTop />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -26,10 +44,13 @@ function App() {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/shipping-policy" element={<ShippingPolicy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/contact" element={<ContactUs />} />
       </Routes>
-      <footer style={{ background: '#333', color: 'white', padding: '20px 0', textAlign: 'center', marginTop: '50px' }}>
-        <p>&copy; 2026 Gavran Magic. All rights reserved.</p>
-      </footer>
+      <Footer />
     </>
   );
 }

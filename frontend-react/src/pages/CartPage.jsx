@@ -6,6 +6,8 @@ import { API_BASE_URL } from '../config';
 
 const getImageUrl = (imgPath) => {
     if (!imgPath) return 'https://via.placeholder.com/150';
+    if (imgPath.startsWith('data:image')) return imgPath; // Support base64 strings exactly as they are
+
     if (imgPath.startsWith('http')) {
         const filename = imgPath.split('/').pop();
         return `/images/${filename}`;

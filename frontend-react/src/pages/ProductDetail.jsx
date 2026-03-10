@@ -28,6 +28,8 @@ const ProductDetail = () => {
 
     const getImageUrl = (imgPath) => {
         if (!imgPath) return 'https://via.placeholder.com/600';
+        if (imgPath.startsWith('data:image')) return imgPath;
+
         if (imgPath.startsWith('http')) {
             const filename = imgPath.split('/').pop();
             return `/images/${filename}`;

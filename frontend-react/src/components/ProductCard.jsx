@@ -15,9 +15,10 @@ const ProductCard = ({ product }) => {
 
     const getImageUrl = (imgPath) => {
         if (!imgPath) return 'https://via.placeholder.com/300';
+        if (imgPath.startsWith('data:image')) return imgPath; // Support base64 uploads
+
         // If it's a full URL, but is the Netlify one, we can optionally try to map to local if in dev
         if (imgPath.startsWith('http')) {
-            // If the image is from the netlify site, try to use the local public folder image instead
             const filename = imgPath.split('/').pop();
             return `/images/${filename}`;
         }
