@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap');
 
 :root {
     --primary: #d35400;
@@ -2186,7 +2186,6 @@ body {
         font-size: 1.8rem;
     }
 }
-
 /* =====================================================
    Skeleton Loading Cards
    ===================================================== */
@@ -2197,35 +2196,23 @@ body {
     border: 1px solid #f0f0f0;
     box-shadow: var(--shadow-sm);
 }
-
 .skeleton-img {
     width: 100%;
     height: 200px;
     background: #e8e8e8;
 }
-
 .skeleton-body {
     padding: 16px;
 }
-
 .skeleton-line {
     height: 14px;
     border-radius: 6px;
     background: #e8e8e8;
 }
-
 @keyframes skeletonPulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.4;
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
 }
-
 .skeleton-pulse {
     animation: skeletonPulse 1.5s ease-in-out infinite;
 }
@@ -2242,28 +2229,12 @@ body {
     margin-bottom: 30px;
     color: #7a4f00;
 }
+.server-waking-banner p { margin:0; font-size:0.9rem; opacity:0.8; }
+.server-waking-banner strong { display:block; font-size:1rem; margin-bottom:4px; }
 
-.server-waking-banner p {
-    margin: 0;
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.server-waking-banner strong {
-    display: block;
-    font-size: 1rem;
-    margin-bottom: 4px;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
+@keyframes spin { to { transform: rotate(360deg); } }
 .waking-spinner {
-    width: 28px;
-    height: 28px;
+    width: 28px; height: 28px;
     border: 3px solid #f9c97c;
     border-top-color: #d35400;
     border-radius: 50%;
@@ -2283,37 +2254,13 @@ body {
     user-select: none;
     width: 100%;
 }
-
-.mobile-user-name {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--dark);
-    flex: 1;
-}
-
-.mobile-chevron {
-    font-size: 0.75rem;
-    color: #999;
-    transition: transform 0.2s;
-}
+.mobile-user-name { font-weight:600; font-size:0.95rem; color:var(--dark); flex:1; }
+.mobile-chevron { font-size:0.75rem; color:#999; transition:transform 0.2s; }
 
 @media (min-width: 769px) {
-
-    .mobile-user-name,
-    .mobile-chevron {
-        display: none;
-    }
-
-    .user-dropdown-menu {
-        display: none;
-    }
-
-    .user-dropdown-menu.show {
-        display: block;
-        position: absolute;
-        top: 55px;
-        right: 0;
-    }
+    .mobile-user-name, .mobile-chevron { display: none; }
+    .user-dropdown-menu { display: none; }
+    .user-dropdown-menu.show { display: block; position: absolute; top: 55px; right: 0; }
 }
 
 @media (max-width: 768px) {
@@ -2329,12 +2276,8 @@ body {
         border-radius: 10px;
         margin-top: 8px;
     }
-
-    .user-dropdown-menu.show {
-        display: block;
-    }
+    .user-dropdown-menu.show { display: block; }
 }
-
 /* =====================================================
    Skeleton Loading Cards
    ===================================================== */
@@ -2480,7 +2423,6 @@ body {
         display: block;
     }
 }
-
 /* --- Loading Spinner --- */
 .loader-container {
     height: 60vh;
@@ -2505,75 +2447,30 @@ body {
         flex-direction: column !important;
         gap: 12px;
     }
-
-    .btn-add,
-    .btn-buy {
+    .btn-add, .btn-buy {
         width: 100% !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
         display: flex !important;
         justify-content: center !important;
     }
-
     .product-visuals {
         position: static !important;
     }
-
     .image-stage {
         height: auto !important;
         max-height: 400px;
         aspect-ratio: 1/1;
     }
-
     .detail-card {
         text-align: center;
-        padding: 0 !important;
     }
-
     .price-box {
         justify-content: center;
-        flex-wrap: wrap;
     }
-
     .quick-specs {
         grid-template-columns: 1fr !important;
     }
-
-    .qty-input {
-        margin: 0 auto 30px !important;
-        justify-content: center;
-    }
-
-    .quantity-box label {
-        text-align: center;
-    }
-
-    .weight-info {
-        border-left: none !important;
-        padding-left: 0 !important;
-        margin-bottom: 20px;
-        display: inline-block !important;
-    }
-
-    .product-view-container {
-        padding: 0 15px !important;
-        margin-top: 30px !important;
-    }
-
-    .add-review-card {
-        padding: 20px !important;
-    }
-
-    .review-bubble {
-        padding: 15px !important;
-    }
-
-    .r-header {
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    .thumbnails-reel {
-        flex-wrap: wrap;
-    }
 }
+
+
