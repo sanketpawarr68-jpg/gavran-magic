@@ -9,7 +9,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config';
 
 export default function Login() {
-    const [phone, setPhone] = useState('');         // full number with country code e.g. 917823879053
+    const [phone, setPhone] = useState('');         // full number with country code - e.g. 917823879053
     const [dialCode, setDialCode] = useState('91'); // just the code e.g. 91
     const [otp, setOtp] = useState(['', '', '', '', '', '']); // 6 individual digit boxes
     const [step, setStep] = useState(1);
