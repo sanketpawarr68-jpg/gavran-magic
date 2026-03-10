@@ -23,44 +23,37 @@ def send_otp_sms(phone, otp):
     """
     db = get_db()
     
-    # 1. Try Fast2SMS first (User has a long valid key for this)
+    # 1. Try Fast2SMS (Text Route 'q')
     fast2sms_key = os.getenv('FAST2SMS_API_KEY', '')
     if fast2sms_key and 'your_' not in fast2sms_key:
         url = "https://www.fast2sms.com/dev/bulkV2"
         headers = {"authorization": fast2sms_key}
+        # Clear text message template
+        message = f"Gavran Magic: Your OTP is {otp}. Valid for 5 minutes."
         payload = {
-            "route": "otp",
-            "variables_values": otp,
+            "route": "q",
+            "message": message,
+            "language": "english",
+            "flash": 0,
             "numbers": phone,
         }
         try:
             resp = requests.post(url, headers=headers, data=payload, timeout=10)
             result = resp.json()
             if result.get("return"):
-                print(f"✅ OTP sent to +91{phone} via Fast2SMS")
+                print(f"✅ SUCCESS: OTP SMS sent to +91{phone} via Fast2SMS")
                 return True
-            print(f"❌ Fast2SMS Error: {result}")
+            else:
+                print(f"❌ FAST2SMS API REJECTED: {result}")
         except Exception as e:
-            print(f"❌ Fast2SMS Exception: {e}")
+            print(f"❌ FAST2SMS CONNECTION ERROR: {e}")
 
-    # 2. Try 2Factor.in fallback
-    tf_key = os.getenv('TWOFACTOR_API_KEY', '')
-    if tf_key and 'your_' not in tf_key:
-        url = f"https://2factor.in/API/V1/{tf_key}/SMS/{phone}/AUTOGEN"
-        try:
-            resp = requests.get(url, timeout=10)
-            result = resp.json()
-            if result.get('Status') == 'Success':
-                print(f"✅ OTP sent to +91{phone} via 2Factor.in")
-                db.otps.update_one({'phone': phone}, {'$set': {'twofactor_session': result.get('Details', '')}})
-                return True
-            print(f"❌ 2Factor Error: {result}")
-        except Exception as e:
-            print(f"❌ 2Factor Exception: {e}")
+    # 2. Disabled 2Factor (to avoid voice calls)
+    print("⚠️ 2Factor fallback disabled by request to prevent voice calls.")
 
-    # 3. Dev Fallback
+    # 3. Dev Fallback (Only if key is missing or API fails)
     print(f"\n{'='*45}")
-    print(f"  [DEV MODE — SMS NOT SENT]")
+    print(f"  [SMS FAILED - CHECK FAST2SMS DASHBOARD]")
     print(f"  Phone : +91 {phone}")
     print(f"  OTP   : {otp}")
     print(f"{'='*45}\n")
