@@ -277,6 +277,32 @@ def update_profile():
         'user': updated_user
     }), 200
 
+# ADMIN: Dashboard Login
+@auth_bp.route('/admin/login', methods=['POST'])
+def admin_login():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    env_username = os.getenv('ADMIN_USERNAME', 'admin')
+    env_password = os.getenv('ADMIN_PASSWORD', 'admin123')
+
+    if username == env_username and password == env_password:
+        # Issue a special admin token
+        token = jwt.encode({
+            'user_id': 'admin',
+            'role': 'admin',
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7)
+        }, Config.JWT_SECRET, algorithm='HS256')
+
+        return jsonify({
+            'token': token,
+            'message': 'Login successful'
+        }), 200
+    
+    return jsonify({'message': 'Invalid admin credentials'}), 401
+
+
 # ADMIN: Get all users
 @auth_bp.route('/users', methods=['GET'])
 def get_all_users():

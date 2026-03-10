@@ -146,77 +146,88 @@ export default function Profile() {
                 </div>
 
                 {activeTab === 'profile' ? (
-                    <div className="profile-edit-form" style={{ maxWidth: '100%', padding: '0' }}>
-                        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                            <div className="user-avatar-circle" style={{ width: '80px', height: '80px', fontSize: '2.5rem', margin: '0 auto 15px' }}>
+                    <div className="profile-edit-form">
+                        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                            <div className="user-avatar-circle" style={{
+                                width: '100px',
+                                height: '100px',
+                                fontSize: '3rem',
+                                margin: '0 auto 20px',
+                                background: 'linear-gradient(135deg, var(--primary) 0%, #e67e22 100%)',
+                                border: '4px solid white',
+                                boxShadow: '0 10px 20px rgba(211, 84, 0, 0.2)'
+                            }}>
                                 {user.name ? user.name.charAt(0).toUpperCase() : '#'}
                             </div>
                             <h2>{user.name && !user.name.startsWith('User ') ? 'Personal Information' : 'Complete Your Profile'}</h2>
+                            <p style={{ color: '#888', fontSize: '0.9rem' }}>Update your shipping and contact details below</p>
                         </div>
 
                         <form onSubmit={handleSubmit}>
-                            <div className="form-group">
-                                <label>Full Name</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="Enter your full name"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Email Address (Optional)</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    placeholder="Enter your email"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Delivery Address</label>
-                                <textarea
-                                    name="address"
-                                    value={formData.address}
-                                    onChange={handleChange}
-                                    rows="3"
-                                    required
-                                    placeholder="House No, Street, Landmark"
-                                ></textarea>
-                            </div>
-
-                            <div className="city-pincode-grid">
+                            <div style={{ display: 'grid', gap: '5px' }}>
                                 <div className="form-group">
-                                    <label>City</label>
+                                    <label>Full Name</label>
                                     <input
                                         type="text"
-                                        name="city"
-                                        value={formData.city}
+                                        name="name"
+                                        value={formData.name}
                                         onChange={handleChange}
                                         required
-                                        placeholder="City"
+                                        placeholder="Enter your full name"
                                     />
                                 </div>
+
                                 <div className="form-group">
-                                    <label>Pincode</label>
+                                    <label>Email Address (Optional)</label>
                                     <input
-                                        type="text"
-                                        name="pincode"
-                                        value={formData.pincode}
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
                                         onChange={handleChange}
-                                        required
-                                        placeholder="6-digit Pincode"
+                                        placeholder="Enter your email address"
                                     />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Delivery Address</label>
+                                    <textarea
+                                        name="address"
+                                        value={formData.address}
+                                        onChange={handleChange}
+                                        rows="4"
+                                        required
+                                        placeholder="Flat/House No, Street, Apartment, Landmark"
+                                    ></textarea>
+                                </div>
+
+                                <div className="city-pincode-grid">
+                                    <div className="form-group">
+                                        <label>City</label>
+                                        <input
+                                            type="text"
+                                            name="city"
+                                            value={formData.city}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="City"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Pincode</label>
+                                        <input
+                                            type="text"
+                                            name="pincode"
+                                            value={formData.pincode}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="6-digit Pincode"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '20px' }} disabled={loading}>
-                                {loading ? 'Saving...' : 'Update Details'}
+                            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '20px', padding: '18px', fontSize: '1rem' }} disabled={loading}>
+                                {loading ? 'Saving Changes...' : 'Update Details'}
                             </button>
 
                             {message && (

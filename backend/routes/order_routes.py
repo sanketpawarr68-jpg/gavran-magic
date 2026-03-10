@@ -134,50 +134,8 @@ def create_order():
     
     order_id = db.orders.insert_one(order).inserted_id
 
-    # Create Shipment in Shiprocket (Order Creation)
-    # Prepare Shiprocket Order Payload
-    sr_order_items = []
-    for item in data['products']:
-         sr_order_items.append({
-             "name": "Product " + str(item.get('product_id', 'Unknown')),
-             "sku": str(item.get('product_id', 'sku')),
-             "units": item.get('quantity', 1),
-             "selling_price": item.get('price', 0),
-             "discount": "",
-             "tax": "",
-             "hsn": ""
-         })
-         
-    sr_order_payload = {
-        "order_id": str(order_id),
-        "order_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "pickup_location": "Primary",
-        "billing_customer_name": data['name'],
-        "billing_last_name": "",
-        "billing_address": data['address'],
-        "billing_city": data['city'],
-        "billing_pincode": pincode,
-        "billing_state": "Maharashtra",
-        "billing_country": "India",
-        "billing_email": data.get("email", "customer@example.com"),
-        "billing_phone": data['phone'],
-        "shipping_is_billing": True,
-        "order_items": sr_order_items,
-        "payment_method": "COD",
-        "sub_total": data['total_price'],
-        "length": 10, "breadth": 10, "height": 10, "weight": 0.5 # Dummy dimensions
-    }
-
-    sr_response = shiprocket.create_order(sr_order_payload)
-    
-    tracking_id = "SR_DEMO_" + str(order_id) # Fallback
-    if sr_response and 'order_id' in sr_response:
-        tracking_id = sr_response['order_id'] # Shiprocket Order ID is often used as tracking ref initially
-        # Or 'awb_code' if shipment is created immediately. 
-        # Usually 'create order' returns order_id/shipment_id. 
-        # Assuming we get a tracking ID or use Internal ID.
-    
-    # Update Tracking ID
+    # For now, we set tracking_id to PENDING as admin will push to Shiprocket manually
+    tracking_id = "PENDING"
     get_db().orders.update_one({'_id': order_id}, {'$set': {'tracking_id': tracking_id}})
 
     # Send Order Confirmation SMS
@@ -248,6 +206,75 @@ def get_user_orders(user_id):
         orders.append(order)
     return jsonify(orders), 200
 
+# ADMIN: Push order to Shiprocket
+@order_bp.route('/<order_id>/ship', methods=['POST'])
+def ship_order(order_id):
+    try:
+        db = get_db()
+        order = db.orders.find_one({'_id': ObjectId(order_id)})
+        if not order:
+            return jsonify({'message': 'Order not found'}), 404
+            
+        # Prepare Shiprocket Order Payload
+        sr_order_items = []
+        for item in order['products']:
+            sr_order_items.append({
+                "name": item.get('name', 'GAVRAN Product'),
+                "sku": str(item.get('product_id', 'sku')),
+                "units": item.get('quantity', 1),
+                "selling_price": item.get('price', 0),
+                "discount": "",
+                "tax": "",
+                "hsn": ""
+            })
+            
+        sr_order_payload = {
+            "order_id": str(order['_id']),
+            "order_date": order['created_at'].strftime("%Y-%m-%d %H:%M"),
+            "pickup_location": "warehouse",
+            "billing_customer_name": order['name'],
+            "billing_last_name": "",
+            "billing_address": order['address'],
+            "billing_city": order['city'],
+            "billing_pincode": order['pincode'],
+            "billing_state": "Maharashtra",
+            "billing_country": "India",
+            "billing_email": order.get("email", "customer@example.com"),
+            "billing_phone": order['phone'],
+            "shipping_is_billing": True,
+            "order_items": sr_order_items,
+            "payment_method": "COD", # Map this based on actual payment if needed
+            "sub_total": order['total_price'],
+            "length": 10, "breadth": 10, "height": 10, "weight": 0.5 
+        }
+
+        sr_response = shiprocket.create_order(sr_order_payload)
+        
+        if sr_response and 'status_code' in sr_response and sr_response['status_code'] == 1:
+            tracking_id = sr_response.get('order_id', order_id)
+            shipment_id = sr_response.get('shipment_id', '')
+            
+            db.orders.update_one(
+                {'_id': ObjectId(order_id)}, 
+                {'$set': {
+                    'order_status': 'Shipped',
+                    'tracking_id': str(tracking_id),
+                    'shipment_id': str(shipment_id)
+                }}
+            )
+            return jsonify({
+                'message': 'Successfully pushed to Shiprocket',
+                'shiprocket_order_id': tracking_id,
+                'shiprocket_shipment_id': shipment_id
+            }), 200
+        else:
+            error_msg = sr_response.get('message', 'Failed to create order in Shiprocket')
+            return jsonify({'message': error_msg, 'details': sr_response}), 400
+            
+    except Exception as e:
+        print(f"Shiprocket Error: {e}")
+        return jsonify({'message': str(e)}), 500
+
 # ADMIN: Get all orders
 @order_bp.route('/', methods=['GET'])
 def get_all_orders():
@@ -288,5 +315,19 @@ def update_order_status(order_id):
             return jsonify({'message': 'Order not found'}), 404
             
         return jsonify({'message': 'Order status updated successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 400
+
+# ADMIN: Delete an order
+@order_bp.route('/<order_id>', methods=['DELETE'])
+def delete_order(order_id):
+    try:
+        db = get_db()
+        result = db.orders.delete_one({'_id': ObjectId(order_id)})
+        
+        if result.deleted_count == 0:
+            return jsonify({'message': 'Order not found'}), 404
+            
+        return jsonify({'message': 'Order deleted successfully'}), 200
     except Exception as e:
         return jsonify({'message': str(e)}), 400
