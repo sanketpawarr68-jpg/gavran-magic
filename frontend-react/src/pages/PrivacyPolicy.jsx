@@ -31,7 +31,7 @@ const PrivacyPolicy = () => {
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <i className="fas fa-phone-alt" style={{ color: 'var(--primary)' }}></i>
-                            <span>+91 98765 43210</span>
+                            <span>+91 78238 79053</span>
                         </div>
                     </div>
                 </section>

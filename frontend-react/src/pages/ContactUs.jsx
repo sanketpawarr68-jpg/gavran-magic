@@ -22,7 +22,7 @@ const ContactUs = () => {
                     </div>
                     <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '10px' }}>Give Us a Call</h3>
                     <p style={{ color: '#555', marginBottom: '15px', fontSize: '0.9rem' }}>Mon-Fri from 9am to 6pm IST.</p>
-                    <a href="tel:+919876543210" style={{ color: 'var(--success)', fontWeight: '600', textDecoration: 'none' }}>+91 98765 43210</a>
+                    <a href="tel:+917823879053" style={{ color: 'var(--success)', fontWeight: '600', textDecoration: 'none' }}>+91 78238 79053</a>
                 </div>
 
                 <div style={{ background: '#f9fafb', padding: '30px', borderRadius: '16px', border: '1px solid #efefef', textAlign: 'center', transition: 'transform 0.2s', cursor: 'pointer' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}>

@@ -54,7 +54,7 @@ function App() {
 
       {/* Floating WhatsApp Support */}
       <a
-        href="https://wa.me/919876543210?text=Hello Gavran Magic! I have a question about my order."
+        href="https://wa.me/917823879053?text=Hello Gavran Magic! I have a question about my order."
         className="whatsapp-float"
         target="_blank"
         rel="noopener noreferrer"
