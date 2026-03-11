@@ -2,36 +2,44 @@ import React from 'react';
 
 const ShippingPolicy = () => {
     return (
-        <main className="container" style={{ padding: '60px 20px', maxWidth: '800px', margin: '0 auto', fontFamily: '"Inter", sans-serif', lineHeight: '1.6' }}>
-            <h1 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '20px', color: '#1a1a1a' }}>Shipping & Delivery Policy</h1>
-            <p style={{ color: '#666', marginBottom: '40px' }}>Last updated: {new Date().toLocaleDateString()}</p>
+        <main className="container fade-in" style={{ padding: '80px 20px', maxWidth: '900px', margin: '0 auto', fontFamily: '"Work Sans", sans-serif' }}>
+            <h1 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '10px', color: 'var(--dark)' }}>Shipping & Delivery</h1>
+            <p style={{ color: 'var(--primary)', fontWeight: '600', marginBottom: '50px' }}>Last updated: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
 
-            <section style={{ marginBottom: '30px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '15px' }}>1. Delivery Timelines</h2>
-                <p>All Gavran Magic orders are processed, packaged, and handed over to our verified delivery partners within 2-3 business days. Note that our homemade process sometimes takes preparation time to ensure freshness!</p>
-                <div style={{ background: '#f9f9f9', padding: '20px', borderRadius: '12px', border: '1px solid #eee', marginTop: '15px' }}>
-                    <ul style={{ paddingLeft: '20px', margin: 0 }}>
-                        <li style={{ marginBottom: '10px' }}><strong>Within Maharashtra:</strong> Delivered in 2 to 4 business days.</li>
-                        <li><strong>Rest of India:</strong> Delivered in 5 to 8 business days.</li>
-                    </ul>
-                </div>
-            </section>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+                <section>
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '15px', color: 'var(--dark)', borderLeft: '4px solid var(--primary)', paddingLeft: '15px' }}>1. Delivery Timelines</h2>
+                    <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: '1.7' }}>
+                        All Gavran Magic orders are prepared fresh and dispatched within 2-3 business days. Since our products are handmade, we ensure maximum quality over speed!
+                    </p>
+                    <div style={{ background: '#f8fafc', padding: '25px', borderRadius: '16px', border: '1px solid #e2e8f0', marginTop: '20px' }}>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            <li style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <i className="fas fa-truck" style={{ color: 'var(--primary)' }}></i>
+                                <span><strong>Within Maharashtra:</strong> 2 to 4 business days.</span>
+                            </li>
+                            <li style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <i className="fas fa-globe-asia" style={{ color: 'var(--secondary)' }}></i>
+                                <span><strong>Rest of India:</strong> 5 to 8 business days.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
 
-            <section style={{ marginBottom: '30px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '15px' }}>2. Shipping Charges</h2>
-                <p>Final shipping charges for your location will be calculated completely transparently and displayed dynamically at checkout based on pincode mapping and overall package weight.</p>
-                <p>Occasionally, Gavran Magic runs free delivery campaigns for bulk tier orders (e.g. Orders over ₹499), which are advertised visibly across the storefront.</p>
-            </section>
+                <section>
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '15px', color: 'var(--dark)', borderLeft: '4px solid var(--primary)', paddingLeft: '15px' }}>2. Live Order Tracking</h2>
+                    <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: '1.7' }}>
+                        Once your delicious treats are shipped, you'll receive a tracking ID. You can watch your package move in real-time through our dedicated **Track Order** page.
+                    </p>
+                </section>
 
-            <section style={{ marginBottom: '30px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '15px' }}>3. Order Tracking</h2>
-                <p>Once your parcel has been sent to our logistics team, you will get a Shipment Confirmation including the relevant AWB/Tracking ID. Active customers can visit the dedicated 'Track Order' option on our website menu to watch their items in transit directly.</p>
-            </section>
-
-            <section style={{ marginBottom: '30px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '15px' }}>4. Transit Damages</h2>
-                <p>Gavran Magic takes immense care by deploying multiple bubble-wrap layers to safeguard fragile items like dried Kurdai or papad. If the courier violently handled your box and you receive it entirely crushed or compromised in quality, please contact us immediately.</p>
-            </section>
+                <section>
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '15px', color: 'var(--dark)', borderLeft: '4px solid var(--primary)', paddingLeft: '15px' }}>3. Secure Packaging</h2>
+                    <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: '1.7' }}>
+                        We use premium multi-layer bubble wrapping to protect fragile items like Kurdai. If you receive a box that appears heavily damaged, please refuse the delivery or contact us immediately.
+                    </p>
+                </section>
+            </div>
         </main>
     );
 };

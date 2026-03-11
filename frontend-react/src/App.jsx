@@ -51,6 +51,17 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
       </Routes>
       <Footer />
+
+      {/* Floating WhatsApp Support */}
+      <a
+        href="https://wa.me/919876543210?text=Hello Gavran Magic! I have a question about my order."
+        className="whatsapp-float"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Chat with us on WhatsApp"
+      >
+        <i className="fab fa-whatsapp"></i>
+      </a>
     </>
   );
 }

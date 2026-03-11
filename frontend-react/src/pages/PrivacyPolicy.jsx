@@ -2,46 +2,40 @@ import React from 'react';
 
 const PrivacyPolicy = () => {
     return (
-        <main className="container" style={{ padding: '60px 20px', maxWidth: '800px', margin: '0 auto', fontFamily: '"Inter", sans-serif', lineHeight: '1.6' }}>
-            <h1 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '20px', color: '#1a1a1a' }}>Privacy Policy</h1>
-            <p style={{ color: '#666', marginBottom: '40px' }}>Last updated: {new Date().toLocaleDateString()}</p>
+        <main className="container fade-in" style={{ padding: '80px 20px', maxWidth: '900px', margin: '0 auto', fontFamily: '"Work Sans", sans-serif' }}>
+            <h1 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '10px', color: 'var(--dark)' }}>Privacy Policy</h1>
+            <p style={{ color: 'var(--primary)', fontWeight: '600', marginBottom: '50px' }}>Last updated: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
 
-            <section style={{ marginBottom: '30px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '15px' }}>1. Introduction</h2>
-                <p>Welcome to Gavran Magic. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data when you visit our website.</p>
-            </section>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+                <section>
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '15px', color: 'var(--dark)', borderLeft: '4px solid var(--primary)', paddingLeft: '15px' }}>1. Introduction</h2>
+                    <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: '1.7' }}>Welcome to Gavran Magic. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data when you visit our website.</p>
+                </section>
 
-            <section style={{ marginBottom: '30px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '15px' }}>2. Data Protection (How we protect customer data)</h2>
-                <p>We take your security seriously. All the data collected on Gavran Magic, including personal details and payment information, is encrypted using secure socket layer technology (SSL) and stored securely. Your payment details are never stored directly on our servers; they are processed securely directly by our trusted payment gateways.</p>
-            </section>
+                <section>
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '15px', color: 'var(--dark)', borderLeft: '4px solid var(--primary)', paddingLeft: '15px' }}>2. Data Protection & Security</h2>
+                    <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: '1.7' }}>We take your security seriously! All the data collected on Gavran Magic is encrypted and stored securely. Your payment details are never stored on our servers; they are handled directly by our PCI-compliant payment partners.</p>
+                </section>
 
-            <section style={{ marginBottom: '30px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '15px' }}>3. Customer Rights (What users can do with their data)</h2>
-                <p>Under data protection laws, you have rights in relation to your personal data. You have the right to:</p>
-                <ul style={{ paddingLeft: '20px', marginTop: '10px' }}>
-                    <li><strong>Request access</strong> to your personal data (commonly known as a "data subject access request").</li>
-                    <li><strong>Request correction</strong> of the personal data that we hold about you.</li>
-                    <li><strong>Request erasure</strong> of your personal data when there is no good reason for us continuing to process it.</li>
-                    <li><strong>Withdraw consent</strong> at any time where we are relying on consent to process your personal data.</li>
-                </ul>
-                <p style={{ marginTop: '10px' }}>To exercise these rights, please contact our support team.</p>
-            </section>
+                <section>
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '15px', color: 'var(--dark)', borderLeft: '4px solid var(--primary)', paddingLeft: '15px' }}>3. Your Rights</h2>
+                    <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: '1.7' }}>You have the right to access, correct, or request the deletion of your personal information at any time. Simply reach out to our team at the email below.</p>
+                </section>
 
-            <section style={{ marginBottom: '30px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '15px' }}>4. Policy Updates</h2>
-                <p>We may update this Privacy Policy from time to time in order to reflect, for example, changes to our practices or for other operational, legal, or regulatory reasons. The latest version will always be posted on this page.</p>
-            </section>
-
-            <section style={{ marginBottom: '30px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '15px' }}>5. Contact Information</h2>
-                <p>If you have any questions about this privacy policy or our privacy practices, please contact us at:</p>
-                <ul style={{ paddingLeft: '20px', marginTop: '10px', listStyle: 'none' }}>
-                    <li><i className="fas fa-envelope" style={{ width: '20px', color: 'var(--primary)' }}></i> <strong>Email:</strong> support@gavranmagic.com</li>
-                    <li><i className="fas fa-phone-alt" style={{ width: '20px', color: 'var(--primary)' }}></i> <strong>Phone:</strong> +91 98765 43210</li>
-                    <li><i className="fas fa-map-marker-alt" style={{ width: '20px', color: 'var(--primary)' }}></i> <strong>Address:</strong> Gavran Magic Kitchen, Pune, Maharashtra, India</li>
-                </ul>
-            </section>
+                <section style={{ background: '#f8fafc', padding: '30px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '20px', color: 'var(--dark)' }}>Need Any Help?</h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', color: '#555' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <i className="fas fa-envelope" style={{ color: 'var(--primary)' }}></i>
+                            <span>support@gavranmagic.com</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <i className="fas fa-phone-alt" style={{ color: 'var(--primary)' }}></i>
+                            <span>+91 98765 43210</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </main>
     );
 };
