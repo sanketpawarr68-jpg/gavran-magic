@@ -17,6 +17,7 @@ function SkeletonCard() {
                 <div className="skeleton-line skeleton-pulse" style={{ width: '50%', marginTop: '8px' }}></div>
                 <div className="skeleton-line skeleton-pulse" style={{ width: '40%', marginTop: '16px' }}></div>
             </div>
+
         </div>
     );
 }
@@ -29,24 +30,11 @@ export default function Shop() {
     const [activeCategory, setActiveCategory] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Dynamic Categories from Products
-    const categories = ['All', ...new Set(products.map(p => p.category).filter(Boolean))];
-
-    const getProductCount = (cat) => {
-        if (cat === 'All') return products.length;
-        return products.filter(p => p.category === cat).length;
-    };
-
-    const filteredProducts = products.filter(p => {
-        const matchesSearch = !searchQuery ||
-            p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            p.description?.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = activeCategory === 'All' || p.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    const categories = ['All', 'Handmade Kurdai', 'Traditional Papad', 'Vermicelli (Shevai)', 'Traditional Masalas'];
 
     useEffect(() => {
         const fetchProducts = async () => {
+            // ... (keep cache logic)
             const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
             if (cachedVersion !== CURRENT_VERSION) {
                 localStorage.removeItem(CACHE_KEY);
@@ -100,6 +88,33 @@ export default function Shop() {
         fetchProducts();
     }, []);
 
+    const filteredProducts = products.filter(p => {
+        // 1. Search Query Match
+        const matchesSearch = !searchQuery ||
+            p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (p.category || '').toLowerCase().includes(searchQuery.toLowerCase());
+
+        // 2. Category Match
+        const prodCat = (p.category || '').toLowerCase().trim();
+        const activeCat = activeCategory.toLowerCase().trim();
+        const matchesCategory = activeCategory === 'All' || prodCat === activeCat;
+
+        // 3. Keyword fallback if no direct category match (existing logic improved)
+        const keywords = activeCategory.toLowerCase()
+            .replace(/traditional|handmade|other|\(|\)/g, '')
+            .trim()
+            .split(' ')
+            .filter(w => w.length > 2);
+
+        const smartCatMatch = activeCategory !== 'All' && keywords.some(word =>
+            p.name?.toLowerCase().includes(word) ||
+            p.description?.toLowerCase().includes(word)
+        );
+
+        return matchesSearch && (matchesCategory || smartCatMatch);
+    });
+
     if (error) {
         return (
             <div className="container" style={{ textAlign: 'center', marginTop: '80px' }}>
@@ -126,6 +141,7 @@ export default function Shop() {
                     </span>
                 </p>
 
+                {/* New Search Bar */}
                 <div className="search-container" style={{ maxWidth: '500px', margin: '0 auto 30px', position: 'relative' }}>
                     <input
                         type="text"
@@ -143,8 +159,16 @@ export default function Shop() {
                             background: '#fff',
                             boxShadow: '0 4px 15px rgba(0,0,0,0.02)'
                         }}
+                        onFocus={(e) => e.target.style.borderColor = 'var(--primary)'}
+                        onBlur={(e) => e.target.style.borderColor = '#eee'}
                     />
-                    <i className="fas fa-search" style={{ position: 'absolute', right: '25px', top: '50%', transform: 'translateY(-50%)', color: '#999' }}></i>
+                    <i className="fas fa-search" style={{
+                        position: 'absolute',
+                        right: '25px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: '#999'
+                    }}></i>
                 </div>
 
                 <div className="category-filters">
@@ -152,14 +176,17 @@ export default function Shop() {
                         <button
                             key={cat}
                             className={`filter-chip ${activeCategory === cat ? 'active' : ''}`}
-                            onClick={() => setActiveCategory(cat)}
+                            onClick={() => {
+                                setActiveCategory(cat);
+                                if (cat === 'All') setSearchQuery('');
+                            }}
                         >
-                            {cat} <span className="cat-count">({getProductCount(cat)})</span>
+                            {cat}
                         </button>
                     ))}
                 </div>
             </header>
-
+            {/* Server waking banner */}
             {serverWaking && !products.length && (
                 <div className="server-waking-banner">
                     <div className="waking-spinner"></div>
