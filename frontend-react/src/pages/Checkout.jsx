@@ -164,6 +164,7 @@ export default function Checkout() {
         validationSchema: CheckoutSchema,
         onSubmit: async (values, { setSubmitting, setStatus }) => {
             try {
+                const finalTotal = total + (shippingInfo ? shippingInfo.total_shipping : 0);
                 const orderData = {
                     user_id: user ? (user._id || user.id) : 'guest',
                     name: values.name,
@@ -178,24 +179,35 @@ export default function Checkout() {
                         price: getEffectivePrice(item),
                         name: item.name
                     })),
-                    total_price: total + (shippingInfo ? shippingInfo.total_shipping : 0)
+                    total_price: finalTotal,
+                    payment_status: values.paymentMethod === 'UPI' ? 'Paid' : 'Pending'
                 };
 
+                // Apply profile update if checked
                 if (values.saveAddressToProfile && user) {
                     const token = localStorage.getItem('gavran_token');
                     if (token) {
                         try {
                             await axios.post(`${API_BASE_URL}/api/auth/update-profile`, {
-                                phone: user.phone,
+                                phone: values.phone,
                                 save_as_new_address: true,
                                 address: values.address,
                                 city: values.city,
                                 pincode: values.pincode
                             }, { headers: { Authorization: `Bearer ${token}` } });
                         } catch (err) {
-                            console.error('Silent profile update error:', err);
+                            console.error('Profile update error:', err);
                         }
                     }
+                }
+
+                // If UPI, open Razorpay in new window first
+                if (values.paymentMethod === 'UPI') {
+                    // Try to pass amount to Razorpay.Me (varies by their platform, but usually type amt manually)
+                    const razorPayUrl = `https://razorpay.me/@sanketsambhajipawar`;
+                    window.open(razorPayUrl, '_blank');
+                    // Alert the user to type the amount
+                    alert(`Opening Razorpay. Please pay ₹${finalTotal.toFixed(2)} to confirm your order.`);
                 }
 
                 const response = await axios.post(`${API_BASE_URL}/api/orders/`, orderData);
