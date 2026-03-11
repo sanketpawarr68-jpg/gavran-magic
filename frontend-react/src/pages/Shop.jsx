@@ -151,8 +151,8 @@ export default function Shop() {
                         : (
                             <div className="no-results" style={{ gridColumn: '1/-1' }}>
                                 <i className="fas fa-search" style={{ fontSize: '2rem', marginBottom: '15px', color: '#ddd' }}></i>
-                                <h3>No products found in this category</h3>
-                                <p>Try checking "All" products for our full collection.</p>
+                                <h3>Product is Currently Not Available</h3>
+                                <p>We are currently preparing fresh stock. Try checking "All" products.</p>
                                 <button className="btn btn-sm" style={{ marginTop: '15px', background: '#f5f5f5' }} onClick={() => setActiveCategory('All')}>
                                     View All Products
                                 </button>
