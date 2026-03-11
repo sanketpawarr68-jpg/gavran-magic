@@ -293,7 +293,7 @@ const ProductDetail = () => {
                                     <div className="r-header">
                                         <div className="r-user">
                                             <strong>{r.user_name}</strong>
-                                            <div className="r-stars">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</div>
+                                            <div className="r-stars">{'★'.repeat(r.rating)}{'☆'.repeat(0 - r.rating)}</div>
                                         </div>
                                         <span className="r-date">{r.timestamp ? new Date(r.timestamp).toLocaleDateString() : 'Recent'}</span>
                                     </div>
