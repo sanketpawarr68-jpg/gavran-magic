@@ -232,87 +232,87 @@ export default function Checkout() {
         <main style={{ minHeight: '100vh', background: '#f8fafc', padding: '80px 20px 100px', fontFamily: '"Work Sans", sans-serif' }}>
             <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
-                <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
                     <h1 className="checkout-main-title">Complete Your Order</h1>
-                    <p style={{ color: '#64748b', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto' }}>
+                    <p style={{ color: '#64748b', fontSize: '1rem', maxWidth: '600px', margin: '0 auto', padding: '0 20px' }}>
                         Join thousands of happy customers enjoying the authentic magic of Maharashtrian kitchen.
                     </p>
                 </div>
 
                 <form onSubmit={formik.handleSubmit}>
-                    <div className="checkout-container" style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                    <div className="checkout-container" style={{ display: 'flex', gap: '30px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
 
                         {/* LEFT: FORM STEPS */}
-                        <div className="checkout-main-column" style={{ flex: '1 1 600px', display: 'flex', flexDirection: 'column', gap: '30px' }}>
+                        <div className="checkout-main-column" style={{ flex: '1 1 500px' }}>
 
                             {/* STEP 1: Contact */}
-                            <div className="checkout-card">
+                            <div className="checkout-card" style={{ marginBottom: '30px' }}>
                                 <div className="checkout-section-header">
                                     <div className="checkout-step-num">1</div>
                                     <span>Contact Information</span>
                                 </div>
-                                <div className="checkout-input-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                                    <div className="form-group">
-                                        <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '10px' }}>Full Name</label>
-                                        <input type="text" id="name" {...formik.getFieldProps('name')} style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', background: '#fff', fontSize: '1rem' }} placeholder="Your Name" />
-                                        {formik.touched.name && formik.errors.name && <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '6px' }}>{formik.errors.name}</div>}
+                                <div className="checkout-input-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                                    <div className="form-group" style={{ marginBottom: '0' }}>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '8px' }}>Full Name</label>
+                                        <input type="text" id="name" {...formik.getFieldProps('name')} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0', background: '#fff', fontSize: '1rem' }} placeholder="Your Name" />
+                                        {formik.touched.name && formik.errors.name && <div style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '5px' }}>{formik.errors.name}</div>}
                                     </div>
-                                    <div className="form-group">
-                                        <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '10px' }}>Phone Number</label>
-                                        <input type="text" id="phone" {...formik.getFieldProps('phone')} style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', background: '#fff', fontSize: '1rem' }} placeholder="10 Digit Number" />
-                                        {formik.touched.phone && formik.errors.phone && <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '6px' }}>{formik.errors.phone}</div>}
+                                    <div className="form-group" style={{ marginBottom: '0' }}>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '8px' }}>Phone Number</label>
+                                        <input type="text" id="phone" {...formik.getFieldProps('phone')} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0', background: '#fff', fontSize: '1rem' }} placeholder="10 Digit Number" />
+                                        {formik.touched.phone && formik.errors.phone && <div style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '5px' }}>{formik.errors.phone}</div>}
                                     </div>
                                 </div>
                             </div>
 
                             {/* STEP 2: Delivery */}
-                            <div className="checkout-card">
+                            <div className="checkout-card" style={{ marginBottom: '30px' }}>
                                 <div className="checkout-section-header">
                                     <div className="checkout-step-num">2</div>
                                     <span>Shipping Details</span>
                                 </div>
 
-                                <div className="checkout-address-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+                                <div className="checkout-address-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px', marginBottom: '25px' }}>
                                     {user && user.address && (
-                                        <div onClick={() => handleAddressModeChange('profile')} style={{ padding: '20px', borderRadius: '16px', border: addressMode === 'profile' ? '2px solid var(--primary)' : '2px solid #f1f5f9', background: addressMode === 'profile' ? '#fff7ed' : '#fff', cursor: 'pointer', position: 'relative' }}>
-                                            <div style={{ fontWeight: '700', marginBottom: '5px' }}>🏡 Default Home</div>
-                                            <div style={{ fontSize: '0.9rem', color: '#64748b' }}>{user.address}, {user.city} - {user.pincode}</div>
-                                            {addressMode === 'profile' && <i className="fas fa-check-circle" style={{ position: 'absolute', top: '15px', right: '15px', color: 'var(--primary)' }}></i>}
+                                        <div onClick={() => handleAddressModeChange('profile')} style={{ padding: '16px', borderRadius: '14px', border: addressMode === 'profile' ? '2px solid var(--primary)' : '2px solid #f1f5f9', background: addressMode === 'profile' ? '#fff7ed' : '#fff', cursor: 'pointer', position: 'relative' }}>
+                                            <div style={{ fontWeight: '700', marginBottom: '4px', fontSize: '0.95rem' }}>🏡 Home Address</div>
+                                            <div style={{ fontSize: '0.85rem', color: '#64748b' }}>{user.address}, {user.city} - {user.pincode}</div>
+                                            {addressMode === 'profile' && <i className="fas fa-check-circle" style={{ position: 'absolute', top: '12px', right: '12px', color: 'var(--primary)' }}></i>}
                                         </div>
                                     )}
 
-                                    <div onClick={() => handleAddressModeChange('current')} style={{ padding: '20px', borderRadius: '16px', border: addressMode === 'current' ? '2px solid var(--primary)' : '2px solid #f1f5f9', background: addressMode === 'current' ? '#fff7ed' : '#fff', cursor: 'pointer', position: 'relative' }}>
-                                        <div style={{ fontWeight: '700', marginBottom: '5px' }}>📍 Use GPS Location</div>
-                                        <div style={{ fontSize: '0.9rem', color: '#64748b' }}>{gpsLoading ? 'Detecting...' : 'Auto-fill from Device'}</div>
+                                    <div onClick={() => handleAddressModeChange('current')} style={{ padding: '16px', borderRadius: '14px', border: addressMode === 'current' ? '2px solid var(--primary)' : '2px solid #f1f5f9', background: addressMode === 'current' ? '#fff7ed' : '#fff', cursor: 'pointer', position: 'relative' }}>
+                                        <div style={{ fontWeight: '700', marginBottom: '4px', fontSize: '0.95rem' }}>📍 GPS Location</div>
+                                        <div style={{ fontSize: '0.85rem', color: '#64748b' }}>{gpsLoading ? 'Detecting...' : 'Detect location'}</div>
                                     </div>
 
-                                    <div onClick={() => handleAddressModeChange('manual')} style={{ padding: '20px', borderRadius: '16px', border: addressMode === 'manual' ? '2px solid var(--primary)' : '2px solid #f1f5f9', background: addressMode === 'manual' ? '#fff7ed' : '#fff', cursor: 'pointer', position: 'relative' }}>
-                                        <div style={{ fontWeight: '700', marginBottom: '5px' }}>➕ Add New Address</div>
-                                        <div style={{ fontSize: '0.9rem', color: '#64748b' }}>Enter details manually</div>
+                                    <div onClick={() => handleAddressModeChange('manual')} style={{ padding: '16px', borderRadius: '14px', border: addressMode === 'manual' ? '2px solid var(--primary)' : '2px solid #f1f5f9', background: addressMode === 'manual' ? '#fff7ed' : '#fff', cursor: 'pointer', position: 'relative' }}>
+                                        <div style={{ fontWeight: '700', marginBottom: '4px', fontSize: '0.95rem' }}>➕ New Address</div>
+                                        <div style={{ fontSize: '0.85rem', color: '#64748b' }}>Enter manually</div>
                                     </div>
                                 </div>
 
                                 {(addressMode === 'manual' || addressMode === 'current') && (
-                                    <div className="fade-in" style={{ background: '#f8fafc', padding: '25px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                                        <div style={{ marginBottom: '20px' }}>
-                                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '8px' }}>Home / Building / Street</label>
-                                            <textarea {...formik.getFieldProps('address')} rows="2" style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '1rem' }} />
-                                            {formik.touched.address && formik.errors.address && <div style={{ color: '#ef4444', fontSize: '0.8rem' }}>{formik.errors.address}</div>}
+                                    <div className="fade-in" style={{ background: '#f8fafc', padding: '20px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+                                        <div style={{ marginBottom: '15px' }}>
+                                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '8px' }}>Home / Building / Street</label>
+                                            <textarea {...formik.getFieldProps('address')} rows="2" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '0.95rem' }} />
+                                            {formik.touched.address && formik.errors.address && <div style={{ color: '#ef4444', fontSize: '0.75rem' }}>{formik.errors.address}</div>}
                                         </div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                        <div className="checkout-input-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                                             <div>
-                                                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '8px' }}>City</label>
-                                                <input type="text" {...formik.getFieldProps('city')} style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }} />
+                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '8px' }}>City</label>
+                                                <input type="text" {...formik.getFieldProps('city')} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }} />
                                             </div>
                                             <div>
-                                                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '8px' }}>Pincode (Maharashtra Only)</label>
-                                                <input type="text" {...formik.getFieldProps('pincode')} style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }} />
+                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '8px' }}>Pincode</label>
+                                                <input type="text" {...formik.getFieldProps('pincode')} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }} />
                                             </div>
                                         </div>
                                         {user && (
-                                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '20px', cursor: 'pointer' }}>
+                                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '15px', cursor: 'pointer' }}>
                                                 <input type="checkbox" name="saveAddressToProfile" checked={formik.values.saveAddressToProfile} onChange={formik.handleChange} />
-                                                <span style={{ fontSize: '0.9rem', color: '#444' }}>Save this to my profile</span>
+                                                <span style={{ fontSize: '0.85rem', color: '#444' }}>Save this to my profile</span>
                                             </label>
                                         )}
                                     </div>
@@ -320,28 +320,26 @@ export default function Checkout() {
                             </div>
 
                             {/* STEP 3: Payment */}
-                            <div className="checkout-card">
+                            <div className="checkout-card" style={{ marginBottom: '30px' }}>
                                 <div className="checkout-section-header">
                                     <div className="checkout-step-num">3</div>
                                     <span>Payment Method</span>
                                 </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                                    <div onClick={() => formik.setFieldValue('paymentMethod', 'UPI')} style={{ padding: '25px', borderRadius: '16px', border: formik.values.paymentMethod === 'UPI' ? '2px solid var(--primary)' : '2px solid #f1f5f9', background: formik.values.paymentMethod === 'UPI' ? '#fff7ed' : '#fff', cursor: 'pointer', textAlign: 'center' }}>
-                                        <i className="fas fa-qrcode" style={{ fontSize: '2rem', color: '#27ae60', marginBottom: '10px' }}></i>
-                                        <div style={{ fontWeight: '700' }}>UPI / Online Pay</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Fast & Secure</div>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px' }}>
+                                    <div onClick={() => formik.setFieldValue('paymentMethod', 'UPI')} style={{ padding: '20px', borderRadius: '14px', border: formik.values.paymentMethod === 'UPI' ? '2px solid var(--primary)' : '2px solid #f1f5f9', background: formik.values.paymentMethod === 'UPI' ? '#fff7ed' : '#fff', cursor: 'pointer', textAlign: 'center' }}>
+                                        <i className="fas fa-qrcode" style={{ fontSize: '1.8rem', color: '#27ae60', marginBottom: '8px' }}></i>
+                                        <div style={{ fontWeight: '700', fontSize: '0.95rem' }}>UPI / Online Pay</div>
                                     </div>
-                                    <div onClick={() => formik.setFieldValue('paymentMethod', 'COD')} style={{ padding: '25px', borderRadius: '16px', border: formik.values.paymentMethod === 'COD' ? '2px solid var(--primary)' : '2px solid #f1f5f9', background: formik.values.paymentMethod === 'COD' ? '#fff7ed' : '#fff', cursor: 'pointer', textAlign: 'center' }}>
-                                        <i className="fas fa-hand-holding-usd" style={{ fontSize: '2rem', color: '#d35400', marginBottom: '10px' }}></i>
-                                        <div style={{ fontWeight: '700' }}>Cash on Delivery</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Pay on arrival</div>
+                                    <div onClick={() => formik.setFieldValue('paymentMethod', 'COD')} style={{ padding: '20px', borderRadius: '14px', border: formik.values.paymentMethod === 'COD' ? '2px solid var(--primary)' : '2px solid #f1f5f9', background: formik.values.paymentMethod === 'COD' ? '#fff7ed' : '#fff', cursor: 'pointer', textAlign: 'center' }}>
+                                        <i className="fas fa-hand-holding-usd" style={{ fontSize: '1.8rem', color: '#d35400', marginBottom: '8px' }}></i>
+                                        <div style={{ fontWeight: '700', fontSize: '0.95rem' }}>Cash on Delivery</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* RIGHT: SUMMARY */}
-                        <div className="checkout-summary-column" style={{ flex: '0 0 400px', width: '100%' }}>
+                        <div className="checkout-summary-column" style={{ flex: '0 0 380px' }}>
                             <div className="checkout-card" style={{ position: 'sticky', top: '120px' }}>
                                 <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '25px' }}>Bag Summary</h3>
 

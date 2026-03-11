@@ -180,6 +180,60 @@ button {
     font-weight: 800;
 }
 
+/* --- Responsive Checkout Updates --- */
+@media (max-width: 1024px) {
+    .checkout-container {
+        flex-direction: column !important;
+        gap: 30px !important;
+    }
+
+    .checkout-main-column,
+    .checkout-summary-column {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .checkout-summary-column .checkout-card {
+        position: static !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .checkout-main-title {
+        font-size: 2rem !important;
+    }
+
+    .checkout-card {
+        padding: 20px !important;
+    }
+
+    .checkout-section-header {
+        font-size: 1.1rem !important;
+    }
+
+    .checkout-input-grid,
+    .checkout-address-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* --- Header & Navbar --- */
 header {
     background: white;
