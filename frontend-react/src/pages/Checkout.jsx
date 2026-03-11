@@ -112,14 +112,33 @@ export default function Checkout() {
         }
     };
 
+    const calculateTotalWeight = () => {
+        let totalW = 0;
+        cart.forEach(item => {
+            const wStr = (item.weight || '500g').toLowerCase();
+            let val = parseFloat(wStr);
+            if (isNaN(val)) val = 0.5;
+
+            if (wStr.includes('kg')) {
+                totalW += val * item.quantity;
+            } else {
+                // assume grams if not kg
+                totalW += (val / 1000) * item.quantity;
+            }
+        });
+        return Math.max(0.5, totalW); // Shiprocket min weight is usually 0.5kg
+    };
+
     const fetchShippingCost = async (pincode, isCOD) => {
         if (!/^[4][0-9]{5}$/.test(pincode)) return;
 
         setLoadingShipping(true);
+        const totalWeight = calculateTotalWeight();
+
         try {
             const response = await axios.post(`${API_BASE_URL}/api/orders/shipping-cost`, {
                 pincode: pincode,
-                weight: 0.5,
+                weight: totalWeight,
                 cod: isCOD ? 1 : 0
             });
             setShippingInfo(response.data);

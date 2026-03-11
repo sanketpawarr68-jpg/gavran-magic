@@ -202,9 +202,26 @@ const ProductDetail = () => {
                         </div>
 
                         <div className="description-text">
-                            <h3>Product Details</h3>
-                            <p>{product.description}</p>
-                            <p>Hand-picked ingredients and traditional processing methods ensure that every bite is filled with authentic flavor and nutrition.</p>
+                            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--dark)', marginBottom: '15px' }}>Product Insight</h3>
+                            <p style={{ marginBottom: '20px' }}>{product.description}</p>
+
+                            {product.ingredients && (
+                                <div className="info-extra-block" style={{ marginBottom: '20px', padding: '15px', background: '#f8f9fa', borderRadius: '12px', borderLeft: '4px solid var(--secondary)' }}>
+                                    <h4 style={{ fontSize: '0.9rem', marginBottom: '5px', textTransform: 'uppercase', color: '#666' }}>🥗 Key Ingredients</h4>
+                                    <p style={{ margin: 0, fontSize: '0.95rem' }}>{product.ingredients}</p>
+                                </div>
+                            )}
+
+                            {product.cooking_instructions && (
+                                <div className="info-extra-block" style={{ marginBottom: '20px', padding: '15px', background: '#fff9f0', borderRadius: '12px', borderLeft: '4px solid var(--primary)' }}>
+                                    <h4 style={{ fontSize: '0.9rem', marginBottom: '5px', textTransform: 'uppercase', color: '#666' }}>👨‍🍳 How to Prepare</h4>
+                                    <p style={{ margin: 0, fontSize: '0.95rem' }}>{product.cooking_instructions}</p>
+                                </div>
+                            )}
+
+                            <p style={{ fontSize: '0.9rem', fontStyle: 'italic', color: '#888' }}>
+                                Hand-picked ingredients and traditional processing methods ensure that every bite is filled with authentic flavor and nutrition.
+                            </p>
                         </div>
 
                         <div className="order-controls">
