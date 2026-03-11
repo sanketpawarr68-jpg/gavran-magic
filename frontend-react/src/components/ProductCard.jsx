@@ -108,7 +108,7 @@ const ProductCard = ({ product }) => {
                             className="btn"
                             onClick={(e) => handleAction(e, 'add')}
                             disabled={product.stock <= 0 || added}
-                            style={{ background: added ? 'var(--secondary)' : 'var(--dark)' }}
+                            style={{ background: added ? 'var(--secondary)' : 'var(--primary)' }}
                         >
                             {added ? 'Added!' : 'Add'}
                         </button>

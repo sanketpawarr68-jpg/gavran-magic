@@ -459,14 +459,30 @@ nav {
 
 .card-actions {
     display: flex;
-    gap: 8px;
+    gap: 12px;
+    margin-top: 20px;
 }
 
 .card-actions .btn {
     flex: 1;
-    padding: 10px 8px;
-    font-size: 0.78rem;
+    padding: 12px 10px;
+    font-size: 0.85rem;
     text-align: center;
+    border-radius: var(--radius-pill);
+    box-shadow: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(227, 219, 219, 0.1);
+}
+
+.card-actions .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 
