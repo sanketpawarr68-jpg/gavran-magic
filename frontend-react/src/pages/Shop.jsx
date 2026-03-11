@@ -89,7 +89,27 @@ export default function Shop() {
 
     const filteredProducts = activeCategory === 'All'
         ? products
-        : products.filter(p => p.category === activeCategory);
+        : products.filter(p => {
+            const prodCat = (p.category || '').toLowerCase().trim();
+            const activeCat = activeCategory.toLowerCase().trim();
+
+            const catMatch = prodCat === activeCat;
+
+            // Smart keyword fallback: extract core word like "kurdai" or "papad"
+            // We ignore descriptors like "Handmade" or "Traditional"
+            const keywords = activeCategory.toLowerCase()
+                .replace(/traditional|handmade|other|\(|\)/g, '')
+                .trim()
+                .split(' ')
+                .filter(w => w.length > 2);
+
+            const nameMatch = keywords.some(word =>
+                p.name?.toLowerCase().includes(word) ||
+                p.description?.toLowerCase().includes(word)
+            );
+
+            return catMatch || nameMatch;
+        });
 
     if (error) {
         return (
@@ -153,7 +173,7 @@ export default function Shop() {
                                 <i className="fas fa-search" style={{ fontSize: '2rem', marginBottom: '15px', color: '#ddd' }}></i>
                                 <h3>Product is Currently Not Available</h3>
                                 <p>We are currently preparing fresh stock. Try checking "All" products.</p>
-                                <button className="btn btn-sm" style={{ marginTop: '15px', background: '#f5f5f5' }} onClick={() => setActiveCategory('All')}>
+                                <button className="btn" style={{ marginTop: '15px', padding: '10px 25px', background: 'var(--dark)', color: 'white' }} onClick={() => setActiveCategory('All')}>
                                     View All Products
                                 </button>
                             </div>
