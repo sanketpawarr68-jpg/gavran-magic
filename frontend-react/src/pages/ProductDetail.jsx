@@ -238,21 +238,6 @@ const ProductDetail = () => {
                 </section>
             </main>
 
-            {/* Related Products */}
-            {allProducts.length > 0 && (
-                <section className="related-section">
-                    <h3>You Might Also Like</h3>
-                    <div className="related-grid">
-                        {allProducts.slice(0, 4).map(p => (
-                            <div key={p._id} className="related-card" onClick={() => navigate(`/product/${p._id}`)}>
-                                <img src={getImageUrl(p.image)} alt={p.name} />
-                                <h4>{p.name}</h4>
-                                <span className="p-price">₹{p.price}</span>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            )}
 
             {/* Reviews Section */}
             <section className="feedback-section">
