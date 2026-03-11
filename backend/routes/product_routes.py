@@ -14,11 +14,23 @@ def get_products():
     """Fetch all products."""
     db = get_db()
     products_coll = db.products
+    
+    # Check if admin is requesting (to see inactive items)
+    is_admin = request.args.get('admin', 'false').lower() == 'true'
+    
+    if is_admin:
+        products = list(products_coll.find())
+    else:
+        # For customers, only show active products
+        # We check for status='active' OR isActive=True OR if field is missing (default to active)
+        products = list(products_coll.find({
+            "$or": [
+                {"status": "active"},
+                {"isActive": True},
+                {"status": {"$exists": False}, "isActive": {"$exists": False}}
+            ]
+        }))
 
-    # Note: Removed auto-seeding logic here because it was causing deleted items 
-    # (like Vermicelli) to instantly respawn when visiting the admin or shop page.
-
-    products = list(products_coll.find())
     for p in products:
         p['_id'] = str(p['_id'])
         # Fallbacks for existing products
@@ -28,6 +40,8 @@ def get_products():
             p['stock'] = 100
         if 'discount' not in p:
             p['discount'] = 0
+        if 'status' not in p:
+            p['status'] = 'active'
             
     return jsonify(products), 200
 

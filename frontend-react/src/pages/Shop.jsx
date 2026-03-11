@@ -5,7 +5,7 @@ import ProductCard from '../components/ProductCard';
 
 const CACHE_KEY = 'products_cache';
 const CACHE_VERSION_KEY = 'products_cache_version';
-const CURRENT_VERSION = 'v6';
+const CURRENT_VERSION = 'v7';
 
 // Skeleton card shown while products load
 function SkeletonCard() {
@@ -27,17 +27,19 @@ export default function Shop() {
     const [loading, setLoading] = useState(true);
     const [serverWaking, setServerWaking] = useState(false);
     const [error, setError] = useState(null);
+    const [activeCategory, setActiveCategory] = useState('All');
+
+    const categories = ['All', 'Handmade Kurdai', 'Traditional Papad', 'Vermicelli (Shevai)', 'Traditional Masalas'];
 
     useEffect(() => {
         const fetchProducts = async () => {
-            // Clear stale cache if version mismatch
+            // ... (keep cache logic)
             const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
             if (cachedVersion !== CURRENT_VERSION) {
                 localStorage.removeItem(CACHE_KEY);
                 localStorage.setItem(CACHE_VERSION_KEY, CURRENT_VERSION);
             }
 
-            // Load from cache instantly — no white flash
             const cachedProducts = localStorage.getItem(CACHE_KEY);
             if (cachedProducts) {
                 try {
@@ -46,29 +48,32 @@ export default function Shop() {
                         ...p,
                         image: p.image?.replace('garvran-magic.netlify.app', 'gavran-magic.netlify.app')
                     }));
-                    setProducts(fixed);
+                    const filtered = fixed.filter(p => p.status === 'active' || p.status === undefined);
+                    setProducts(filtered);
                     setLoading(false);
                 } catch (e) {
                     console.error("Cache parse error", e);
                 }
             }
 
-            // Show "server waking" notice only if no cache after 3 seconds
             const wakingTimer = setTimeout(() => {
                 setServerWaking(true);
             }, 3000);
 
             try {
                 const response = await axios.get(`${API_BASE_URL}/api/products/`, {
-                    timeout: 60000 // 60s — Render free tier can take up to 50s to wake
+                    timeout: 60000
                 });
                 const data = Array.isArray(response.data) ? response.data : response.data.products || [];
                 const fixed = data.map(p => ({
                     ...p,
                     image: p.image?.replace('garvran-magic.netlify.app', 'gavran-magic.netlify.app')
                 }));
-                setProducts(fixed);
-                localStorage.setItem(CACHE_KEY, JSON.stringify(fixed));
+
+                const filtered = fixed.filter(p => p.status === 'active' || p.status === undefined);
+
+                setProducts(filtered);
+                localStorage.setItem(CACHE_KEY, JSON.stringify(filtered));
             } catch (err) {
                 if (!products.length) {
                     setError(err.message);
@@ -81,6 +86,10 @@ export default function Shop() {
         };
         fetchProducts();
     }, []);
+
+    const filteredProducts = activeCategory === 'All'
+        ? products
+        : products.filter(p => p.category === activeCategory);
 
     if (error) {
         return (
@@ -98,16 +107,36 @@ export default function Shop() {
     }
 
     return (
-        <main className="container">
-            <h2 className="section-title">Our Homemade Products</h2>
+        <main className="container fade-in">
+            <h1 className="section-title" style={{ marginTop: '40px' }}>Gavran Magic Shop</h1>
+            <p style={{ textAlign: 'center', color: '#666', marginBottom: '30px' }}>Authentic Maharashtrian Homemade Delicacies</p>
 
-            {/* Server waking banner — only shows after 3 seconds of waiting */}
+            {/* Maharashtra Delivery Notice */}
+            <div className="delivery-notice">
+                <i className="fas fa-truck-moving"></i>
+                <span>Fast Delivery Available All Across <strong>Maharashtra</strong></span>
+            </div>
+
+            {/* Category Filters */}
+            <div className="category-filters">
+                {categories.map(cat => (
+                    <button
+                        key={cat}
+                        className={`filter-chip ${activeCategory === cat ? 'active' : ''}`}
+                        onClick={() => setActiveCategory(cat)}
+                    >
+                        {cat}
+                    </button>
+                ))}
+            </div>
+
+            {/* Server waking banner */}
             {serverWaking && !products.length && (
                 <div className="server-waking-banner">
                     <div className="waking-spinner"></div>
                     <div>
                         <strong>Server is starting up...</strong>
-                        <p>Free server takes ~30 seconds to wake. Please wait ☕</p>
+                        <p>Our traditional kitchen is preparing the catalog. Please wait ~30 seconds. ☕</p>
                     </div>
                 </div>
             )}
@@ -115,9 +144,20 @@ export default function Shop() {
             <div className="products-grid">
                 {loading && !products.length
                     ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-                    : products.map(product => (
-                        <ProductCard key={product._id} product={product} />
-                    ))
+                    : filteredProducts.length > 0
+                        ? filteredProducts.map(product => (
+                            <ProductCard key={product._id} product={product} />
+                        ))
+                        : (
+                            <div className="no-results" style={{ gridColumn: '1/-1' }}>
+                                <i className="fas fa-search" style={{ fontSize: '2rem', marginBottom: '15px', color: '#ddd' }}></i>
+                                <h3>No products found in this category</h3>
+                                <p>Try checking "All" products for our full collection.</p>
+                                <button className="btn btn-sm" style={{ marginTop: '15px', background: '#f5f5f5' }} onClick={() => setActiveCategory('All')}>
+                                    View All Products
+                                </button>
+                            </div>
+                        )
                 }
             </div>
         </main>
