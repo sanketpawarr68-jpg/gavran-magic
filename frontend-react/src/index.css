@@ -235,12 +235,12 @@ button {
 }
 
 /* --- Header & Navbar --- */
-header {
+.site-header {
     background: white;
     border-bottom: 1px solid #eee;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 9999;
 }
 
 nav {
@@ -827,7 +827,7 @@ body {
         gap: 4px;
         border-top: 1px solid #eee;
         display: none;
-        z-index: 999;
+        z-index: 10000;
         overflow-y: auto;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
     }
@@ -857,7 +857,7 @@ body {
         font-size: 1.4rem;
         padding: 8px;
         color: var(--dark);
-        z-index: 1001;
+        z-index: 10001;
     }
 
     /* Avatar inside mobile nav drawer — full width row */

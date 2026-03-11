@@ -39,7 +39,7 @@ export default function Navbar() {
     const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : (user?.phone ? '#' : 'U');
 
     return (
-        <header>
+        <header className="site-header">
             <div className="container">
                 <nav>
                     {/* Logo */}

@@ -132,7 +132,7 @@ export default function Shop() {
 
     return (
         <main className="container fade-in">
-            <header className="shop-header" style={{ textAlign: 'center', padding: '60px 0 40px' }}>
+            <section className="shop-header" style={{ textAlign: 'center', padding: '60px 0 40px' }}>
                 <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '15px' }}>Our Traditional Kitchen</h1>
                 <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto 40px' }}>
                     Authentic handmade Maharashtrian delicacies prepared with love and tradition.
@@ -185,7 +185,7 @@ export default function Shop() {
                         </button>
                     ))}
                 </div>
-            </header>
+            </section>
             {/* Server waking banner */}
             {serverWaking && !products.length && (
                 <div className="server-waking-banner">
