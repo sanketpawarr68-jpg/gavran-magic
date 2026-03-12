@@ -193,6 +193,14 @@ export default function Shop() {
                 </div>
             )}
 
+            {loading && !products.length && (
+                <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                    <div className="spinner"></div>
+                    <h3 className="loading-text">{t('loading_products')}</h3>
+                    <p style={{ color: '#888', fontSize: '0.9rem' }}>{t('loading_msg')}</p>
+                </div>
+            )}
+
             <div className="products-grid">
                 {loading && !products.length
                     ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)

@@ -127,7 +127,9 @@ export const LanguageProvider = ({ children }) => {
             only_left: "Only {count} products available!",
             total_reviews: "{count} Total Reviews",
             related_products: "Related Products",
-            delivery_maharashtra: "Delivery across all of Maharashtra"
+            delivery_maharashtra: "Delivery across all of Maharashtra",
+            loading_products: "Retrieving Products...",
+            loading_msg: "Please wait while we set up our store for you."
         },
         MR: {
             nav_home: "होम",
@@ -245,7 +247,9 @@ export const LanguageProvider = ({ children }) => {
             only_left: "फक्त {count} शिल्लक!",
             total_reviews: "एकूण {count} प्रतिक्रिया",
             related_products: "संबंधित उत्पादने",
-            delivery_maharashtra: "संपूर्ण महाराष्ट्रात डिलिव्हरी"
+            delivery_maharashtra: "संपूर्ण महाराष्ट्रात डिलिव्हरी",
+            loading_products: "उत्पादने शोधत आहोत...",
+            loading_msg: "स्वयंपाकघर सज्ज होत आहे, कृपया प्रतीक्षा करा."
         }
     };
 

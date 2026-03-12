@@ -73,8 +73,8 @@ export default function Navbar() {
                         </li>
                         <li><NavLink to="/tracking" className={({ isActive }) => isActive ? "active" : ""} onClick={handleNavLinkClick}>{t('nav_track')}</NavLink></li>
                         
-                        {/* Profile inside Mobile Menu (Bottom) */}
-                        {isSignedIn && (
+                        {/* User actions inside Mobile Menu (Bottom) */}
+                        {isSignedIn ? (
                             <li className="mobile-only-profile">
                                 <Link to="/profile" className="mobile-profile-link" onClick={handleNavLinkClick}>
                                     <div className="user-avatar-circle mini">{userInitial}</div>
@@ -83,6 +83,13 @@ export default function Navbar() {
                                 <button onClick={handleLogout} className="mobile-logout-btn">
                                     <i className="fas fa-sign-out-alt"></i> {t('nav_logout')}
                                 </button>
+                            </li>
+                        ) : (
+                            <li className="mobile-only-profile">
+                                <Link to="/login" className="mobile-profile-link sign-in-link" onClick={handleNavLinkClick}>
+                                    <i className="fas fa-sign-in-alt"></i>
+                                    <span>{t('nav_signin')}</span>
+                                </Link>
                             </li>
                         )}
                     </ul>

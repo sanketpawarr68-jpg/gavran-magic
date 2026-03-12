@@ -138,7 +138,15 @@ const ProductDetail = () => {
         }
     };
 
-    if (loading) return <div className="loader-container"><div className="loader"></div></div>;
+    if (loading) {
+        return (
+            <div style={{ height: '70vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <div className="spinner"></div>
+                <h3 className="loading-text">{t('loading_products')}</h3>
+                <p style={{ color: '#888', fontSize: '0.9rem' }}>{t('loading_msg')}</p>
+            </div>
+        );
+    }
     if (error || !product) return <div className="container" style={{ padding: '100px 0', textAlign: 'center' }}><h2>{error || "Product not found"}</h2></div>;
 
     // Use product specific images from DB or fallback
