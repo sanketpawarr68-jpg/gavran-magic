@@ -33,10 +33,13 @@ function App() {
   return (
     <>
       <ScrollToTop />
-      {/* Promo Banner */}
+      {/* Seamless Promo Banner */}
       <div className="promo-banner-container">
-        <div className="promo-marquee">
-          ✨ <span style={{ textTransform: 'uppercase' }}>Special Offer:</span> Get FREE Delivery on your first 2 orders! 🚚 &nbsp;&nbsp;&nbsp;&nbsp; ✨ <span style={{ textTransform: 'uppercase' }}>Special Offer:</span> Get FREE Delivery on your first 2 orders! 🚚
+        <div className="promo-marquee-flex">
+          <div className="promo-item">✨ <span>SPECIAL OFFER:</span> Get FREE Delivery on your first 2 orders! 🚚</div>
+          <div className="promo-item">✨ <span>SPECIAL OFFER:</span> Get FREE Delivery on your first 2 orders! 🚚</div>
+          <div className="promo-item">✨ <span>SPECIAL OFFER:</span> Get FREE Delivery on your first 2 orders! 🚚</div>
+          <div className="promo-item">✨ <span>SPECIAL OFFER:</span> Get FREE Delivery on your first 2 orders! 🚚</div>
         </div>
       </div>
       <Navbar />
