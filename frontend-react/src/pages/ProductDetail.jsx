@@ -235,16 +235,35 @@ const ProductDetail = () => {
                             </div>
 
                             <div className="main-actions">
-                                <button
-                                    className={`btn-add ${added ? 'added' : ''}`}
-                                    onClick={() => handleAddToCart('add')}
-                                    disabled={added || product.stock <= 0}
-                                >
-                                    {product.stock <= 0 ? 'Out of Stock' : (added ? 'Added ✓' : 'Add to Cart')}
-                                </button>
-                                <button className="btn-buy" onClick={() => handleAddToCart('buy')} disabled={product.stock <= 0}>
-                                    Buy Now
-                                </button>
+                                {product.status === 'inactive' ? (
+                                    <div style={{
+                                        color: '#e74c3c',
+                                        fontWeight: '800',
+                                        fontSize: '1rem',
+                                        textAlign: 'center',
+                                        width: '100%',
+                                        padding: '15px',
+                                        background: '#fff5f5',
+                                        border: '1px solid #ffcfcf',
+                                        borderRadius: '12px',
+                                        marginBottom: '15px'
+                                    }}>
+                                        Product is Unavailabe currently it will Avaialbe Soon......
+                                    </div>
+                                ) : (
+                                    <>
+                                        <button
+                                            className={`btn-add ${added ? 'added' : ''}`}
+                                            onClick={() => handleAddToCart('add')}
+                                            disabled={added || product.stock <= 0}
+                                        >
+                                            {product.stock <= 0 ? 'Out of Stock' : (added ? 'Added ✓' : 'Add to Cart')}
+                                        </button>
+                                        <button className="btn-buy" onClick={() => handleAddToCart('buy')} disabled={product.stock <= 0}>
+                                            Buy Now
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
 
