@@ -139,7 +139,8 @@ export default function Checkout() {
             const response = await axios.post(`${API_BASE_URL}/api/orders/shipping-cost`, {
                 pincode: pincode,
                 weight: totalWeight,
-                cod: isCOD ? 1 : 0
+                cod: isCOD ? 1 : 0,
+                user_id: user ? (user._id || user.id) : 'guest'
             });
             setShippingInfo(response.data);
         } catch (error) {
@@ -374,10 +375,25 @@ export default function Checkout() {
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b' }}>
                                         <span>Shipping Cost</span>
-                                        <span style={{ color: shippingInfo ? 'var(--secondary)' : '#64748b', fontWeight: '700' }}>
-                                            {loadingShipping ? 'Calculating...' : (shippingInfo ? `₹${shippingInfo.total_shipping}` : 'Enter PIN')}
+                                        <span style={{ color: shippingInfo ? (shippingInfo.total_shipping === 0 ? '#27ae60' : 'var(--secondary)') : '#64748b', fontWeight: '700' }}>
+                                            {loadingShipping ? 'Calculating...' : (shippingInfo ? (shippingInfo.total_shipping === 0 ? 'FREE' : `₹${shippingInfo.total_shipping}`) : 'Enter PIN')}
                                         </span>
                                     </div>
+
+                                    {shippingInfo && shippingInfo.message && shippingInfo.total_shipping === 0 && (
+                                        <div style={{ 
+                                            fontSize: '0.8rem', 
+                                            color: '#27ae60', 
+                                            background: '#f0fff4', 
+                                            padding: '8px 12px', 
+                                            borderRadius: '8px', 
+                                            border: '1px solid #c6f6d5',
+                                            fontWeight: '600',
+                                            marginTop: '5px'
+                                        }}>
+                                            🎁 {shippingInfo.message}
+                                        </div>
+                                    )}
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', fontSize: '1.4rem', fontWeight: '800' }}>
                                         <span>Total</span>
                                         <span style={{ color: 'var(--primary)' }}>₹{(total + (shippingInfo ? shippingInfo.total_shipping : 0)).toFixed(0)}</span>

@@ -23,12 +23,31 @@ def get_shipping_cost():
     pincode = data.get('pincode')
     weight = data.get('weight', 0.5)
     cod = data.get('cod', 0)
+    user_id = data.get('user_id')
     
     if not pincode:
         return jsonify({'message': 'Pincode is required'}), 400
         
     if not is_maharashtra_pincode(pincode):
          return jsonify({'message': 'Delivery available only in Maharashtra'}), 400
+
+    # User's 1st and 2nd orders are FREE
+    is_free_delivery = False
+    if user_id and user_id != 'guest':
+        db = get_db()
+        # Count non-cancelled orders
+        order_count = db.orders.count_documents({
+            'user_id': str(user_id),
+            'order_status': {'$ne': 'Cancelled'}
+        })
+        if order_count < 2:
+            is_free_delivery = True
+
+    if is_free_delivery:
+        return jsonify({
+            'total_shipping': 0,
+            'message': f'Congratulations! Your order #{order_count + 1} qualifies for FREE delivery.'
+        }), 200
 
     # Pickup location: Shrigonda (413701)
     pickup_pincode = "413701" 
