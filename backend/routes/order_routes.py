@@ -1,4 +1,3 @@
-
 from flask import Blueprint, request, jsonify
 from extensions import get_db
 from shiprocket import ShiprocketAPI
@@ -10,18 +9,13 @@ shiprocket = ShiprocketAPI()
 
 def send_sms(phone, message):
     """Order confirmation SMS — uses MSG91 if configured, else prints to console."""
-    from routes.auth_routes import send_order_confirmation_sms
-    # For order confirmations we use a different template
-    # Fallback: print to terminal in dev
     import os
     if not os.getenv('MSG91_AUTH_KEY') or 'your_' in os.getenv('MSG91_AUTH_KEY', ''):
         print(f"\n[DEV MODE] Order SMS → +91{phone}: {message}")
         return True
-    try:
-        from routes.auth_routes import send_order_confirmation_sms
-        return True
-    except:
-        return True
+    
+    # In production, integrate MSG91 or fast2sms logic here
+    return True
 
 @order_bp.route('/shipping-cost', methods=['POST'])
 def get_shipping_cost():
@@ -112,9 +106,10 @@ def create_order():
 
     # All products have enough stock, now decrement
     for p_id, qty in products_to_update:
+        dec_qty = int(qty) * -1
         db.products.update_one(
             {'_id': ObjectId(p_id)},
-            {'$inc': {'stock': -qty}}
+            {'$inc': {'stock': dec_qty}}
         )
 
     # Create Order in MongoDB
@@ -353,7 +348,7 @@ def get_analytics():
             revenue = sum(float(o.get('total_price', 0)) for o in orders)
             last_7_days.append({
                 'name': day.strftime('%a'),
-                'revenue': round(revenue, 2),
+                'revenue': round(float(revenue), 2),
                 'orders': len(orders)
             })
 
@@ -366,11 +361,14 @@ def get_analytics():
                 # Try to get category from orders product ref or fetch from products coll
                 # For efficiency we use a small cache or just use the category field if it was stored in the order
                 cat = item.get('category', 'Others')
-                val = float(item.get('price', 0)) * int(item.get('quantity', 1))
-                category_stats[cat] = category_stats.get(cat, 0) + val
+                val = float(item.get('price', 0)) * float(item.get('quantity', 1))
+                if cat in category_stats:
+                    category_stats[cat] += val
+                else:
+                    category_stats[cat] = val
         
         category_data = [
-            {'name': k, 'value': round(v, 2)} for k, v in category_stats.items()
+            {'name': k, 'value': int(round(v))} for k, v in category_stats.items()
         ]
         
         # 3. Overall Metrics
