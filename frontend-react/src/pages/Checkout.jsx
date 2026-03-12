@@ -242,10 +242,10 @@ export default function Checkout() {
     }
 
     return (
-        <main style={{ minHeight: '100vh', background: '#f8fafc', padding: '80px 20px 100px', fontFamily: '"Work Sans", sans-serif' }}>
+        <main style={{ minHeight: '100vh', background: '#f8fafc', padding: '40px 20px 60px', fontFamily: '"Work Sans", sans-serif' }}>
             <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
-                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '25px' }}>
                     <h1 className="checkout-main-title">Complete Your Order</h1>
                     <p style={{ color: '#64748b', fontSize: '1rem', maxWidth: '600px', margin: '0 auto', padding: '0 20px' }}>
                         Join thousands of happy customers enjoying the authentic magic of Maharashtrian kitchen.

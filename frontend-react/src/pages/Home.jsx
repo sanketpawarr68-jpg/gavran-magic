@@ -12,7 +12,7 @@ export default function Home() {
     return (
         <div className="fade-in">
             <Hero />
-            <section id="features" className="container" style={{ padding: '100px 0' }}>
+            <section id="features" className="container" style={{ padding: '60px 0' }}>
                 <div className="products-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
                     <div className="feature-card" style={{ textAlign: 'center' }}>
                         <i className="fas fa-seedling" style={{ fontSize: '3.5rem', color: 'var(--secondary)', marginBottom: '30px', display: 'block' }}></i>

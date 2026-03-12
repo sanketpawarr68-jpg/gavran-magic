@@ -212,8 +212,8 @@ export default function Tracking() {
     const currentStep = orderStatus ? getCurrentStep(orderStatus.order_status) : 0;
 
     return (
-        <main className="container" style={{ padding: '80px 0', maxWidth: '900px' }}>
-            <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+        <main className="container" style={{ padding: '40px 0', maxWidth: '900px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
                 <div style={{
                     width: '80px', height: '80px', background: '#e1f5fe', color: 'var(--secondary)',
                     borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -336,7 +336,7 @@ export default function Tracking() {
 
                         {/* Timeline */}
                         {orderStatus.order_status !== 'Cancelled' && orderStatus.order_status !== 'Declined' ? (
-                            <div className="status-timeline" style={{ position: 'relative', marginBottom: '50px' }}>
+                            <div className="status-timeline" style={{ position: 'relative', marginBottom: '25px' }}>
                                 <div style={{ position: 'absolute', top: '15px', left: '0', height: '4px', width: '100%', background: '#eee', zIndex: 0, borderRadius: '4px' }}></div>
                                 <div style={{
                                     position: 'absolute', top: '15px', left: '0', height: '4px',
@@ -383,7 +383,7 @@ export default function Tracking() {
                         )}
 
                         {/* --- Live Map Section --- */}
-                        <div style={{ marginBottom: '30px', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                        <div style={{ marginBottom: '20px', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
                             <div style={{ padding: '15px', background: '#f8f9fa', borderBottom: '1px solid #ddd', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <h4 style={{ margin: 0 }}>Live Shipment Tracking</h4>
 

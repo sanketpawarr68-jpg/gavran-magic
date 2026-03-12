@@ -117,9 +117,9 @@ export default function Shop() {
 
     return (
         <main className="container fade-in">
-            <section className="shop-header" style={{ textAlign: 'center', padding: '60px 0 40px' }}>
-                <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '15px' }}>Our Traditional Kitchen</h1>
-                <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto 40px' }}>
+            <section className="shop-header" style={{ textAlign: 'center', padding: '40px 0 20px' }}>
+                <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '15px' }}>Our Traditional Kitchen</h1>
+                <p style={{ color: '#666', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto 20px' }}>
                     Authentic handmade Maharashtrian delicacies prepared with love and tradition.
                     <span style={{ display: 'block', marginTop: '10px', fontSize: '0.9rem', color: 'var(--primary)', fontWeight: 'bold' }}>
                         🚚 Delivery across all of Maharashtra
@@ -127,7 +127,7 @@ export default function Shop() {
                 </p>
 
                 {/* New Search Bar */}
-                <div className="search-container" style={{ maxWidth: '500px', margin: '0 auto 30px', position: 'relative' }}>
+                <div className="search-container" style={{ maxWidth: '500px', margin: '0 auto 20px', position: 'relative' }}>
                     <input
                         type="text"
                         placeholder="Search for Kurdai, Papad, Masala..."
