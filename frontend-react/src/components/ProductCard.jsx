@@ -101,17 +101,20 @@ const ProductCard = ({ product }) => {
                     {product.status === 'inactive' ? (
                         <div style={{
                             color: '#e74c3c',
-                            fontWeight: '700',
-                            fontSize: '0.9rem',
+                            fontWeight: '800',
+                            fontSize: '0.85rem',
                             textAlign: 'center',
                             width: '100%',
-                            padding: '10px',
+                            padding: '12px 8px',
                             background: '#fff5f5',
                             border: '1px solid #ffcfcf',
-                            borderRadius: '8px',
-                            marginTop: '5px'
+                            borderRadius: '12px',
+                            marginTop: '10px',
+                            lineHeight: '1.4',
+                            boxShadow: '0 2px 8px rgba(231, 76, 60, 0.05)'
                         }}>
-                            Product is Unavailabe currently it will Avaialbe Soon......
+                            <i className="fas fa-clock" style={{ marginRight: '6px' }}></i>
+                            Product is Unavailabe currently <br/> it will Avaialbe Soon......
                         </div>
                     ) : (
                         <>

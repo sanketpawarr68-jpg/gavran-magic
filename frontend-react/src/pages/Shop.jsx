@@ -5,7 +5,7 @@ import ProductCard from '../components/ProductCard';
 
 const CACHE_KEY = 'products_cache';
 const CACHE_VERSION_KEY = 'products_cache_version';
-const CURRENT_VERSION = 'v7';
+const CURRENT_VERSION = 'v8';
 
 // Skeleton card shown while products load
 function SkeletonCard() {

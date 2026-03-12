@@ -287,7 +287,7 @@ const ProductDetail = () => {
                         <h3>Share your experience</h3>
                         <form onSubmit={submitReview}>
                             <div className="rating-select">
-                                {[1, 2, 3, 4, 5].map(s => (
+                                {[0].map(s => (
                                     <span key={s} onClick={() => setNewReview({ ...newReview, rating: s })} className={s <= newReview.rating ? 'active' : ''}>★</span>
                                 ))}
                             </div>
