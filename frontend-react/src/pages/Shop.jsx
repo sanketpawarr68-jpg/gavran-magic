@@ -49,8 +49,7 @@ export default function Shop() {
                         ...p,
                         image: p.image?.replace('garvran-magic.netlify.app', 'gavran-magic.netlify.app')
                     }));
-                    const filtered = fixed.filter(p => p.status === 'active' || p.status === undefined);
-                    setProducts(filtered);
+                    setProducts(fixed);
                     setLoading(false);
                 } catch (e) {
                     console.error("Cache parse error", e);
@@ -71,10 +70,8 @@ export default function Shop() {
                     image: p.image?.replace('garvran-magic.netlify.app', 'gavran-magic.netlify.app')
                 }));
 
-                const filtered = fixed.filter(p => p.status === 'active' || p.status === undefined);
-
-                setProducts(filtered);
-                localStorage.setItem(CACHE_KEY, JSON.stringify(filtered));
+                setProducts(fixed);
+                localStorage.setItem(CACHE_KEY, JSON.stringify(fixed));
             } catch (err) {
                 if (!products.length) {
                     setError(err.message);

@@ -15,21 +15,8 @@ def get_products():
     db = get_db()
     products_coll = db.products
     
-    # Check if admin is requesting (to see inactive items)
-    is_admin = request.args.get('admin', 'false').lower() == 'true'
-    
-    if is_admin:
-        products = list(products_coll.find())
-    else:
-        # For customers, only show active products
-        # We check for status='active' OR isActive=True OR if field is missing (default to active)
-        products = list(products_coll.find({
-            "$or": [
-                {"status": "active"},
-                {"isActive": True},
-                {"status": {"$exists": False}, "isActive": {"$exists": False}}
-            ]
-        }))
+    # Fetch all products (admin vs public filtering shifted to frontend display logic)
+    products = list(products_coll.find())
 
     for p in products:
         p['_id'] = str(p['_id'])

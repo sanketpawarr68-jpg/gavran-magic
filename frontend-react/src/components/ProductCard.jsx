@@ -98,28 +98,47 @@ const ProductCard = ({ product }) => {
                 </div>
 
                 <div className="card-controls" onClick={(e) => e.stopPropagation()}>
-                    <div className="mini-qty">
-                        <button onClick={() => setQty(Math.max(1, qty - 1))} disabled={product.stock <= 0}>-</button>
-                        <span>{qty}</span>
-                        <button onClick={() => setQty(qty + 1)} disabled={product.stock <= 0}>+</button>
-                    </div>
-                    <div className="card-actions">
-                        <button
-                            className="btn"
-                            onClick={(e) => handleAction(e, 'add')}
-                            disabled={product.stock <= 0 || added}
-                            style={{ background: added ? 'var(--secondary)' : 'var(--primary)' }}
-                        >
-                            {added ? 'Added!' : 'Add'}
-                        </button>
-                        <button
-                            className="btn btn-secondary"
-                            onClick={(e) => handleAction(e, 'buy')}
-                            disabled={product.stock <= 0}
-                        >
-                            Buy
-                        </button>
-                    </div>
+                    {product.status === 'inactive' ? (
+                        <div style={{
+                            color: '#e74c3c',
+                            fontWeight: '700',
+                            fontSize: '0.9rem',
+                            textAlign: 'center',
+                            width: '100%',
+                            padding: '10px',
+                            background: '#fff5f5',
+                            border: '1px solid #ffcfcf',
+                            borderRadius: '8px',
+                            marginTop: '5px'
+                        }}>
+                            Product is Unavailabe currently it will Avaialbe Soon......
+                        </div>
+                    ) : (
+                        <>
+                            <div className="mini-qty">
+                                <button onClick={() => setQty(Math.max(1, qty - 1))} disabled={product.stock <= 0}>-</button>
+                                <span>{qty}</span>
+                                <button onClick={() => setQty(qty + 1)} disabled={product.stock <= 0}>+</button>
+                            </div>
+                            <div className="card-actions">
+                                <button
+                                    className="btn"
+                                    onClick={(e) => handleAction(e, 'add')}
+                                    disabled={product.stock <= 0 || added}
+                                    style={{ background: added ? 'var(--secondary)' : 'var(--primary)' }}
+                                >
+                                    {added ? 'Added!' : 'Add'}
+                                </button>
+                                <button
+                                    className="btn btn-secondary"
+                                    onClick={(e) => handleAction(e, 'buy')}
+                                    disabled={product.stock <= 0}
+                                >
+                                    Buy
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
