@@ -41,20 +41,8 @@ export default function Shop() {
                 localStorage.setItem(CACHE_VERSION_KEY, CURRENT_VERSION);
             }
 
-            const cachedProducts = localStorage.getItem(CACHE_KEY);
-            if (cachedProducts) {
-                try {
-                    const parsed = JSON.parse(cachedProducts);
-                    const fixed = parsed.map(p => ({
-                        ...p,
-                        image: p.image?.replace('garvran-magic.netlify.app', 'gavran-magic.netlify.app')
-                    }));
-                    setProducts(fixed);
-                    setLoading(false);
-                } catch (e) {
-                    console.error("Cache parse error", e);
-                }
-            }
+            // We skip loading from cache to ensure the user sees the absolute latest 
+            // product statuses (Active/Hidden) from the server immediately.
 
             const wakingTimer = setTimeout(() => {
                 setServerWaking(true);

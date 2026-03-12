@@ -2,6 +2,7 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { API_BASE_URL } from '../config';
 
 const getImageUrl = (imgPath) => {
@@ -23,31 +24,38 @@ export default function CartPage() {
             try {
                 const res = await axios.get(`${API_BASE_URL}/api/products/`);
                 const activeProducts = res.data;
-                const activeIds = activeProducts.map(p => p._id);
 
-                // Update cart items in context if their status changed in backend
-                // Note: items not in activeProducts are considered 'inactive'
-                const updatedCart = cart.map(item => {
-                    const serverProduct = activeProducts.find(p => p._id === item._id);
-                    if (!serverProduct) {
-                        return { ...item, status: 'inactive' };
+                setCart(prevCart => {
+                    const updated = prevCart.map(item => {
+                        const serverProduct = activeProducts.find(p => p._id === item._id);
+                        const newStatus = serverProduct?.status || 'inactive';
+                        if (item.status !== newStatus) {
+                            return { ...item, status: newStatus };
+                        }
+                        return item;
+                    });
+                    
+                    // Only update state if something actually changed
+                    if (JSON.stringify(updated) !== JSON.stringify(prevCart)) {
+                        return updated;
                     }
-                    return { ...item, status: 'active' };
+                    return prevCart;
                 });
-
-                // Only update if something changed to avoid re-renders
-                if (JSON.stringify(updatedCart) !== JSON.stringify(cart)) {
-                    // We need setCart from useCart, checking if it exports it
-                    if (setCart) {
-                        setCart(updatedCart);
-                    }
-                }
             } catch (err) {
                 console.error("Cart sync error:", err);
             }
         };
+
+        // Initial sync
         if (cart.length > 0) syncCartStatuses();
-    }, []);
+
+        // Polling sync every 5 seconds to catch Admin changes without refresh
+        const interval = setInterval(() => {
+            if (cart.length > 0) syncCartStatuses();
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [cart.length]);
 
     if (cart.length === 0) {
         return (
