@@ -127,6 +127,30 @@ button {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+.promo-marquee {
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee 15s linear infinite;
+    padding-left: 20px;
+}
+
+.promo-banner-container {
+    overflow: hidden;
+    background: var(--primary);
+    color: white;
+    padding: 8px 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    position: relative;
+    z-index: 1001;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
 @keyframes whatsapp-pulse {
     0% {
         box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5);
