@@ -18,40 +18,46 @@ const getImageUrl = (imgPath) => {
 
 export default function CartPage() {
     const { cart, setCart, removeFromCart, updateQuantity, total, getEffectivePrice } = useCart();
+    const [isSyncing, setIsSyncing] = React.useState(false);
+    const [syncToast, setSyncToast] = React.useState('');
 
     React.useEffect(() => {
-        const syncCartStatuses = async () => {
+        const syncCartStatuses = async (silent = false) => {
+            if (!silent) setIsSyncing(true);
             try {
                 const res = await axios.get(`${API_BASE_URL}/api/products/`);
                 const activeProducts = res.data;
 
                 setCart(prevCart => {
+                    let changed = false;
                     const updated = prevCart.map(item => {
                         const serverProduct = activeProducts.find(p => p._id === item._id);
                         const newStatus = serverProduct?.status || 'inactive';
                         if (item.status !== newStatus) {
+                            changed = true;
+                            if (newStatus === 'inactive') setSyncToast(`'${item.name}' is now unavailable.`);
                             return { ...item, status: newStatus };
                         }
                         return item;
                     });
                     
-                    // Only update state if something actually changed
-                    if (JSON.stringify(updated) !== JSON.stringify(prevCart)) {
+                    if (changed) {
+                        setTimeout(() => setSyncToast(''), 4000);
                         return updated;
                     }
                     return prevCart;
                 });
             } catch (err) {
                 console.error("Cart sync error:", err);
+            } finally {
+                if (!silent) setIsSyncing(false);
             }
         };
 
-        // Initial sync
         if (cart.length > 0) syncCartStatuses();
 
-        // Polling sync every 5 seconds to catch Admin changes without refresh
         const interval = setInterval(() => {
-            if (cart.length > 0) syncCartStatuses();
+            if (cart.length > 0) syncCartStatuses(true);
         }, 5000);
 
         return () => clearInterval(interval);
@@ -71,8 +77,30 @@ export default function CartPage() {
     }
 
     return (
-        <main className="container" style={{ padding: '60px 0' }}>
+        <main className="container" style={{ padding: '60px 0', position: 'relative' }}>
             <h1 className="section-title" style={{ marginTop: 0, textAlign: 'left' }}>Your Cart</h1>
+
+            {syncToast && (
+                <div className="fade-in" style={{
+                    position: 'fixed',
+                    top: '100px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 1000,
+                    background: '#e74c3c',
+                    color: 'white',
+                    padding: '12px 25px',
+                    borderRadius: '50px',
+                    fontWeight: '700',
+                    boxShadow: '0 4px 15px rgba(231, 76, 60, 0.4)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px'
+                }}>
+                    <i className="fas fa-exclamation-circle"></i>
+                    {syncToast}
+                </div>
+            )}
 
             <div className="cart-layout">
                 <div className="cart-items">

@@ -45,17 +45,46 @@ const ProductCard = ({ product }) => {
 
     return (
         <div className="product-card" onClick={() => navigate(`/product/${product._id}`)}>
-            <div className="product-img-wrapper" style={{ cursor: 'pointer' }}>
+            <div className="product-img-wrapper" style={{ 
+                cursor: 'pointer', 
+                position: 'relative',
+                overflow: 'hidden'
+            }}>
                 <img
                     src={getImageUrl(product.image)}
                     alt={product.name}
                     className="product-img"
+                    style={{
+                        filter: product.status === 'inactive' ? 'grayscale(100%)' : 'none',
+                        opacity: product.status === 'inactive' ? 0.8 : 1,
+                        transition: 'all 0.4s ease'
+                    }}
                     onError={(e) => {
                         if (!e.target.src.includes('placeholder')) {
                             e.target.src = 'https://via.placeholder.com/300';
                         }
                     }}
                 />
+                
+                {product.status === 'inactive' && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '15px',
+                        left: '-35px',
+                        backgroundColor: '#e74c3c',
+                        color: 'white',
+                        padding: '5px 40px',
+                        fontSize: '0.7rem',
+                        fontWeight: '900',
+                        transform: 'rotate(-45deg)',
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                        zIndex: 1,
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px'
+                    }}>
+                        Soon Back
+                    </div>
+                )}
             </div>
             <div className="product-info">
                 <h3 style={{ cursor: 'pointer' }}>{product.name}</h3>

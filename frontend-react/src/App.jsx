@@ -33,6 +33,21 @@ function App() {
   return (
     <>
       <ScrollToTop />
+      {/* Promo Banner */}
+      <div style={{
+        backgroundColor: 'var(--primary)',
+        color: 'white',
+        textAlign: 'center',
+        padding: '8px 20px',
+        fontSize: '0.85rem',
+        fontWeight: '700',
+        letterSpacing: '0.5px',
+        position: 'relative',
+        zIndex: 1001,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      }}>
+        ✨ <span style={{ textTransform: 'uppercase' }}>Special Offer:</span> Get FREE Delivery on your first 2 orders! 🚚
+      </div>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

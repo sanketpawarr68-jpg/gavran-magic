@@ -267,8 +267,30 @@ const ProductDetail = () => {
                             </div>
                         </div>
 
-                        <div className="shipping-badges">
-                            <span>🚀 Free Shipping on orders over ₹499</span>
+                        <div className="trust-badges" style={{ 
+                            display: 'grid', 
+                            gridTemplateColumns: 'repeat(3, 1fr)', 
+                            gap: '10px', 
+                            marginTop: '25px',
+                            borderTop: '1px solid #eee',
+                            paddingTop: '20px'
+                        }}>
+                            <div style={{ textAlign: 'center' }}>
+                                <i className="fas fa-leaf" style={{ color: '#27ae60', fontSize: '1.2rem', marginBottom: '8px' }}></i>
+                                <div style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: '#666' }}>Pure Veg</div>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <i className="fas fa-shield-virus" style={{ color: '#e67e22', fontSize: '1.2rem', marginBottom: '8px' }}></i>
+                                <div style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: '#666' }}>No Chemicals</div>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <i className="fas fa-certificate" style={{ color: '#f1c40f', fontSize: '1.2rem', marginBottom: '8px' }}></i>
+                                <div style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: '#666' }}>Authentic</div>
+                            </div>
+                        </div>
+
+                        <div className="shipping-badges" style={{ marginTop: '20px' }}>
+                            <span>🚀 Free Shipping on first 2 orders!</span>
                         </div>
                     </div>
                 </section>
