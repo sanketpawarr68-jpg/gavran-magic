@@ -17,6 +17,7 @@ import ShippingPolicy from './pages/ShippingPolicy';
 import Terms from './pages/Terms';
 import ContactUs from './pages/ContactUs';
 import Footer from './components/Footer';
+import { useLanguage } from './context/LanguageContext';
 import './index.css';
 
 function ScrollToTop() {
@@ -30,16 +31,17 @@ function ScrollToTop() {
 }
 
 function App() {
+  const { t } = useLanguage();
   return (
     <>
       <ScrollToTop />
       {/* Seamless Promo Banner */}
       <div className="promo-banner-container">
         <div className="promo-marquee-flex">
-          <div className="promo-item">✨ <span>SPECIAL OFFER:</span> Get FREE Delivery on your first 2 orders! 🚚</div>
-          <div className="promo-item">✨ <span>SPECIAL OFFER:</span> Get FREE Delivery on your first 2 orders! 🚚</div>
-          <div className="promo-item">✨ <span>SPECIAL OFFER:</span> Get FREE Delivery on your first 2 orders! 🚚</div>
-          <div className="promo-item">✨ <span>SPECIAL OFFER:</span> Get FREE Delivery on your first 2 orders! 🚚</div>
+          <div className="promo-item">✨ <span>{t('special_offer')}:</span> {t('promo_msg_offer')} 🚚</div>
+          <div className="promo-item">✨ <span>{t('special_offer')}:</span> {t('promo_msg_offer')} 🚚</div>
+          <div className="promo-item">✨ <span>{t('special_offer')}:</span> {t('promo_msg_offer')} 🚚</div>
+          <div className="promo-item">✨ <span>{t('special_offer')}:</span> {t('promo_msg_offer')} 🚚</div>
         </div>
       </div>
       <Navbar />
@@ -63,7 +65,7 @@ function App() {
 
       {/* Floating WhatsApp Support */}
       <a
-        href="https://wa.me/917823879053?text=Hello Gavran Magic! I have a question about my order."
+        href="https://wa.me/917823879053?text=Hello Gavran Magic Foods! I have a question about my order."
         className="whatsapp-float"
         target="_blank"
         rel="noopener noreferrer"

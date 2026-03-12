@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
@@ -7,6 +8,7 @@ import { API_BASE_URL } from '../config';
 export default function Profile() {
     const { user, loginWithToken } = useAuth();
     const navigate = useNavigate();
+    const { t } = useLanguage();
 
     const [formData, setFormData] = useState({
         name: user?.name || '',
@@ -127,7 +129,7 @@ export default function Profile() {
                             cursor: 'pointer'
                         }}
                     >
-                        My Profile
+                        {t('my_profile')}
                     </button>
                     <button
                         onClick={() => setActiveTab('orders')}
@@ -141,7 +143,7 @@ export default function Profile() {
                             cursor: 'pointer'
                         }}
                     >
-                        Order History ({orders.length})
+                        {t('order_history')} ({orders.length})
                     </button>
                 </div>
 
@@ -159,14 +161,14 @@ export default function Profile() {
                             }}>
                                 {user.name ? user.name.charAt(0).toUpperCase() : '#'}
                             </div>
-                            <h2>{user.name && !user.name.startsWith('User ') ? 'Personal Information' : 'Complete Your Profile'}</h2>
-                            <p style={{ color: '#888', fontSize: '0.9rem' }}>Update your shipping and contact details below</p>
+                            <h2>{user.name && !user.name.startsWith('User ') ? t('personal_info') : t('complete_profile')}</h2>
+                            <p style={{ color: '#888', fontSize: '0.9rem' }}>{t('profile_subtitle')}</p>
                         </div>
 
                         <form onSubmit={handleSubmit}>
                             <div style={{ display: 'grid', gap: '5px' }}>
                                 <div className="form-group">
-                                    <label>Full Name</label>
+                                    <label>{t('full_name')}</label>
                                     <input
                                         type="text"
                                         name="name"
@@ -178,7 +180,7 @@ export default function Profile() {
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Email Address (Optional)</label>
+                                    <label>{t('email_addr')}</label>
                                     <input
                                         type="email"
                                         name="email"
@@ -189,7 +191,7 @@ export default function Profile() {
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Delivery Address</label>
+                                    <label>{t('delivery_addr')}</label>
                                     <textarea
                                         name="address"
                                         value={formData.address}
@@ -202,7 +204,7 @@ export default function Profile() {
 
                                 <div className="city-pincode-grid">
                                     <div className="form-group">
-                                        <label>City</label>
+                                        <label>{t('city')}</label>
                                         <input
                                             type="text"
                                             name="city"
@@ -213,7 +215,7 @@ export default function Profile() {
                                         />
                                     </div>
                                     <div className="form-group">
-                                        <label>Pincode</label>
+                                        <label>{t('pincode')}</label>
                                         <input
                                             type="text"
                                             name="pincode"
@@ -227,7 +229,7 @@ export default function Profile() {
                             </div>
 
                             <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '20px', padding: '18px', fontSize: '1rem' }} disabled={loading}>
-                                {loading ? 'Saving Changes...' : 'Update Details'}
+                                {loading ? t('saving') : t('update_details')}
                             </button>
 
                             {message && (
@@ -250,9 +252,9 @@ export default function Profile() {
                         ) : orders.length === 0 ? (
                             <div style={{ textAlign: 'center', padding: '60px 20px', background: '#f9f9f9', borderRadius: '12px' }}>
                                 <i className="fas fa-box-open" style={{ fontSize: '3rem', color: '#ccc', marginBottom: '20px' }}></i>
-                                <h3>No Orders Yet</h3>
+                                <h3>{t('no_orders')}</h3>
                                 <p style={{ color: '#777', marginBottom: '20px' }}>Your treats are waiting for you in the shop!</p>
-                                <button onClick={() => navigate('/shop')} className="btn">Go to Shop</button>
+                                <button onClick={() => navigate('/shop')} className="btn">{t('nav_shop')}</button>
                             </div>
                         ) : (
                             <div style={{ display: 'grid', gap: '20px' }}>
@@ -273,7 +275,7 @@ export default function Profile() {
                                                 <StatusBadge status={order.order_status} />
                                             </div>
                                             <div style={{ fontSize: '0.85rem', color: '#777' }}>
-                                                Placed on {new Date(order.created_at).toLocaleDateString()} • ₹{order.total_price}
+                                                {t('placed_on')} {new Date(order.created_at).toLocaleDateString()} • {t('total')}: ₹{order.total_price}
                                             </div>
                                         </div>
                                         <button
@@ -288,7 +290,7 @@ export default function Profile() {
                                                 cursor: 'pointer'
                                             }}
                                         >
-                                            Track
+                                            {t('track')}
                                         </button>
                                     </div>
                                 ))}

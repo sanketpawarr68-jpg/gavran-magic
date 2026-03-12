@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
@@ -18,6 +19,7 @@ const getImageUrl = (imgPath) => {
 
 export default function CartPage() {
     const { cart, setCart, removeFromCart, updateQuantity, total, getEffectivePrice } = useCart();
+    const { t } = useLanguage();
     const [isSyncing, setIsSyncing] = React.useState(false);
     const [syncToast, setSyncToast] = React.useState('');
 
@@ -69,16 +71,16 @@ export default function CartPage() {
                 <div style={{ marginBottom: '30px', opacity: 0.5 }}>
                     <i className="fas fa-shopping-basket" style={{ fontSize: '4rem', color: 'var(--dark)' }}></i>
                 </div>
-                <h2 style={{ marginBottom: '20px' }}>Your Cart is Empty</h2>
-                <p style={{ color: '#777', marginBottom: '30px' }}>Looks like you haven't added any magic to your cart yet.</p>
-                <Link to="/shop" className="btn">Start Shopping</Link>
+                <h2 style={{ marginBottom: '20px' }}>{t('cart_empty')}</h2>
+                <p style={{ color: '#777', marginBottom: '30px' }}>{t('cart_empty_msg')}</p>
+                <Link to="/shop" className="btn">{t('start_shopping')}</Link>
             </main>
         );
     }
 
     return (
         <main className="container" style={{ padding: '30px 0', position: 'relative' }}>
-            <h1 className="section-title" style={{ marginTop: 0, textAlign: 'left', marginBottom: '20px' }}>Your Cart</h1>
+            <h1 className="section-title" style={{ marginTop: 0, textAlign: 'left', marginBottom: '20px' }}>{t('cart_title')}</h1>
 
             {syncToast && (
                 <div className="fade-in" style={{
@@ -107,10 +109,10 @@ export default function CartPage() {
                     <table className="cart-table">
                         <thead>
                             <tr>
-                                <th style={{ width: '50%' }}>Product</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Subtotal</th>
+                                <th style={{ width: '50%' }}>{t('cart_product')}</th>
+                                <th>{t('cart_price')}</th>
+                                <th>{t('cart_quantity')}</th>
+                                <th>{t('cart_subtotal')}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -151,7 +153,7 @@ export default function CartPage() {
                                                             textTransform: 'uppercase',
                                                             padding: '4px'
                                                         }}>
-                                                            Product is Unavailable
+                                                            {t('product_unavailable_cart')}
                                                         </div>
                                                     )}
                                                 </div>
@@ -198,28 +200,28 @@ export default function CartPage() {
 
                     <div style={{ marginTop: '30px' }}>
                         <Link to="/shop" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontWeight: 500 }}>
-                            <i className="fas fa-arrow-left"></i> Continue Shopping
+                            <i className="fas fa-arrow-left"></i> {t('continue_shopping')}
                         </Link>
                     </div>
                 </div>
 
                 {/* --- Cart Summary Sidebar --- */}
-                <div className="cart-summary">
-                    <h3>Order Summary</h3>
+                <div className="cart-summary" style={{ position: 'sticky', top: '100px', height: 'fit-content' }}>
+                    <h3>{t('order_summary')}</h3>
 
                     <div className="summary-row">
-                        <span>Subtotal</span>
+                        <span>{t('cart_subtotal')}</span>
                         <span>₹{total}</span>
                     </div>
                     <div className="summary-row">
-                        <span>Shipping</span>
-                        <span style={{ color: '#666', fontSize: '0.85rem' }}>Calculated at checkout</span>
+                        <span>{t('shipping_policy_title') || (t('nav_home') === 'होम' ? 'डिलिव्हरी' : 'Shipping')}</span>
+                        <span style={{ color: '#666', fontSize: '0.85rem' }}>{t('shipping_at_checkout')}</span>
                     </div>
 
                     <div className="summary-divider"></div>
 
                     <div className="summary-row total">
-                        <span>Total (INR)</span>
+                        <span>{t('total')} (INR)</span>
                         <span>₹{total}</span>
                     </div>
 
@@ -235,17 +237,17 @@ export default function CartPage() {
                             background: cart.some(i => i.status === 'inactive') ? '#ccc' : ''
                         }}
                         onClick={(e) => {
-                            if (cart.some(i => i.status === 'inactive')) {
+                             if (cart.some(i => i.status === 'inactive')) {
                                 e.preventDefault();
-                                alert("Please remove unavailable products before checking out.");
+                                alert(t('remove_unavailable'));
                             }
                         }}
                     >
-                        Proceed to Checkout
+                        {t('proceed_checkout')}
                     </Link>
 
                     <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '0.85rem', color: '#999', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                        <i className="fas fa-shield-alt"></i> Secure Checkout
+                        <i className="fas fa-shield-alt"></i> {t('secure_checkout')}
                     </div>
                 </div>
             </div>

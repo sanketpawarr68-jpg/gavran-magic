@@ -3,12 +3,14 @@ import React from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 import { API_BASE_URL } from '../config';
 
 const ProductCard = ({ product }) => {
     const { addToCart } = useCart();
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { t } = useLanguage();
 
     const [qty, setQty] = React.useState(1);
     const [added, setAdded] = React.useState(false);
@@ -82,7 +84,7 @@ const ProductCard = ({ product }) => {
                         textTransform: 'uppercase',
                         letterSpacing: '1px'
                     }}>
-                        Soon Back
+                        {t('nav_home') === 'होम' ? 'लवकरच' : 'Soon Back'}
                     </div>
                 )}
             </div>
@@ -109,7 +111,7 @@ const ProductCard = ({ product }) => {
                             border: '1px solid #ffcfcf',
                             display: 'inline-block'
                         }}>
-                            OUT OF STOCK
+                            {t('out_of_stock')}
                         </span>
                     ) : (
                         <span style={{
@@ -121,7 +123,7 @@ const ProductCard = ({ product }) => {
                             gap: '4px'
                         }}>
                             <span style={{ width: '6px', height: '6px', background: product.stock <= 5 ? '#e67e22' : '#27ae60', borderRadius: '50%' }}></span>
-                            {product.stock <= 5 ? `Only ${product.stock} products available!` : `${product.stock} products available`}
+                            {product.stock <= 5 ? t('only_left').replace('{count}', product.stock) : `${product.stock} ${t('nav_home') === 'होम' ? 'उपलब्ध' : 'available'}`}
                         </span>
                     )}
                 </div>
@@ -143,7 +145,7 @@ const ProductCard = ({ product }) => {
                             boxShadow: '0 2px 8px rgba(231, 76, 60, 0.05)'
                         }}>
                             <i className="fas fa-clock" style={{ marginRight: '6px' }}></i>
-                            Product is Unavailabe currently <br/> it will Avaialbe Soon......
+                            {t('nav_home') === 'होम' ? 'उत्पादन सध्या उपलब्ध नाही, लवकरच येईल...' : 'Product is Unavailable currently it will Available Soon......'}
                         </div>
                     ) : (
                         <>
@@ -159,14 +161,14 @@ const ProductCard = ({ product }) => {
                                     disabled={product.stock <= 0 || added}
                                     style={{ background: added ? 'var(--secondary)' : 'var(--primary)' }}
                                 >
-                                    {added ? 'Added!' : 'Add'}
+                                    {added ? '✓' : t('nav_home') === 'होम' ? 'टाका' : 'Add'}
                                 </button>
                                 <button
                                     className="btn btn-secondary"
                                     onClick={(e) => handleAction(e, 'buy')}
                                     disabled={product.stock <= 0}
                                 >
-                                    Buy
+                                    {t('buy_now')}
                                 </button>
                             </div>
                         </>

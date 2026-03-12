@@ -220,8 +220,7 @@ export default function Login() {
 
             <div className="auth-wrapper">
                 <Link to="/" className="auth-logo">
-                    <img src="/images/logo.jpg" alt="Gavran Magic" />
-                    <span>Gavran <b>Magic</b></span>
+                    <img src="/images/company_logo.jpg" alt="Gavran Magic Foods" style={{ height: '80px', width: 'auto' }} />
                 </Link>
 
                 <div className="auth-card">

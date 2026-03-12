@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 
 const Footer = () => {
+    const { t } = useLanguage();
     return (
         <footer className="footer-container" style={{ background: 'linear-gradient(to bottom, #111, #000)', color: '#eee', padding: '70px 20px 30px', marginTop: '80px', fontFamily: '"Inter", sans-serif', borderTop: '4px solid var(--primary)' }}>
             <style>
@@ -23,9 +25,9 @@ const Footer = () => {
 
                 {/* Brand Section */}
                 <div className="footer-brand" style={{ display: 'flex', flexDirection: 'column' }}>
-                    <h2 style={{ color: 'white', fontSize: '1.8rem', marginBottom: '15px', fontWeight: '800', letterSpacing: '-0.5px' }}>Gavran<span style={{ color: 'var(--primary)' }}>Magic</span></h2>
+                    <img src="/images/company_logo.jpg" alt="Gavran Magic Foods" style={{ height: '70px', width: 'auto', marginBottom: '15px', alignSelf: 'flex-start' }} />
                     <p style={{ fontSize: '0.95rem', lineHeight: '1.7', opacity: '0.7', marginBottom: '25px' }}>
-                        Authentic, handmade Maharashtrian delicacies delivered straight from our kitchen to your door. Taste the tradition in every bite.
+                        {t('footer_desc')}
                     </p>
                     <div className="footer-social-row" style={{ display: 'flex', gap: '15px' }}>
                         <a href="#" style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', textDecoration: 'none', transition: 'all 0.3s' }} onMouseOver={e => { e.currentTarget.style.background = 'var(--primary)'; e.currentTarget.style.transform = 'translateY(-3px)' }} onMouseOut={e => { e.currentTarget.style.background = '#222'; e.currentTarget.style.transform = 'translateY(0)' }}>
@@ -46,14 +48,14 @@ const Footer = () => {
                 {/* Quick Links */}
                 <div>
                     <h3 style={{ color: 'white', fontSize: '1.2rem', marginBottom: '20px', fontWeight: '600', position: 'relative', paddingBottom: '10px' }}>
-                        Shop & Orders
+                        {t('nav_shop')}
                         <span style={{ position: 'absolute', bottom: 0, left: 0, width: '40px', height: '3px', background: 'var(--primary)', borderRadius: '2px' }}></span>
                     </h3>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <li><Link to="/shop" style={{ color: '#aaa', textDecoration: 'none', transition: 'color 0.2s', fontSize: '0.95rem' }} onMouseOver={e => e.target.style.color = 'var(--primary)'} onMouseOut={e => e.target.style.color = '#aaa'}>All Products</Link></li>
-                        <li><Link to="/tracking" style={{ color: '#aaa', textDecoration: 'none', transition: 'color 0.2s', fontSize: '0.95rem' }} onMouseOver={e => e.target.style.color = 'var(--primary)'} onMouseOut={e => e.target.style.color = '#aaa'}>Track Order</Link></li>
-                        <li><Link to="/cart" style={{ color: '#aaa', textDecoration: 'none', transition: 'color 0.2s', fontSize: '0.95rem' }} onMouseOver={e => e.target.style.color = 'var(--primary)'} onMouseOut={e => e.target.style.color = '#aaa'}>Shopping Cart</Link></li>
-                        <li><Link to="/profile" style={{ color: '#aaa', textDecoration: 'none', transition: 'color 0.2s', fontSize: '0.95rem' }} onMouseOver={e => e.target.style.color = 'var(--primary)'} onMouseOut={e => e.target.style.color = '#aaa'}>My Account</Link></li>
+                        <li><Link to="/tracking" style={{ color: '#aaa', textDecoration: 'none', transition: 'color 0.2s', fontSize: '0.95rem' }} onMouseOver={e => e.target.style.color = 'var(--primary)'} onMouseOut={e => e.target.style.color = '#aaa'}>{t('nav_track')}</Link></li>
+                        <li><Link to="/cart" style={{ color: '#aaa', textDecoration: 'none', transition: 'color 0.2s', fontSize: '0.95rem' }} onMouseOver={e => e.target.style.color = 'var(--primary)'} onMouseOut={e => e.target.style.color = '#aaa'}>{t('nav_cart')}</Link></li>
+                        <li><Link to="/profile" style={{ color: '#aaa', textDecoration: 'none', transition: 'color 0.2s', fontSize: '0.95rem' }} onMouseOver={e => e.target.style.color = 'var(--primary)'} onMouseOut={e => e.target.style.color = '#aaa'}>{t('nav_profile')}</Link></li>
                     </ul>
                 </div>
 
@@ -75,14 +77,14 @@ const Footer = () => {
                 {/* Newsletter */}
                 <div>
                     <h3 style={{ color: 'white', fontSize: '1.2rem', marginBottom: '20px', fontWeight: '600', position: 'relative', paddingBottom: '10px' }}>
-                        Stay Connected
+                        {t('stay_connected')}
                         <span style={{ position: 'absolute', bottom: 0, left: 0, width: '40px', height: '3px', background: 'var(--primary)', borderRadius: '2px' }}></span>
                     </h3>
                     <p style={{ fontSize: '0.95rem', lineHeight: '1.6', opacity: '0.7', marginBottom: '15px' }}>
-                        Subscribe to our newsletter for exclusive offers, recipes, and discounts!
+                        {t('newsletter_desc')}
                     </p>
                     <form onSubmit={e => { e.preventDefault(); alert("Thanks for subscribing!"); }} style={{ display: 'flex', gap: '5px' }}>
-                        <input type="email" placeholder="Your Email Address" required style={{ flex: 1, padding: '12px 15px', borderRadius: '8px', border: 'none', outline: 'none', fontSize: '0.9rem', background: '#222', color: 'white' }} />
+                        <input type="email" placeholder={t('email_placeholder')} required style={{ flex: 1, padding: '12px 15px', borderRadius: '8px', border: 'none', outline: 'none', fontSize: '0.9rem', background: '#222', color: 'white' }} />
                         <button type="submit" style={{ padding: '0 20px', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', transition: 'background 0.3s' }} onMouseOver={e => e.target.style.background = '#d86b00'} onMouseOut={e => e.target.style.background = 'var(--primary)'}>
                             <i className="fas fa-paper-plane"></i>
                         </button>
@@ -93,7 +95,7 @@ const Footer = () => {
 
             {/* Copyright Bar */}
             <div className="footer-copyright" style={{ maxWidth: '1200px', margin: '50px auto 0', paddingTop: '25px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px', alignItems: 'center', fontSize: '0.85rem', color: '#777' }}>
-                <p style={{ margin: 0 }}>&copy; {new Date().getFullYear()} Gavran Magic. All rights reserved.</p>
+                <p style={{ margin: 0 }}>{t('footer_copyright')}</p>
                 <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
                     <span>Secure Payments</span>
                     <div style={{ display: 'flex', gap: '10px', fontSize: '1.2rem', color: '#555' }}>

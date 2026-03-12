@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import ProductCard from '../components/ProductCard';
+import { useLanguage } from '../context/LanguageContext';
 
 const CACHE_KEY = 'products_cache';
 const CACHE_VERSION_KEY = 'products_cache_version';
@@ -11,13 +12,12 @@ const CURRENT_VERSION = 'v8';
 function SkeletonCard() {
     return (
         <div className="skeleton-card">
-            <div className="skeleton-img skeleton-pulse"></div>
+            <div className="skeleton-img skeleton-shimmer"></div>
             <div className="skeleton-body">
-                <div className="skeleton-line skeleton-pulse" style={{ width: '70%' }}></div>
-                <div className="skeleton-line skeleton-pulse" style={{ width: '50%', marginTop: '8px' }}></div>
-                <div className="skeleton-line skeleton-pulse" style={{ width: '40%', marginTop: '16px' }}></div>
+                <div className="skeleton-line skeleton-shimmer" style={{ width: '70%' }}></div>
+                <div className="skeleton-line skeleton-shimmer" style={{ width: '50%' }}></div>
+                <div className="skeleton-line skeleton-shimmer" style={{ width: '40%' }}></div>
             </div>
-
         </div>
     );
 }
@@ -27,22 +27,26 @@ export default function Shop() {
     const [loading, setLoading] = useState(true);
     const [serverWaking, setServerWaking] = useState(false);
     const [error, setError] = useState(null);
-    const [activeCategory, setActiveCategory] = useState('All');
-    const [searchQuery, setSearchQuery] = useState('');
+    const { t } = useLanguage();
 
-    const categories = ['All', 'Handmade Kurdai', 'Traditional Papad', 'Vermicelli (Shevai)', 'Traditional Masalas'];
+    const categoryOptions = [
+        { key: 'All', label: t('cat_all') },
+        { key: 'Kurdai', label: t('cat_kurdai') },
+        { key: 'Papad', label: t('cat_papad') },
+        { key: 'Shevai', label: t('cat_shevai') },
+        { key: 'Masala', label: t('cat_masalas') }
+    ];
+
+    const [activeCategoryKey, setActiveCategoryKey] = useState('All');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const fetchProducts = async () => {
-            // ... (keep cache logic)
             const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
             if (cachedVersion !== CURRENT_VERSION) {
                 localStorage.removeItem(CACHE_KEY);
                 localStorage.setItem(CACHE_VERSION_KEY, CURRENT_VERSION);
             }
-
-            // We skip loading from cache to ensure the user sees the absolute latest 
-            // product statuses (Active/Hidden) from the server immediately.
 
             const wakingTimer = setTimeout(() => {
                 setServerWaking(true);
@@ -75,29 +79,35 @@ export default function Shop() {
 
     const filteredProducts = products.filter(p => {
         // 1. Search Query Match
-        const matchesSearch = !searchQuery ||
-            p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            p.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (p.category || '').toLowerCase().includes(searchQuery.toLowerCase());
+        const q = searchQuery.toLowerCase();
+        const name = (p.name || '').toLowerCase();
+        const desc = (p.description || '').toLowerCase();
+        const cat = (p.category || '').toLowerCase();
+
+        // Simple search expansion: if searching for Marathi words, also search for English equivalents
+        let expandedQuery = q;
+        if (q.includes('कुरडई')) expandedQuery += ' kurdai';
+        if (q.includes('पापड')) expandedQuery += ' papad';
+        if (q.includes('शेवई')) expandedQuery += ' shevai';
+        if (q.includes('मसाला')) expandedQuery += ' masala';
+
+        const matchesSearch = !searchQuery || 
+            expandedQuery.split(' ').some(word => 
+                name.includes(word) || desc.includes(word) || cat.includes(word)
+            );
 
         // 2. Category Match
-        const prodCat = (p.category || '').toLowerCase().trim();
-        const activeCat = activeCategory.toLowerCase().trim();
-        const matchesCategory = activeCategory === 'All' || prodCat === activeCat;
+        const prodCat = (p.category || '').toLowerCase();
+        const activeKey = activeCategoryKey.toLowerCase();
+        const matchesCategory = activeCategoryKey === 'All' || prodCat.includes(activeKey);
 
-        // 3. Keyword fallback if no direct category match (existing logic improved)
-        const keywords = activeCategory.toLowerCase()
-            .replace(/traditional|handmade|other|\(|\)/g, '')
-            .trim()
-            .split(' ')
-            .filter(w => w.length > 2);
-
-        const smartCatMatch = activeCategory !== 'All' && keywords.some(word =>
-            p.name?.toLowerCase().includes(word) ||
-            p.description?.toLowerCase().includes(word)
+        // 3. Smart fallback: if category key doesn't match, try matching original name
+        const smartMatch = activeCategoryKey !== 'All' && (
+            name.includes(activeKey) || 
+            desc.includes(activeKey)
         );
 
-        return matchesSearch && (matchesCategory || smartCatMatch);
+        return matchesSearch && (matchesCategory || smartMatch);
     });
 
     if (error) {
@@ -109,7 +119,7 @@ export default function Shop() {
                     The server might be down. Please try again.
                 </p>
                 <button className="btn btn-primary" onClick={() => { setError(null); setLoading(true); window.location.reload(); }}>
-                    Try Again
+                    {t('nav_home') === 'होम' ? 'पुन्हा प्रयत्न करा' : 'Try Again'}
                 </button>
             </div>
         );
@@ -118,11 +128,11 @@ export default function Shop() {
     return (
         <main className="container fade-in">
             <section className="shop-header" style={{ textAlign: 'center', padding: '40px 0 20px' }}>
-                <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '15px' }}>Our Traditional Kitchen</h1>
+                <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '15px' }}>{t('shop_title')}</h1>
                 <p style={{ color: '#666', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto 20px' }}>
-                    Authentic handmade Maharashtrian delicacies prepared with love and tradition.
+                    {t('shop_subtitle')}
                     <span style={{ display: 'block', marginTop: '10px', fontSize: '0.9rem', color: 'var(--primary)', fontWeight: 'bold' }}>
-                        🚚 Delivery across all of Maharashtra
+                        🚚 {t('delivery_maharashtra')}
                     </span>
                 </p>
 
@@ -130,7 +140,7 @@ export default function Shop() {
                 <div className="search-container" style={{ maxWidth: '500px', margin: '0 auto 20px', position: 'relative' }}>
                     <input
                         type="text"
-                        placeholder="Search for Kurdai, Papad, Masala..."
+                        placeholder={t('search_placeholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         style={{
@@ -157,27 +167,28 @@ export default function Shop() {
                 </div>
 
                 <div className="category-filters">
-                    {categories.map(cat => (
+                    {categoryOptions.map(opt => (
                         <button
-                            key={cat}
-                            className={`filter-chip ${activeCategory === cat ? 'active' : ''}`}
+                            key={opt.key}
+                            className={`filter-chip ${activeCategoryKey === opt.key ? 'active' : ''}`}
                             onClick={() => {
-                                setActiveCategory(cat);
-                                if (cat === 'All') setSearchQuery('');
+                                setActiveCategoryKey(opt.key);
+                                if (opt.key === 'All') setSearchQuery('');
                             }}
                         >
-                            {cat}
+                            {opt.label}
                         </button>
                     ))}
                 </div>
             </section>
             {/* Server waking banner */}
             {serverWaking && !products.length && (
-                <div className="server-waking-banner">
-                    <div className="waking-spinner"></div>
+                <div className="server-waking-banner" style={{ display: 'flex', flexDirection: 'column', textAlign: 'center', padding: '40px' }}>
+                    <img src="/images/illus_kitchen.png" alt="Kitchen" style={{ width: '150px', marginBottom: '20px', margin: '0 auto' }} />
+                    <div className="waking-spinner" style={{ margin: '15px auto' }}></div>
                     <div>
-                        <strong>Server is starting up...</strong>
-                        <p>Our traditional kitchen is preparing the catalog. Please wait ~30 seconds. ☕</p>
+                        <strong>{t('server_waking')}</strong>
+                        <p>{t('server_waking_msg')}</p>
                     </div>
                 </div>
             )}
@@ -192,10 +203,10 @@ export default function Shop() {
                         : (
                             <div className="no-results" style={{ gridColumn: '1/-1' }}>
                                 <i className="fas fa-search" style={{ fontSize: '2rem', marginBottom: '15px', color: '#ddd' }}></i>
-                                <h3>Product is Currently Not Available</h3>
-                                <p>We are currently preparing fresh stock. Try checking "All" products.</p>
-                                <button className="btn" style={{ marginTop: '15px', padding: '10px 25px', background: 'var(--dark)', color: 'white' }} onClick={() => setActiveCategory('All')}>
-                                    View All Products
+                                <h3>{t('product_not_available')}</h3>
+                                <p>{t('preparing_fresh_stock')}</p>
+                                <button className="btn" style={{ marginTop: '15px', padding: '10px 25px', background: 'var(--dark)', color: 'white' }} onClick={() => setActiveCategoryKey('All')}>
+                                    {t('view_all')}
                                 </button>
                             </div>
                         )
