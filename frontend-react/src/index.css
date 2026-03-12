@@ -1012,25 +1012,23 @@ body {
         left: 0;
         width: 100%;
         height: calc(100vh - 65px);
-        background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
+        background: white; /* Solid for better clarity */
         flex-direction: column;
-        padding: 40px 24px;
-        gap: 15px;
-        border-top: 1px solid rgba(0,0,0,0.05);
+        padding: 20px 0; /* Vertical padding only */
+        gap: 0; /* Dividers handle spacing */
+        border-top: 1px solid #f0f0f0;
         display: none;
         z-index: 10000;
         overflow-y: auto;
         opacity: 0;
-        transform: translateY(-10px);
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transform: translateX(100%); /* Slide from right */
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .nav-links.open {
         display: flex;
         opacity: 1;
-        transform: translateY(0);
+        transform: translateX(0);
     }
 
     .nav-links li {
@@ -1038,16 +1036,30 @@ body {
     }
 
     .nav-links a {
-        font-size: 1.2rem;
-        padding: 15px;
+        font-size: 1.1rem;
+        padding: 18px 25px;
         font-weight: 700;
-        border-bottom: none;
-        display: block;
+        border-bottom: 1px solid #f9f9f9;
+        display: flex;
+        align-items: center;
         width: 100%;
-        text-align: center;
-        border-radius: 12px;
+        text-align: left;
+        border-radius: 0;
         transition: all 0.2s;
         font-family: 'Unbounded', sans-serif;
+        color: var(--dark);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .nav-links a::after {
+        display: none; /* Remove desktop underline */
+    }
+
+    .nav-links a.active {
+        color: var(--primary);
+        background: #fffcf9;
+        border-right: 5px solid var(--primary);
     }
 
     .nav-links a:active {
@@ -1065,27 +1077,29 @@ body {
         flex-direction: column;
         align-items: center;
         width: 100%;
-        margin-top: 10px;
-        padding-top: 20px;
-        border-top: 1px dashed rgba(0,0,0,0.1);
+        margin-top: 20px;
+        padding: 25px;
+        background: #fdfdfd;
         gap: 15px;
+        border-top: 5px solid #f8f9fa;
     }
     
     .mobile-profile-link {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 15px;
         text-decoration: none;
         color: var(--dark);
         font-weight: 700;
         font-size: 1.1rem;
-        padding: 12px 20px;
+        padding: 15px 20px;
         background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         width: 100%;
         justify-content: center;
         font-family: 'Unbounded', sans-serif;
+        border: 1px solid #eee;
     }
     
     .user-avatar-circle.mini {
