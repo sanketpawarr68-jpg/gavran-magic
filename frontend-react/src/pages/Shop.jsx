@@ -33,8 +33,7 @@ export default function Shop() {
         { key: 'All', label: t('cat_all') },
         { key: 'Kurdai', label: t('cat_kurdai') },
         { key: 'Papad', label: t('cat_papad') },
-        { key: 'Shevai', label: t('cat_shevai') },
-        { key: 'Masala', label: t('cat_masalas') }
+        { key: 'Shevai', label: t('cat_shevai') }
     ];
 
     const [activeCategoryKey, setActiveCategoryKey] = useState('All');
@@ -89,7 +88,6 @@ export default function Shop() {
         if (q.includes('कुरडई')) expandedQuery += ' kurdai';
         if (q.includes('पापड')) expandedQuery += ' papad';
         if (q.includes('शेवई')) expandedQuery += ' shevai';
-        if (q.includes('मसाला')) expandedQuery += ' masala';
 
         const matchesSearch = !searchQuery || 
             expandedQuery.split(' ').some(word => 
@@ -193,13 +191,6 @@ export default function Shop() {
                 </div>
             )}
 
-            {loading && !products.length && (
-                <div style={{ textAlign: 'center', padding: '60px 0' }}>
-                    <div className="spinner"></div>
-                    <h3 className="loading-text">{t('loading_products')}</h3>
-                    <p style={{ color: '#888', fontSize: '0.9rem' }}>{t('loading_msg')}</p>
-                </div>
-            )}
 
             <div className="products-grid">
                 {loading && !products.length
