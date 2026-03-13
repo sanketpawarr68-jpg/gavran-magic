@@ -379,6 +379,7 @@ nav {
     display: flex;
     align-items: center;
     height: 100%;
+    width: 100%; /* Fill the grid column to make the entire area clickable */
 }
 
 .logo-breakout-img {
@@ -392,9 +393,9 @@ nav {
     object-fit: contain;
 }
 
-.logo-breakout-container:hover .logo-breakout-img {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+.logo-breakout-img:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Tablet Responsiveness */
@@ -432,6 +433,8 @@ nav {
     align-items: center;
     list-style: none;
     justify-content: center;
+    margin: 0;
+    padding: 0; /* Remove default browser padding which creates dead space */
 }
 
 .nav-links li {
@@ -605,9 +608,9 @@ nav {
 /* --- Products --- */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
-    padding: 30px 0;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Increased width for desktop */
+    gap: 20px;
+    padding: 20px 0;
 }
 
 .product-card {
@@ -624,8 +627,7 @@ nav {
 }
 
 .product-img-wrapper {
-    height: 280px;
-    /* Taller images */
+    height: 130px; /* Reduced height for desktop */
     background: #f4f4f4;
     overflow: hidden;
 }
@@ -637,22 +639,19 @@ nav {
 }
 
 .product-info {
-    padding: 20px;
+    padding: 15px; /* Reduced from 20px */
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
 .product-info h3 {
-    font-size: 1.2rem;
+    font-size: 1rem; /* Smaller title */
     margin-bottom: 5px;
 }
 
 .product-info p {
-    font-size: 0.9rem;
-    color: #777;
-    margin-bottom: 15px;
-    flex-grow: 1;
+    display: none; /* Hide description in grid view to save space */
 }
 
 .product-meta {
@@ -914,8 +913,8 @@ nav {
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
-    margin-bottom: 80px;
+    gap: 20px;
+    margin-bottom: 60px;
 }
 
 .no-results {
@@ -1197,9 +1196,9 @@ body {
 
     /* === PRODUCTS GRID === */
     .products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 12px;
-        padding: 20px 0;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 10px 0;
     }
 
     .no-results {
@@ -1207,11 +1206,11 @@ body {
     }
 
     .product-img-wrapper {
-        height: 180px;
+        height: 140px; /* Reduced from 150px */
     }
 
     .product-info {
-        padding: 14px;
+        padding: 12px; /* Reduced from 14px */
     }
 
     .product-info h3 {
@@ -1315,11 +1314,12 @@ body {
 /* === SMALL PHONES (≤420px) — 1 column layout === */
 @media (max-width: 420px) {
     .products-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr); /* Ensure 2 columns even on very small phones */
+        gap: 8px;
     }
 
     .product-img-wrapper {
-        height: 220px;
+        height: 140px; /* Compact height for smaller phones */
     }
 
     .product-info h3 {
