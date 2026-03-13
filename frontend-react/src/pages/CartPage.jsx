@@ -79,8 +79,8 @@ export default function CartPage() {
     }
 
     return (
-        <main className="container" style={{ padding: '20px 0', position: 'relative' }}>
-            <h1 className="section-title" style={{ marginTop: 0, textAlign: 'left', marginBottom: '15px' }}>{t('cart_title')}</h1>
+        <main className="container" style={{ padding: '5px 0', position: 'relative' }}>
+            <h1 className="section-title" style={{ marginTop: 0, textAlign: 'left', marginBottom: '10px', fontSize: '1.8rem' }}>{t('cart_title')}</h1>
 
             {syncToast && (
                 <div className="fade-in" style={{

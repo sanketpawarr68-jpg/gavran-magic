@@ -406,25 +406,32 @@ export default function Checkout() {
                                     </div>
                                 </div>
 
-                                <div style={{ marginTop: '25px', display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
+                                <div style={{ 
+                                    marginTop: '25px', 
+                                    display: 'flex', 
+                                    gap: '15px', 
+                                    alignItems: 'center', 
+                                    background: '#f8fafc', 
+                                    padding: '15px', 
+                                    borderRadius: '12px',
+                                    border: formik.values.acceptTerms ? '2px solid #27ae60' : '2px solid #e2e8f0'
+                                }}>
                                     <input 
                                         type="checkbox" 
                                         id="acceptTerms"
                                         name="acceptTerms"
                                         checked={formik.values.acceptTerms}
                                         onChange={formik.handleChange}
-                                        style={{ marginTop: '3px', width: '24px', height: '24px', cursor: 'pointer', accentColor: 'var(--primary)', flexShrink: 0 }}
+                                        style={{ width: '22px', height: '22px', cursor: 'pointer', accentColor: '#27ae60', flexShrink: 0 }}
                                     />
-                                    <label htmlFor="acceptTerms" style={{ fontSize: '0.9rem', color: '#444', lineHeight: '1.6', cursor: 'pointer' }}>
-                                        {t('accept_terms')}
-                                        <div style={{ marginTop: '5px' }}>
-                                            <Link to="/shipping-policy" target="_blank" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'underline' }}>{t('nav_home') === 'होम' ? 'शिपिंग धोरण' : 'Shipping & Delivery'}</Link>
-                                            <span style={{ margin: '0 5px', color: '#ccc' }}>•</span>
-                                            <Link to="/refund-policy" target="_blank" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'underline' }}>{t('nav_home') === 'होम' ? 'रिफंड धोरण' : 'Refund & Returns'}</Link>
-                                            <span style={{ margin: '0 5px', color: '#ccc' }}>•</span>
-                                            <Link to="/terms" target="_blank" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'underline' }}>{t('nav_home') === 'होम' ? 'नियम आणि अटी' : 'Terms & Conditions'}</Link>
-                                            <span style={{ margin: '0 5px', color: '#ccc' }}>•</span>
-                                            <Link to="/privacy-policy" target="_blank" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'underline' }}>{t('nav_home') === 'होम' ? 'गोपनीयता धोरण' : 'Privacy Policy'}</Link>
+                                    <label htmlFor="acceptTerms" style={{ fontSize: '0.85rem', color: '#444', lineHeight: '1.4', cursor: 'pointer', fontWeight: '500' }}>
+                                        {t('nav_home') === 'होम' 
+                                            ? 'मी या वेबसाइटशी संबंधित सर्व गोपनीयता धोरणे आणि अटी वाचल्या आहेत आणि त्या मला मान्य आहेत.' 
+                                            : 'I have read and accept all privacy policies and terms related to this website.'}
+                                        <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                            <Link to="/shipping-policy" target="_blank" style={{ color: 'var(--primary)', fontWeight: '700', textDecoration: 'underline' }}>{t('nav_home') === 'होम' ? 'शिपिंग' : 'Shipping'}</Link>
+                                            <Link to="/refund-policy" target="_blank" style={{ color: 'var(--primary)', fontWeight: '700', textDecoration: 'underline' }}>{t('nav_home') === 'होम' ? 'रिफंड' : 'Refund'}</Link>
+                                            <Link to="/terms" target="_blank" style={{ color: 'var(--primary)', fontWeight: '700', textDecoration: 'underline' }}>{t('nav_home') === 'होम' ? 'अटी' : 'Terms'}</Link>
                                         </div>
                                     </label>
                                 </div>

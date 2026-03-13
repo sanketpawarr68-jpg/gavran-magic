@@ -18,7 +18,11 @@ def get_settings():
         "type": "global",
         "refund_hour_grace_period": 24,
         "refund_policy_text": "You can request a refund within the grace period after placing your order.",
-        "return_policy_text": "Products can be returned if they are damaged or incorrect upon delivery."
+        "return_policy_text": "Products can be returned if they are damaged or incorrect upon delivery.",
+        "store_name": "Gavran Magic",
+        "store_email": "contact@gavranmagic.com",
+        "store_phone": "+91 9876543210",
+        "store_address": "Pune, Maharashtra, India"
     }
     return jsonify(default_settings), 200
 
@@ -31,6 +35,10 @@ def update_settings():
         "refund_hour_grace_period": data.get('refund_hour_grace_period', 24),
         "refund_policy_text": data.get('refund_policy_text', ""),
         "return_policy_text": data.get('return_policy_text', ""),
+        "store_name": data.get('store_name', "Gavran Magic"),
+        "store_email": data.get('store_email', "contact@gavranmagic.com"),
+        "store_phone": data.get('store_phone', "+91 9876543210"),
+        "store_address": data.get('store_address', "Pune, Maharashtra, India")
     }
     
     db.settings.update_one(

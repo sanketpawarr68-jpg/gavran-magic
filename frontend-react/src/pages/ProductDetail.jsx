@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
@@ -25,6 +25,8 @@ const ProductDetail = () => {
     const [reviews, setReviews] = useState([]);
     const [isSubmittingReview, setIsSubmittingReview] = useState(false);
     const [selectedSize, setSelectedSize] = useState(null);
+    const [showStickyBar, setShowStickyBar] = useState(false);
+    const buyButtonRef = useRef(null);
 
     const getCurrentPrice = () => {
         if (!product) return 0;
@@ -54,21 +56,30 @@ const ProductDetail = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // Fetch current product
                 const prodRes = await axios.get(`${API_BASE_URL}/api/products/${id}`);
-                setProduct(prodRes.data);
-                setSelectedImage(getImageUrl(prodRes.data.image));
-                if (prodRes.data.pack_sizes && prodRes.data.pack_sizes.length > 0) {
-                    setSelectedSize(prodRes.data.pack_sizes[0].size);
+                const prod = prodRes.data;
+                setProduct(prod);
+                setSelectedImage(getImageUrl(prod.image));
+                if (prod.pack_sizes && prod.pack_sizes.length > 0) {
+                    setSelectedSize(prod.pack_sizes[0].size);
                 } else {
-                    setSelectedSize(prodRes.data.weight);
+                    setSelectedSize(prod.weight);
                 }
 
-                // Fetch all products for related section
-                const allRes = await axios.get(`${API_BASE_URL}/api/products/`);
-                setAllProducts(allRes.data.filter(p => p._id !== id));
+                // Save to Recently Viewed in localStorage
+                try {
+                    const recent = JSON.parse(localStorage.getItem('gavran_recently_viewed') || '[]');
+                    const updated = [{ _id: prod._id, name: prod.name, image: prod.image, price: prod.price, category: prod.category, weight: prod.weight, pack_sizes: prod.pack_sizes, stock: prod.stock, discount: prod.discount, status: prod.status, description: prod.description }, ...recent.filter(r => r._id !== prod._id)].slice(0, 6);
+                    localStorage.setItem('gavran_recently_viewed', JSON.stringify(updated));
+                } catch(e) {}
 
-                // Fetch reviews from DB
+                const allRes = await axios.get(`${API_BASE_URL}/api/products/`);
+                const others = allRes.data.filter(p => p._id !== id && p.status !== 'inactive');
+                // Smart sort: same category first
+                const sameCat = others.filter(p => p.category === prod.category);
+                const diffCat = others.filter(p => p.category !== prod.category);
+                setAllProducts([...sameCat, ...diffCat]);
+
                 const reviewRes = await axios.get(`${API_BASE_URL}/api/products/${id}/reviews`);
                 setReviews(reviewRes.data);
 
@@ -81,6 +92,16 @@ const ProductDetail = () => {
         };
         fetchData();
     }, [id]);
+
+    // Sticky bar: show when buy buttons scroll out of view
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => setShowStickyBar(!entry.isIntersecting),
+            { threshold: 0 }
+        );
+        if (buyButtonRef.current) observer.observe(buyButtonRef.current);
+        return () => observer.disconnect();
+    }, [product]);
 
     const handleAddToCart = (action) => {
         if (!user) {
@@ -212,6 +233,21 @@ const ProductDetail = () => {
                 <section className="product-details-panel">
                     <div className="detail-card">
                         <h1 className="name">{product.name}</h1>
+                        {/* Average Rating Display */}
+                        {reviews.length > 0 && (() => {
+                            const avg = (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length).toFixed(1);
+                            return (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                    <div style={{ display: 'flex', gap: '2px' }}>
+                                        {[1,2,3,4,5].map(s => (
+                                            <span key={s} style={{ color: s <= Math.round(avg) ? '#f1c40f' : '#e0e0e0', fontSize: '1.1rem' }}>★</span>
+                                        ))}
+                                    </div>
+                                    <span style={{ fontWeight: '700', fontSize: '1rem', color: '#333' }}>{avg}</span>
+                                    <span style={{ color: '#888', fontSize: '0.85rem' }}>({reviews.length} {t('nav_home') === 'होम' ? 'परीक्षणे' : 'reviews'})</span>
+                                </div>
+                            );
+                        })()}
                         <p className="weight-info">{product.weight} - {product.category || (t('nav_home') === 'होम' ? 'शुद्ध हस्तनिर्मित' : 'Pure Handmade')}</p>
 
                         <div className="price-box">
@@ -290,7 +326,7 @@ const ProductDetail = () => {
                             </p>
                         </div>
 
-                        <div className="order-controls">
+                        <div className="order-controls" ref={buyButtonRef}>
                             <div className="quantity-box">
                                 <label>{t('nav_home') === 'होम' ? 'प्रमाण निवडा' : 'Select Quantity'}</label>
                                 <div className="qty-input">
@@ -362,12 +398,50 @@ const ProductDetail = () => {
                 </section>
             </main>
 
-            {/* Related Products */}
+            {/* Sticky Add to Cart Bar */}
+            {showStickyBar && product && product.status !== 'inactive' && product.stock > 0 && (
+                <div style={{
+                    position: 'fixed', bottom: 0, left: 0, right: 0,
+                    background: 'white', borderTop: '2px solid var(--primary)',
+                    padding: '12px 20px', zIndex: 1000,
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    boxShadow: '0 -4px 20px rgba(0,0,0,0.12)',
+                    flexWrap: 'wrap', gap: '10px'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flex: 1 }}>
+                        <img src={selectedImage} alt={product.name} style={{ width: '45px', height: '45px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #eee' }} />
+                        <div>
+                            <div style={{ fontWeight: '800', fontSize: '0.95rem', color: 'var(--dark)' }}>{product.name}</div>
+                            <div style={{ fontSize: '1.1rem', fontWeight: '900', color: 'var(--primary)' }}>₹{product.discount > 0 ? Math.round(getCurrentPrice() * (1 - product.discount / 100)) : getCurrentPrice()}</div>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f8f9fa', borderRadius: '8px', padding: '4px 8px' }}>
+                            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--primary)', fontWeight: '900', width: '28px', height: '28px' }}>-</button>
+                            <span style={{ fontWeight: '800', minWidth: '20px', textAlign: 'center' }}>{quantity}</span>
+                            <button onClick={() => setQuantity(quantity + 1)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--primary)', fontWeight: '900', width: '28px', height: '28px' }}>+</button>
+                        </div>
+                        <button onClick={() => handleAddToCart('add')} disabled={added} style={{ background: added ? '#27ae60' : 'var(--primary)', color: 'white', border: 'none', padding: '10px 22px', borderRadius: '10px', fontWeight: '800', cursor: 'pointer', fontSize: '0.9rem', transition: 'all 0.2s' }}>
+                            {added ? '✓ Added!' : t('add_to_cart')}
+                        </button>
+                        <button onClick={() => handleAddToCart('buy')} style={{ background: 'var(--dark)', color: 'white', border: 'none', padding: '10px 22px', borderRadius: '10px', fontWeight: '800', cursor: 'pointer', fontSize: '0.9rem' }}>
+                            {t('buy_now')}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* You May Also Like */}
             {allProducts.length > 0 && (
-                <section className="container" style={{ padding: '60px 0', borderTop: '1px solid #eee' }}>
-                    <h2 style={{ marginBottom: '30px', fontSize: '1.8rem', fontWeight: 800 }}>
-                        {t('related_products')}
-                    </h2>
+                <section className="container" style={{ padding: '50px 0 20px', borderTop: '1px solid #eee' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '25px' }}>
+                        <div>
+                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '5px' }}>
+                                {t('nav_home') === 'होम' ? '✨ तुम्हाला हे आवडेल' : '✨ You May Also Like'}
+                            </h2>
+                            <p style={{ color: '#888', fontSize: '0.9rem' }}>{t('nav_home') === 'होम' ? 'आमच्या इतर हातनिर्मित उत्पादनांचा आनंद घ्या' : 'Explore more handmade products from our collection'}</p>
+                        </div>
+                    </div>
                     <div className="products-grid">
                         {allProducts.slice(0, 4).map(p => (
                             <ProductCard key={p._id} product={p} />

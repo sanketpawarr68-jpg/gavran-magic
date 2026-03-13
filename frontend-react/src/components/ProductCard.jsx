@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { API_BASE_URL } from '../config';
+import axios from 'axios';
 
 const ProductCard = ({ product }) => {
     const { addToCart } = useCart();
@@ -19,6 +20,21 @@ const ProductCard = ({ product }) => {
             ? product.pack_sizes[0].size 
             : product.weight
     );
+    const [avgRating, setAvgRating] = React.useState(null);
+    const [reviewCount, setReviewCount] = React.useState(0);
+
+    React.useEffect(() => {
+        // Fetch average rating for this product
+        axios.get(`${API_BASE_URL}/api/products/${product._id}/reviews`)
+            .then(res => {
+                if (res.data && res.data.length > 0) {
+                    const avg = res.data.reduce((s, r) => s + (r.rating || 0), 0) / res.data.length;
+                    setAvgRating(avg.toFixed(1));
+                    setReviewCount(res.data.length);
+                }
+            })
+            .catch(() => {}); // silently fail — ratings are a bonus
+    }, [product._id]);
 
     const currentPrice = () => {
         if (product.pack_sizes && product.pack_sizes.length > 0) {
@@ -103,6 +119,18 @@ const ProductCard = ({ product }) => {
             </div>
             <div className="product-info">
                 <h3 style={{ cursor: 'pointer' }}>{product.name}</h3>
+                {/* Star Rating Row */}
+                {avgRating && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '6px' }}>
+                        <div style={{ display: 'flex', gap: '1px' }}>
+                            {[1,2,3,4,5].map(s => (
+                                <span key={s} style={{ color: s <= Math.round(avgRating) ? '#f1c40f' : '#ddd', fontSize: '0.8rem' }}>★</span>
+                            ))}
+                        </div>
+                        <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#555' }}>{avgRating}</span>
+                        <span style={{ fontSize: '0.7rem', color: '#999' }}>({reviewCount})</span>
+                    </div>
+                )}
                 <p>{product.description}</p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                     <div className="weight-badge" style={{ display: 'flex', gap: '5px' }}>

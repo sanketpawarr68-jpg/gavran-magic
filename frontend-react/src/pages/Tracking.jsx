@@ -236,17 +236,17 @@ export default function Tracking() {
     const currentStep = orderStatus ? getCurrentStep(orderStatus.order_status) : 0;
 
     return (
-        <main className="container" style={{ padding: '20px 0', maxWidth: '900px' }}>
-            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <main className="container" style={{ padding: '5px 0', maxWidth: '900px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '15px' }}>
                 <div style={{
-                    width: '60px', height: '60px', background: '#e1f5fe', color: 'var(--secondary)',
+                    width: '50px', height: '50px', background: '#e1f5fe', color: 'var(--secondary)',
                     borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    margin: '0 auto 15px', fontSize: '1.5rem'
+                    margin: '0 auto 10px', fontSize: '1.3rem'
                 }}>
                     <i className="fas fa-truck-moving"></i>
                 </div>
-                <h1 className="section-title" style={{ margin: '0 0 5px' }}>Track Your Order</h1>
-                <p style={{ color: '#777', fontSize: '0.9rem' }}>Enter order ID or select from recent orders.</p>
+                <h1 className="section-title" style={{ margin: '0 0 2px', fontSize: '1.8rem' }}>Track Your Order</h1>
+                <p style={{ color: '#777', fontSize: '0.85rem' }}>Enter order ID or select from recent orders.</p>
             </div>
 
             <div className="tracking-box">

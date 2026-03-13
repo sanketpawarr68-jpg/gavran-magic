@@ -28,6 +28,15 @@ export default function Shop() {
     const [serverWaking, setServerWaking] = useState(false);
     const [error, setError] = useState(null);
     const { t } = useLanguage();
+    const [recentlyViewed, setRecentlyViewed] = React.useState([]);
+
+    // Load recently viewed from localStorage
+    React.useEffect(() => {
+        try {
+            const stored = JSON.parse(localStorage.getItem('gavran_recently_viewed') || '[]');
+            setRecentlyViewed(stored);
+        } catch(e) {}
+    }, []);
 
     const categoryOptions = [
         { key: 'All', label: t('cat_all') },
@@ -180,8 +189,8 @@ export default function Shop() {
                 </div>
             </section>
             {/* Server waking banner */}
-            {serverWaking && !products.length && (
-                <div className="server-waking-banner" style={{ display: 'flex', flexDirection: 'column', textAlign: 'center', padding: '40px' }}>
+            {serverWaking && !products.length ? (
+                <div className="server-waking-banner" style={{ display: 'flex', flexDirection: 'column', textAlign: 'center', padding: '20px 0 40px' }}>
                     <img src="/images/illus_kitchen.png" alt="Kitchen" style={{ width: '150px', marginBottom: '20px', margin: '0 auto' }} />
                     <div className="waking-spinner" style={{ margin: '15px auto' }}></div>
                     <div>
@@ -189,11 +198,11 @@ export default function Shop() {
                         <p>{t('server_waking_msg')}</p>
                     </div>
                 </div>
-            )}
+            ) : null}
 
 
-            <div className="products-grid">
-                {loading && !products.length
+            <div className="products-grid" style={{ marginTop: products.length ? '0' : '10px' }}>
+                {loading && !products.length && !serverWaking
                     ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
                     : filteredProducts.length > 0
                         ? filteredProducts.map(product => (
@@ -211,6 +220,37 @@ export default function Shop() {
                         )
                 }
             </div>
+
+            {/* Recently Viewed Section */}
+            {recentlyViewed.length > 0 && (
+                <section style={{ borderTop: '2px solid #f1f5f9', paddingTop: '35px', marginTop: '30px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+                        <div>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>
+                                👁️ {t('nav_home') === 'होम' ? 'नुकतेच पाहिलेले' : 'Recently Viewed'}
+                            </h2>
+                            <p style={{ color: '#888', fontSize: '0.85rem', margin: '3px 0 0' }}>{t('nav_home') === 'होम' ? 'तुम्ही नुकतेच पाहिलेले उत्पादने' : 'Products you recently browsed'}</p>
+                        </div>
+                        <button onClick={() => { localStorage.removeItem('gavran_recently_viewed'); setRecentlyViewed([]); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem', color: '#aaa', textDecoration: 'underline' }}>{t('nav_home') === 'होम' ? 'साफ करा' : 'Clear'}</button>
+                    </div>
+                    <div style={{ display: 'flex', gap: '15px', overflowX: 'auto', paddingBottom: '12px' }}>
+                        {recentlyViewed.map(prod => (
+                            <a key={prod._id} href={`/product/${prod._id}`} style={{ textDecoration: 'none', color: 'inherit', flexShrink: 0, width: '150px' }}>
+                                <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid #f0f0f0', transition: 'box-shadow 0.2s', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
+                                    onMouseOver={e => e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.10)'}
+                                    onMouseOut={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'}
+                                >
+                                    <img src={prod.image?.startsWith('http') ? `/images/${prod.image.split('/').pop()}` : `/images/${prod.image}`} alt={prod.name} style={{ width: '100%', height: '110px', objectFit: 'cover' }} onError={e => e.target.src='https://via.placeholder.com/150'} />
+                                    <div style={{ padding: '10px' }}>
+                                        <div style={{ fontWeight: '700', fontSize: '0.82rem', color: '#333', marginBottom: '3px', lineHeight: '1.3', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prod.name}</div>
+                                        <div style={{ color: 'var(--primary)', fontWeight: '800', fontSize: '0.9rem' }}>₹{prod.discount > 0 ? Math.round(prod.price * (1 - prod.discount / 100)) : prod.price}</div>
+                                    </div>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                </section>
+            )}
         </main>
     );
 }
