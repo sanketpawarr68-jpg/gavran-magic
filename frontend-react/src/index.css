@@ -605,6 +605,25 @@ nav {
     margin: 0 auto 30px;
 }
 
+.hero .btn {
+    padding: 14px 30px;
+    font-size: 0.95rem;
+    min-width: 160px;
+}
+
+.btn-signin-hero {
+    background: white;
+    color: var(--primary);
+    border: 2px solid white;
+}
+
+.btn-signin-hero:hover {
+    background: transparent !important;
+    color: white !important;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
 /* --- Products --- */
 .products-grid {
     display: grid;
@@ -883,7 +902,7 @@ nav {
     display: flex;
     justify-content: center;
     gap: 12px;
-    margin-bottom: 40px;
+    margin-bottom: 25px; /* Reduced from 40px */
     overflow-x: auto;
     padding: 10px 15px;
     -webkit-overflow-scrolling: touch;
@@ -895,7 +914,7 @@ nav {
     .category-filters {
         justify-content: flex-start;
         /* Better for scrolling on mobile */
-        margin-bottom: 25px;
+        margin-bottom: 15px; /* Reduced from 25px */
     }
 }
 
@@ -1218,6 +1237,8 @@ body {
     .hero .btn {
         padding: 12px 20px;
         font-size: 0.8rem;
+        width: 100%; /* Full width buttons on mobile */
+        max-width: 280px;
     }
 
     /* === PRODUCTS GRID === */

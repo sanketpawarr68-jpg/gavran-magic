@@ -67,20 +67,20 @@ export default function CartPage() {
 
     if (cart.length === 0) {
         return (
-            <main className="container" style={{ padding: '80px 0', textAlign: 'center' }}>
-                <div style={{ marginBottom: '30px', opacity: 0.5 }}>
-                    <i className="fas fa-shopping-basket" style={{ fontSize: '4rem', color: 'var(--dark)' }}></i>
+            <main className="container" style={{ padding: '40px 0', textAlign: 'center' }}>
+                <div style={{ marginBottom: '20px', opacity: 0.5 }}>
+                    <i className="fas fa-shopping-basket" style={{ fontSize: '3rem', color: 'var(--dark)' }}></i>
                 </div>
-                <h2 style={{ marginBottom: '20px' }}>{t('cart_empty')}</h2>
-                <p style={{ color: '#777', marginBottom: '30px' }}>{t('cart_empty_msg')}</p>
+                <h2 style={{ marginBottom: '15px' }}>{t('cart_empty')}</h2>
+                <p style={{ color: '#777', marginBottom: '20px' }}>{t('cart_empty_msg')}</p>
                 <Link to="/shop" className="btn">{t('start_shopping')}</Link>
             </main>
         );
     }
 
     return (
-        <main className="container" style={{ padding: '30px 0', position: 'relative' }}>
-            <h1 className="section-title" style={{ marginTop: 0, textAlign: 'left', marginBottom: '20px' }}>{t('cart_title')}</h1>
+        <main className="container" style={{ padding: '20px 0', position: 'relative' }}>
+            <h1 className="section-title" style={{ marginTop: 0, textAlign: 'left', marginBottom: '15px' }}>{t('cart_title')}</h1>
 
             {syncToast && (
                 <div className="fade-in" style={{

@@ -127,9 +127,9 @@ export default function Shop() {
 
     return (
         <main className="container fade-in">
-            <section className="shop-header" style={{ textAlign: 'center', padding: '40px 0 20px' }}>
-                <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '15px' }}>{t('shop_title')}</h1>
-                <p style={{ color: '#666', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto 20px' }}>
+            <section className="shop-header" style={{ textAlign: 'center', padding: '20px 0 10px' }}>
+                <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '10px' }}>{t('shop_title')}</h1>
+                <p style={{ color: '#666', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto 10px' }}>
                     {t('shop_subtitle')}
                     <span style={{ display: 'block', marginTop: '10px', fontSize: '0.9rem', color: 'var(--primary)', fontWeight: 'bold' }}>
                         🚚 {t('delivery_maharashtra')}
@@ -137,7 +137,7 @@ export default function Shop() {
                 </p>
 
                 {/* New Search Bar */}
-                <div className="search-container" style={{ maxWidth: '500px', margin: '0 auto 20px', position: 'relative' }}>
+                <div className="search-container" style={{ maxWidth: '500px', margin: '0 auto 15px', position: 'relative' }}>
                     <input
                         type="text"
                         placeholder={t('search_placeholder')}

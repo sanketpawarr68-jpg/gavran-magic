@@ -212,21 +212,21 @@ export default function Tracking() {
     const currentStep = orderStatus ? getCurrentStep(orderStatus.order_status) : 0;
 
     return (
-        <main className="container" style={{ padding: '40px 0', maxWidth: '900px' }}>
-            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        <main className="container" style={{ padding: '20px 0', maxWidth: '900px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                 <div style={{
-                    width: '80px', height: '80px', background: '#e1f5fe', color: 'var(--secondary)',
+                    width: '60px', height: '60px', background: '#e1f5fe', color: 'var(--secondary)',
                     borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    margin: '0 auto 20px', fontSize: '2rem'
+                    margin: '0 auto 15px', fontSize: '1.5rem'
                 }}>
                     <i className="fas fa-truck-moving"></i>
                 </div>
-                <h1 className="section-title" style={{ margin: '0 0 10px' }}>Track Your Order</h1>
-                <p style={{ color: '#777' }}>Enter your order ID or select from your recent orders.</p>
+                <h1 className="section-title" style={{ margin: '0 0 5px' }}>Track Your Order</h1>
+                <p style={{ color: '#777', fontSize: '0.9rem' }}>Enter order ID or select from recent orders.</p>
             </div>
 
             <div className="tracking-box">
-                <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                     <input
                         type="text"
                         className="tracking-input"
