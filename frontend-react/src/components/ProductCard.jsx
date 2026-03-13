@@ -156,10 +156,9 @@ const ProductCard = ({ product }) => {
                             </div>
                             <div className="card-actions">
                                 <button
-                                    className="btn"
+                                    className={`btn ${added ? 'added' : ''}`}
                                     onClick={(e) => handleAction(e, 'add')}
                                     disabled={product.stock <= 0 || added}
-                                    style={{ background: added ? 'var(--secondary)' : 'var(--primary)' }}
                                 >
                                     {added ? '✓' : t('nav_home') === 'होम' ? 'टाका' : 'Add'}
                                 </button>

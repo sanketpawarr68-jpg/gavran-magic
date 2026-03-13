@@ -38,9 +38,9 @@ export default function Home() {
             <Hero />
 
             {/* Featured Products Section */}
-            <section style={{ padding: '80px 0' }}>
+            <section style={{ padding: '40px 0' }}>
                 <div className="container">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '25px' }}>
                         <div>
                             <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '10px' }}>{t('featured_title')}</h2>
                             <p style={{ color: '#666', fontSize: '1.1rem' }}>{t('featured_subtitle')}</p>
@@ -51,7 +51,7 @@ export default function Home() {
                     </div>
 
                     {loadingProducts ? (
-                        <div style={{ textAlign: 'center', padding: '100px 0' }}>
+                        <div style={{ textAlign: 'center', padding: '60px 0' }}>
                             <div className="spinner"></div>
                             <h3 className="loading-text">{t('loading_products')}</h3>
                             <p style={{ color: '#888', fontSize: '0.9rem' }}>{t('loading_msg')}</p>
@@ -66,8 +66,8 @@ export default function Home() {
                 </div>
             </section>
 
-            <section id="features" className="container" style={{ padding: '60px 0' }}>
-                <div className="products-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+            <section id="features" className="container" style={{ padding: '30px 15px' }}>
+                <div className="products-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
                     <div className="feature-card" style={{ textAlign: 'center' }}>
                         <img src="/images/illus_natural.png" alt="Natural" className="illustration-icon" />
                         <h3>{t('feature_natural')}</h3>
@@ -87,10 +87,10 @@ export default function Home() {
             </section>
 
             {/* Testimonials */}
-            <section style={{ padding: '80px 0', background: '#f8fafc' }}>
+            <section style={{ padding: '40px 0', background: '#f8fafc' }}>
                 <div className="container">
-                    <h2 style={{ textAlign: 'center', marginBottom: '50px', fontSize: '2.2rem', fontWeight: 800 }}>{t('testimonials_title')}</h2>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
+                    <h2 style={{ textAlign: 'center', marginBottom: '30px', fontSize: '2rem', fontWeight: 800 }}>{t('testimonials_title')}</h2>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
                         {[1, 2, 3].map(id => (
                             <div key={id} style={{ background: 'white', padding: '40px', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.03)', position: 'relative' }}>
                                 <i className="fas fa-quote-left" style={{ position: 'absolute', top: '20px', left: '25px', fontSize: '2rem', color: '#eee' }}></i>

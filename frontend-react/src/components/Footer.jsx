@@ -5,7 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 const Footer = () => {
     const { t } = useLanguage();
     return (
-        <footer className="footer-container" style={{ background: 'linear-gradient(to bottom, #111, #000)', color: '#eee', padding: '70px 20px 30px', marginTop: '80px', fontFamily: '"Inter", sans-serif', borderTop: '4px solid var(--primary)' }}>
+        <footer className="footer-container" style={{ background: 'linear-gradient(to bottom, #111, #000)', color: '#eee', padding: '40px 20px 20px', marginTop: '40px', fontFamily: '"Inter", sans-serif', borderTop: '4px solid var(--primary)' }}>
             <style>
                 {`
                     @media (max-width: 768px) {

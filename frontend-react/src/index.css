@@ -584,12 +584,12 @@ nav {
 
 /* --- Original Hero --- */
 .hero {
-    padding: 120px 0;
+    padding: 60px 0; /* Reduced from 120px */
     text-align: center;
     background: linear-gradient(135deg, #d35400 0%, #e67e22 100%);
     color: white;
     border-radius: 0 0 40px 40px;
-    margin-bottom: 60px;
+    margin-bottom: 30px; /* Reduced from 60px */
 }
 
 .hero h1 {
@@ -671,17 +671,43 @@ nav {
 
 .card-actions .btn {
     flex: 1;
-    padding: 12px 10px;
-    font-size: 0.85rem;
+    padding: 10px 8px; /* Slightly tighter */
+    font-size: 0.8rem; /* More elegant size */
     text-align: center;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-sm); /* Switched from pill for more modern flat look */
     box-shadow: none;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 800;
 }
 
-.card-actions .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(227, 219, 219, 0.1);
+/* Add Button - Premium Outline Style */
+.card-actions .btn:not(.btn-secondary) {
+    background: transparent !important;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+}
+
+.card-actions .btn:not(.btn-secondary):hover,
+.card-actions .btn.added {
+    background: var(--primary) !important;
+    color: white;
+}
+
+.card-actions .btn.added {
+    background: var(--secondary) !important; /* Success color when added */
+    border-color: var(--secondary);
+}
+
+/* Buy Now - Solid Primary for Main Action */
+.card-actions .btn-secondary {
+    background: var(--primary);
+    border: 2px solid var(--primary);
+    color: white;
+}
+
+.card-actions .btn-secondary:hover {
+    background: #c34d00;
+    border-color: #c34d00;
 }
 
 .card-actions .btn:disabled {
@@ -1175,7 +1201,7 @@ body {
 
     /* === HERO === */
     .hero {
-        padding: 60px 0;
+        padding: 40px 0;
     }
 
     .hero h1 {
