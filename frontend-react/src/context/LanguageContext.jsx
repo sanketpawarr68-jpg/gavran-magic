@@ -128,7 +128,9 @@ export const LanguageProvider = ({ children }) => {
             related_products: "Related Products",
             delivery_maharashtra: "Delivery across all of Maharashtra",
             loading_products: "Retrieving Products...",
-            loading_msg: "Please wait while we set up our store for you."
+            loading_msg: "Please wait while we set up our store for you.",
+            accept_terms: "I have read and agree to the website's",
+            terms_and_privacy: "Terms & Conditions, Privacy Policy, Shipping & Delivery, and Refund & Returns policies."
         },
         MR: {
             nav_home: "होम",
@@ -247,7 +249,9 @@ export const LanguageProvider = ({ children }) => {
             related_products: "संबंधित उत्पादने",
             delivery_maharashtra: "संपूर्ण महाराष्ट्रात डिलिव्हरी",
             loading_products: "उत्पादने शोधत आहोत...",
-            loading_msg: "स्वयंपाकघर सज्ज होत आहे, कृपया प्रतीक्षा करा."
+            loading_msg: "स्वयंपाकघर सज्ज होत आहे, कृपया प्रतीक्षा करा.",
+            accept_terms: "मी वेबसाइटचे सर्व",
+            terms_and_privacy: "नियम आणि अटी, गोपनीयता धोरण, शिपिंग आणि डिलिव्हरी तसेच रिफंड आणि रिटर्न धोरण वाचले आहेत"
         }
     };
 

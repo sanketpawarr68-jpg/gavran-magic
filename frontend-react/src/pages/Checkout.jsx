@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
 
 
@@ -162,6 +162,7 @@ export default function Checkout() {
             pincode: user ? user.pincode || '' : '',
             paymentMethod: 'COD',
             saveAddressToProfile: true,
+            acceptTerms: false,
         },
         enableReinitialize: true,
         validationSchema: CheckoutSchema,
@@ -404,11 +405,42 @@ export default function Checkout() {
                                     </div>
                                 </div>
 
+                                <div style={{ marginTop: '25px', display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
+                                    <input 
+                                        type="checkbox" 
+                                        id="acceptTerms"
+                                        name="acceptTerms"
+                                        checked={formik.values.acceptTerms}
+                                        onChange={formik.handleChange}
+                                        style={{ marginTop: '3px', width: '24px', height: '24px', cursor: 'pointer', accentColor: 'var(--primary)', flexShrink: 0 }}
+                                    />
+                                    <label htmlFor="acceptTerms" style={{ fontSize: '0.9rem', color: '#444', lineHeight: '1.6', cursor: 'pointer' }}>
+                                        {t('accept_terms')}
+                                        <div style={{ marginTop: '5px' }}>
+                                            <Link to="/shipping-policy" target="_blank" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'underline' }}>{t('nav_home') === 'होम' ? 'शिपिंग धोरण' : 'Shipping & Delivery'}</Link>
+                                            <span style={{ margin: '0 5px', color: '#ccc' }}>•</span>
+                                            <Link to="/refund-policy" target="_blank" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'underline' }}>{t('nav_home') === 'होम' ? 'रिफंड धोरण' : 'Refund & Returns'}</Link>
+                                            <span style={{ margin: '0 5px', color: '#ccc' }}>•</span>
+                                            <Link to="/terms" target="_blank" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'underline' }}>{t('nav_home') === 'होम' ? 'नियम आणि अटी' : 'Terms & Conditions'}</Link>
+                                            <span style={{ margin: '0 5px', color: '#ccc' }}>•</span>
+                                            <Link to="/privacy-policy" target="_blank" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'underline' }}>{t('nav_home') === 'होम' ? 'गोपनीयता धोरण' : 'Privacy Policy'}</Link>
+                                        </div>
+                                    </label>
+                                </div>
+
                                 <button
                                     type="submit"
                                     className="btn btn-primary"
-                                    disabled={formik.isSubmitting || (formik.values.pincode.length === 6 && !shippingInfo)}
-                                    style={{ width: '100%', marginTop: '30px', padding: '18px', fontSize: '1rem', borderRadius: '15px' }}
+                                    disabled={formik.isSubmitting || (formik.values.pincode.length === 6 && !shippingInfo) || !formik.values.acceptTerms}
+                                    style={{ 
+                                        width: '100%', 
+                                        marginTop: '20px', 
+                                        padding: '18px', 
+                                        fontSize: '1rem', 
+                                        borderRadius: '15px',
+                                        opacity: formik.values.acceptTerms ? 1 : 0.6,
+                                        cursor: formik.values.acceptTerms ? 'pointer' : 'not-allowed'
+                                    }}
                                 >
                                     {formik.isSubmitting ? t('confirming_order') : t('place_order')}
                                 </button>
