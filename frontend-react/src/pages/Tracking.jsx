@@ -59,6 +59,19 @@ export default function Tracking() {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [cancelReason, setCancelReason] = useState('');
     const [cancelling, setCancelling] = useState(false);
+    const [settings, setSettings] = useState(null);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const res = await axios.get(`${API_BASE_URL}/api/settings/`);
+                setSettings(res.data);
+            } catch (err) {
+                console.error("Settings fetch error:", err);
+            }
+        };
+        fetchSettings();
+    }, []);
 
 
     // Fixed Source: Shrigonda, Maharashtra 413701
@@ -137,7 +150,6 @@ export default function Tracking() {
         }
 
         setCancelling(true);
-        setCancelling(true);
         try {
             await axios.post(`${API_BASE_URL}/api/orders/${orderStatus._id}/cancel`, {
                 reason: cancelReason
@@ -152,6 +164,18 @@ export default function Tracking() {
         } finally {
             setCancelling(false);
         }
+    };
+
+    const isWithinGracePeriod = () => {
+        if (!orderStatus || !orderStatus.created_at || !settings) return false;
+        
+        const graceHours = settings.refund_hour_grace_period || 24;
+        const createdDate = new Date(orderStatus.created_at);
+        const now = new Date();
+        const diffMs = now - createdDate;
+        const diffHours = diffMs / (1000 * 60 * 60);
+        
+        return diffHours <= graceHours;
     };
 
     const handleSubmit = (e) => {
@@ -504,7 +528,7 @@ export default function Tracking() {
                                     </div>
                                 </div>
 
-                                {orderStatus.order_status !== 'Delivered' && orderStatus.order_status !== 'Cancelled' && (
+                                {orderStatus.order_status !== 'Delivered' && orderStatus.order_status !== 'Cancelled' && isWithinGracePeriod() && (
                                     <button
                                         onClick={() => setShowCancelModal(true)}
                                         style={{

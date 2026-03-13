@@ -117,7 +117,7 @@ export default function Checkout() {
     const calculateTotalWeight = () => {
         let totalW = 0;
         cart.forEach(item => {
-            const wStr = (item.weight || '500g').toLowerCase();
+            const wStr = (item.selectedSize || item.weight || '500g').toLowerCase();
             let val = parseFloat(wStr);
             if (isNaN(val)) val = 0.5;
 
@@ -181,7 +181,8 @@ export default function Checkout() {
                         product_id: item._id,
                         quantity: item.quantity,
                         price: getEffectivePrice(item),
-                        name: item.name
+                        name: item.name,
+                        selected_size: item.selectedSize
                     })),
                     total_price: finalTotal,
                     payment_status: values.paymentMethod === 'UPI' ? 'Paid' : 'Pending'

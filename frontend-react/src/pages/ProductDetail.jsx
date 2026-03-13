@@ -24,6 +24,16 @@ const ProductDetail = () => {
     const [quantity, setQuantity] = useState(1);
     const [reviews, setReviews] = useState([]);
     const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+    const [selectedSize, setSelectedSize] = useState(null);
+
+    const getCurrentPrice = () => {
+        if (!product) return 0;
+        if (product.pack_sizes && product.pack_sizes.length > 0 && selectedSize) {
+            const variant = product.pack_sizes.find(v => v.size === selectedSize);
+            return variant ? variant.price : product.price;
+        }
+        return product.price;
+    };
 
     const [newReview, setNewReview] = useState({ rating: 5, title: "", comment: "" });
     const [previewPhoto, setPreviewPhoto] = useState(null);
@@ -48,6 +58,11 @@ const ProductDetail = () => {
                 const prodRes = await axios.get(`${API_BASE_URL}/api/products/${id}`);
                 setProduct(prodRes.data);
                 setSelectedImage(getImageUrl(prodRes.data.image));
+                if (prodRes.data.pack_sizes && prodRes.data.pack_sizes.length > 0) {
+                    setSelectedSize(prodRes.data.pack_sizes[0].size);
+                } else {
+                    setSelectedSize(prodRes.data.weight);
+                }
 
                 // Fetch all products for related section
                 const allRes = await axios.get(`${API_BASE_URL}/api/products/`);
@@ -72,7 +87,7 @@ const ProductDetail = () => {
             navigate('/login');
             return;
         }
-        addToCart(product, quantity);
+        addToCart(product, quantity, selectedSize);
         setAdded(true);
         setTimeout(() => setAdded(false), 2000);
 
@@ -200,10 +215,10 @@ const ProductDetail = () => {
                         <p className="weight-info">{product.weight} - {product.category || (t('nav_home') === 'होम' ? 'शुद्ध हस्तनिर्मित' : 'Pure Handmade')}</p>
 
                         <div className="price-box">
-                            <span className="current-price">₹{product.discount > 0 ? Math.round(product.price * (1 - product.discount / 100)) : product.price}</span>
+                            <span className="current-price">₹{product.discount > 0 ? Math.round(getCurrentPrice() * (1 - product.discount / 100)) : getCurrentPrice()}</span>
                             {product.discount > 0 && (
                                 <>
-                                    <span className="old-price">₹{product.price}</span>
+                                    <span className="old-price">₹{getCurrentPrice()}</span>
                                     <span className="discount-badge">SAVE {product.discount}%</span>
                                 </>
                             )}
@@ -221,9 +236,34 @@ const ProductDetail = () => {
                                         : (product.stock <= 5 ? t('only_left').replace('{count}', product.stock) : `${t('in_stock')} (${product.stock})`)}
                                 </span>
                             </div>
-                            <div className="spec-item">
-                                <span className="label">{t('nav_home') === 'होम' ? 'वजन' : 'Weight'}</span>
-                                <span className="val">{product.weight || '500g'}</span>
+                            <div className="spec-item" style={{ gridColumn: 'span 2' }}>
+                                <span className="label" style={{ display: 'block', marginBottom: '10px' }}>{t('nav_home') === 'होम' ? 'पॅकेजिंग निवडा' : 'Select Packaging'}</span>
+                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                    {product.pack_sizes && product.pack_sizes.length > 0 ? (
+                                        product.pack_sizes.map((p, idx) => (
+                                            <button 
+                                                key={idx}
+                                                onClick={() => setSelectedSize(p.size)}
+                                                style={{
+                                                    padding: '8px 15px',
+                                                    borderRadius: '8px',
+                                                    border: `2px solid ${selectedSize === p.size ? 'var(--primary)' : '#eee'}`,
+                                                    background: selectedSize === p.size ? 'rgba(var(--primary-rgb), 0.1)' : 'white',
+                                                    color: selectedSize === p.size ? 'var(--primary)' : '#666',
+                                                    fontWeight: '700',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.3s ease'
+                                                }}
+                                            >
+                                                {p.size}
+                                            </button>
+                                        ))
+                                    ) : (
+                                        <div style={{ padding: '8px 15px', borderRadius: '8px', background: '#f8f9fa', border: '1px solid #eee', fontWeight: '700' }}>
+                                            {product.weight || '500g'}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 

@@ -14,6 +14,19 @@ const ProductCard = ({ product }) => {
 
     const [qty, setQty] = React.useState(1);
     const [added, setAdded] = React.useState(false);
+    const [activeSize, setActiveSize] = React.useState(
+        product.pack_sizes && product.pack_sizes.length > 0 
+            ? product.pack_sizes[0].size 
+            : product.weight
+    );
+
+    const currentPrice = () => {
+        if (product.pack_sizes && product.pack_sizes.length > 0) {
+            const variant = product.pack_sizes.find(p => p.size === activeSize);
+            return variant ? variant.price : product.price;
+        }
+        return product.price;
+    };
 
     const getImageUrl = (imgPath) => {
         if (!imgPath) return 'https://via.placeholder.com/300';
@@ -36,7 +49,7 @@ const ProductCard = ({ product }) => {
             return;
         }
 
-        addToCart(product, qty);
+        addToCart(product, qty, activeSize);
         setAdded(true);
         setTimeout(() => setAdded(false), 2000);
 
@@ -92,10 +105,31 @@ const ProductCard = ({ product }) => {
                 <h3 style={{ cursor: 'pointer' }}>{product.name}</h3>
                 <p>{product.description}</p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                    <span className="weight-badge">{product.weight || '500g'}</span>
+                    <div className="weight-badge" style={{ display: 'flex', gap: '5px' }}>
+                        {product.pack_sizes && product.pack_sizes.length > 0 ? (
+                            <select 
+                                value={activeSize} 
+                                onChange={(e) => setActiveSize(e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                style={{ 
+                                    fontSize: '0.75rem', 
+                                    padding: '2px 5px', 
+                                    borderRadius: '4px', 
+                                    border: '1px solid #ddd',
+                                    background: '#f8f9fa'
+                                }}
+                            >
+                                {product.pack_sizes.map((p, i) => (
+                                    <option key={i} value={p.size}>{p.size}</option>
+                                ))}
+                            </select>
+                        ) : (
+                            <span>{product.weight || '500g'}</span>
+                        )}
+                    </div>
                     <div className="price-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                        <span className="price">₹{product.discount > 0 ? Math.round(product.price * (1 - product.discount / 100)) : product.price}</span>
-                        {product.discount > 0 && <span className="old-price" style={{ textDecoration: 'line-through', fontSize: '0.75rem', color: '#888' }}>₹{product.price}</span>}
+                        <span className="price">₹{product.discount > 0 ? Math.round(currentPrice() * (1 - product.discount / 100)) : currentPrice()}</span>
+                        {product.discount > 0 && <span className="old-price" style={{ textDecoration: 'line-through', fontSize: '0.75rem', color: '#888' }}>₹{currentPrice()}</span>}
                     </div>
                 </div>
 

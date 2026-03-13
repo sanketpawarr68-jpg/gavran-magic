@@ -6,6 +6,7 @@ from extensions import connect_db
 from routes.auth_routes import auth_bp
 from routes.product_routes import product_bp
 from routes.order_routes import order_bp
+from routes.settings_routes import settings_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -16,6 +17,7 @@ connect_db()
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(product_bp, url_prefix='/api/products')
 app.register_blueprint(order_bp, url_prefix='/api/orders')
+app.register_blueprint(settings_bp, url_prefix='/api/settings')
 
 @app.route('/')
 def home():

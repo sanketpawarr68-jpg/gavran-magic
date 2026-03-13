@@ -194,6 +194,28 @@ def cancel_order(order_id):
         if order['order_status'] in ['Delivered', 'Cancelled']:
              return jsonify({'message': f'Order cannot be cancelled. Current status: {order["order_status"]}'}), 400
              
+        # Check grace period from settings
+        db = get_db()
+        settings = db.settings.find_one({"type": "global"})
+        grace_hours = settings.get('refund_hour_grace_period', 24) if settings else 24
+        
+        created_at = order.get('created_at')
+        if created_at:
+            if isinstance(created_at, str):
+                created_at = datetime.datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+            
+            # Ensure created_at is naive if comparing with utcnow() or both are aware
+            if created_at.tzinfo is not None:
+                now = datetime.datetime.now(datetime.timezone.utc)
+            else:
+                now = datetime.datetime.utcnow()
+                
+            time_diff = now - created_at
+            hours_passed = time_diff.total_seconds() / 3600
+            
+            if hours_passed > grace_hours:
+                return jsonify({'message': f'Order cancellation window ({grace_hours} hours) has expired.'}), 400
+             
         get_db().orders.update_one(
             {'_id': ObjectId(order_id)},
             {'$set': {

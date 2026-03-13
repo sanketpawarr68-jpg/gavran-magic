@@ -159,7 +159,7 @@ export default function CartPage() {
                                                 </div>
                                                 <div>
                                                     <h4 style={{ margin: 0, fontSize: '1rem' }}>{item.name}</h4>
-                                                    <small style={{ color: '#888' }}>{item.weight || '500g'}</small>
+                                                    <small style={{ color: '#888' }}>{item.selectedSize || item.weight || '500g'}</small>
                                                 </div>
                                             </div>
                                         </td>
@@ -170,12 +170,12 @@ export default function CartPage() {
                                         <td>
                                             <div className="quantity-control">
                                                 <button
-                                                    onClick={() => updateQuantity(item._id, Math.max(1, item.quantity - 1))}
+                                                    onClick={() => updateQuantity(item._id, Math.max(1, item.quantity - 1), item.selectedSize)}
                                                     disabled={item.quantity <= 1 || isUnavailable}
                                                 >−</button>
                                                 <span>{item.quantity}</span>
                                                 <button
-                                                    onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                                                    onClick={() => updateQuantity(item._id, item.quantity + 1, item.selectedSize)}
                                                     disabled={(item.stock !== undefined && item.quantity >= item.stock) || isUnavailable}
                                                 >+</button>
                                             </div>
@@ -186,7 +186,7 @@ export default function CartPage() {
                                         <td style={{ textAlign: 'right' }}>
                                             <button
                                                 className="btn-icon-danger"
-                                                onClick={() => removeFromCart(item._id)}
+                                                onClick={() => removeFromCart(item._id, item.selectedSize)}
                                                 title="Remove Item"
                                             >
                                                 <i className="fas fa-trash-alt"></i>

@@ -25,9 +25,11 @@ export function CartProvider({ children }) {
         return item.price;
     };
 
-    function addToCart(product, qty = 1) {
+    function addToCart(product, qty = 1, selectedSize = null) {
         setCart(prevCart => {
-            const existing = prevCart.find(item => item._id === product._id);
+            const itemKey = selectedSize ? `${product._id}-${selectedSize}` : product._id;
+            const existing = prevCart.find(item => (item.selectedSize ? `${item._id}-${item.selectedSize}` : item._id) === itemKey);
+            
             const currentQty = existing ? existing.quantity : 0;
             const newQty = currentQty + qty;
 
@@ -39,26 +41,30 @@ export function CartProvider({ children }) {
 
             if (existing) {
                 return prevCart.map(item =>
-                    item._id === product._id ? { ...item, quantity: newQty } : item
+                    (item.selectedSize ? `${item._id}-${item.selectedSize}` : item._id) === itemKey 
+                        ? { ...item, quantity: newQty } 
+                        : item
                 );
             }
-            return [...prevCart, { ...product, quantity: qty }];
+            return [...prevCart, { ...product, quantity: qty, selectedSize }];
         });
     }
 
-    function removeFromCart(id) {
-        setCart(prevCart => prevCart.filter(item => item._id !== id));
+    function removeFromCart(id, size = null) {
+        const itemKey = size ? `${id}-${size}` : id;
+        setCart(prevCart => prevCart.filter(item => (item.selectedSize ? `${item._id}-${item.selectedSize}` : item._id) !== itemKey));
     }
 
-    function updateQuantity(id, quantity) {
+    function updateQuantity(id, quantity, size = null) {
         if (quantity < 1) {
-            removeFromCart(id);
+            removeFromCart(id, size);
             return;
         }
 
+        const itemKey = size ? `${id}-${size}` : id;
         setCart(prevCart =>
             prevCart.map(item => {
-                if (item._id === id) {
+                if ((item.selectedSize ? `${item._id}-${item.selectedSize}` : item._id) === itemKey) {
                     // Check stock during manual update
                     if (item.stock !== undefined && quantity > item.stock) {
                         alert(`Only ${item.stock} available`);
