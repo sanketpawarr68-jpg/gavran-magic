@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 
 const Footer = () => {
     const { t } = useLanguage();
+    const { settings } = useSettings();
     return (
         <footer className="footer-container" style={{ background: 'linear-gradient(to bottom, #111, #000)', color: '#eee', padding: '40px 20px 20px', marginTop: '40px', fontFamily: '"Inter", sans-serif', borderTop: '4px solid var(--primary)' }}>
             <style>
@@ -25,7 +27,7 @@ const Footer = () => {
 
                 {/* Brand Section */}
                 <div className="footer-brand" style={{ display: 'flex', flexDirection: 'column' }}>
-                    <img src="/images/company_logo.jpg" alt="Gavran Magic Foods" style={{ height: '70px', width: 'auto', marginBottom: '15px', alignSelf: 'flex-start' }} />
+                    <img src="/images/company_logo.jpg" alt={settings.store_name} style={{ height: '70px', width: 'auto', marginBottom: '15px', alignSelf: 'flex-start' }} />
                     <p style={{ fontSize: '0.95rem', lineHeight: '1.7', opacity: '0.7', marginBottom: '25px' }}>
                         {t('footer_desc')}
                     </p>

@@ -1,10 +1,13 @@
 import React from 'react';
+import { useSettings } from '../context/SettingsContext';
 
 const ContactUs = () => {
+    const { settings } = useSettings();
+
     return (
         <main className="container" style={{ padding: '60px 20px', maxWidth: '900px', margin: '0 auto', fontFamily: '"Inter", sans-serif', lineHeight: '1.6' }}>
             <h1 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '15px', color: '#1a1a1a', textAlign: 'center' }}>Contact Us</h1>
-            <p style={{ color: '#666', marginBottom: '50px', fontSize: '1.1rem', textAlign: 'center' }}>We'd love to hear from you. Reach out to the Gavran Magic team if you have any questions, feedback, or need help with a recent order!</p>
+            <p style={{ color: '#666', marginBottom: '50px', fontSize: '1.1rem', textAlign: 'center' }}>We'd love to hear from you. Reach out to the {settings.store_name} team if you have any questions, feedback, or need help with a recent order!</p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px', marginBottom: '50px' }}>
                 <div style={{ background: '#f9fafb', padding: '30px', borderRadius: '16px', border: '1px solid #efefef', textAlign: 'center', transition: 'transform 0.2s', cursor: 'pointer' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
@@ -13,7 +16,7 @@ const ContactUs = () => {
                     </div>
                     <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '10px' }}>Email Support</h3>
                     <p style={{ color: '#555', marginBottom: '15px', fontSize: '0.9rem' }}>For general support & order inquiries.</p>
-                    <a href="mailto:support@gavranmagic.com" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>support@gavranmagic.com</a>
+                    <a href={`mailto:${settings.store_email}`} style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>{settings.store_email}</a>
                 </div>
 
                 <div style={{ background: '#f9fafb', padding: '30px', borderRadius: '16px', border: '1px solid #efefef', textAlign: 'center', transition: 'transform 0.2s', cursor: 'pointer' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
@@ -22,7 +25,7 @@ const ContactUs = () => {
                     </div>
                     <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '10px' }}>Give Us a Call</h3>
                     <p style={{ color: '#555', marginBottom: '15px', fontSize: '0.9rem' }}>Mon-Fri from 9am to 6pm IST.</p>
-                    <a href="tel:+917823879053" style={{ color: 'var(--success)', fontWeight: '600', textDecoration: 'none' }}>+91 78238 79053</a>
+                    <a href={`tel:${settings.store_phone?.replace(/\s/g, '')}`} style={{ color: 'var(--success)', fontWeight: '600', textDecoration: 'none' }}>{settings.store_phone}</a>
                 </div>
 
                 <div style={{ background: '#f9fafb', padding: '30px', borderRadius: '16px', border: '1px solid #efefef', textAlign: 'center', transition: 'transform 0.2s', cursor: 'pointer' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
@@ -30,8 +33,8 @@ const ContactUs = () => {
                         <i className="fas fa-map-marker-alt"></i>
                     </div>
                     <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '10px' }}>Visit Us</h3>
-                    <p style={{ color: '#555', marginBottom: '15px', fontSize: '0.9rem' }}>Gavran Magic Food Kitchens.</p>
-                    <span style={{ color: '#333', fontWeight: '600' }}>Pune, Maharashtra, India</span>
+                    <p style={{ color: '#555', marginBottom: '15px', fontSize: '0.9rem' }}>{settings.store_name} Kitchens.</p>
+                    <span style={{ color: '#333', fontWeight: '600' }}>{settings.store_address}</span>
                 </div>
             </div>
 

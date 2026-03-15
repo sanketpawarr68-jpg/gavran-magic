@@ -1,6 +1,9 @@
 import React from 'react';
+import { useSettings } from '../context/SettingsContext';
 
 const PrivacyPolicy = () => {
+    const { settings } = useSettings();
+
     return (
         <main className="container fade-in" style={{ padding: '80px 20px', maxWidth: '900px', margin: '0 auto', fontFamily: '"Work Sans", sans-serif' }}>
             <h1 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '10px', color: 'var(--dark)' }}>Privacy Policy</h1>
@@ -9,12 +12,12 @@ const PrivacyPolicy = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
                 <section>
                     <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '15px', color: 'var(--dark)', borderLeft: '4px solid var(--primary)', paddingLeft: '15px' }}>1. Introduction</h2>
-                    <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: '1.7' }}>Welcome to Gavran Magic. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data when you visit our website.</p>
+                    <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: '1.7' }}>Welcome to {settings.store_name}. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data when you visit our website.</p>
                 </section>
 
                 <section>
                     <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '15px', color: 'var(--dark)', borderLeft: '4px solid var(--primary)', paddingLeft: '15px' }}>2. Data Protection & Security</h2>
-                    <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: '1.7' }}>We take your security seriously! All the data collected on Gavran Magic is encrypted and stored securely. Your payment details are never stored on our servers; they are handled directly by our PCI-compliant payment partners.</p>
+                    <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: '1.7' }}>We take your security seriously! All the data collected on {settings.store_name} is encrypted and stored securely. Your payment details are never stored on our servers; they are handled directly by our PCI-compliant payment partners.</p>
                 </section>
 
                 <section>
@@ -27,11 +30,11 @@ const PrivacyPolicy = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', color: '#555' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <i className="fas fa-envelope" style={{ color: 'var(--primary)' }}></i>
-                            <span>support@gavranmagic.com</span>
+                            <span>{settings.store_email}</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <i className="fas fa-phone-alt" style={{ color: 'var(--primary)' }}></i>
-                            <span>+91 78238 79053</span>
+                            <span>{settings.store_phone}</span>
                         </div>
                     </div>
                 </section>

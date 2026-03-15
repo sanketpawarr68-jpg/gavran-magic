@@ -1,28 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { API_BASE_URL } from '../config';
+import React from 'react';
+import { useSettings } from '../context/SettingsContext';
 
 const RefundPolicy = () => {
-    const [settings, setSettings] = useState({
-        refund_hour_grace_period: 24,
-        refund_policy_text: '',
-        return_policy_text: ''
-    });
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const res = await axios.get(`${API_BASE_URL}/api/settings/`);
-                setSettings(res.data);
-            } catch (err) {
-                console.error("Policy fetch error:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchSettings();
-    }, []);
+    const { settings } = useSettings();
 
     return (
         <main className="container fade-in" style={{ padding: '80px 20px', maxWidth: '900px', margin: '0 auto', fontFamily: '"Work Sans", sans-serif' }}>

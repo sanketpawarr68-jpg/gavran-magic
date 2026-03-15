@@ -18,6 +18,7 @@ import Terms from './pages/Terms';
 import ContactUs from './pages/ContactUs';
 import Footer from './components/Footer';
 import { useLanguage } from './context/LanguageContext';
+import { useSettings } from './context/SettingsContext';
 import './index.css';
 
 function ScrollToTop() {
@@ -32,6 +33,8 @@ function ScrollToTop() {
 
 function App() {
   const { t } = useLanguage();
+  const { settings } = useSettings();
+  
   return (
     <>
       <ScrollToTop />
@@ -65,7 +68,7 @@ function App() {
 
       {/* Floating WhatsApp Support */}
       <a
-        href="https://wa.me/917823879053?text=Hello Gavran Magic Foods! I have a question about my order."
+        href={`https://wa.me/91${settings.store_phone?.replace(/[^0-9]/g, '').slice(-10)}?text=Hello ${encodeURIComponent(settings.store_name)}! I have a question about my order.`}
         className="whatsapp-float"
         target="_blank"
         rel="noopener noreferrer"
