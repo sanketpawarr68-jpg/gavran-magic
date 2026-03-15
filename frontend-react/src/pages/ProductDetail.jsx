@@ -54,43 +54,60 @@ const ProductDetail = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            setLoading(true);
+            // PROACTIVE: Try to load from cache immediately for zero-lag feeling
+            let cachedProd = null;
             try {
-                const prodRes = await axios.get(`${API_BASE_URL}/api/products/${id}`);
-                const prod = prodRes.data;
+                const cachedData = localStorage.getItem('products_cache');
+                if (cachedData) {
+                    const productsList = JSON.parse(cachedData);
+                    cachedProd = productsList.find(p => p._id === id);
+                    if (cachedProd) {
+                        setProduct(cachedProd);
+                        setSelectedImage(getImageUrl(cachedProd.image));
+                        setSelectedSize((cachedProd.pack_sizes && cachedProd.pack_sizes.length > 0) ? cachedProd.pack_sizes[0].size : cachedProd.weight);
+                        setLoading(false); 
+                    }
+                }
+            } catch(e) {}
+
+            if (!cachedProd) setLoading(true);
+
+            try {
+                // PARALLEL: Fetch product, related products, and reviews at once
+                const [pRes, aRes, rRes] = await Promise.all([
+                    axios.get(`${API_BASE_URL}/api/products/${id}`),
+                    axios.get(`${API_BASE_URL}/api/products/`),
+                    axios.get(`${API_BASE_URL}/api/products/${id}/reviews`).catch(() => ({ data: [] }))
+                ]);
+
+                const prod = pRes.data;
                 setProduct(prod);
                 setSelectedImage(getImageUrl(prod.image));
-                if (prod.pack_sizes && prod.pack_sizes.length > 0) {
-                    setSelectedSize(prod.pack_sizes[0].size);
-                } else {
-                    setSelectedSize(prod.weight);
-                }
+                setSelectedSize((prod.pack_sizes && prod.pack_sizes.length > 0) ? prod.pack_sizes[0].size : prod.weight);
 
-                // Save to Recently Viewed in localStorage
+                // Update Recently Viewed
                 try {
                     const recent = JSON.parse(localStorage.getItem('gavran_recently_viewed') || '[]');
-                    const updated = [{ _id: prod._id, name: prod.name, image: prod.image, price: prod.price, category: prod.category, weight: prod.weight, pack_sizes: prod.pack_sizes, stock: prod.stock, discount: prod.discount, status: prod.status, description: prod.description }, ...recent.filter(r => r._id !== prod._id)].slice(0, 6);
+                    const updated = [prod, ...recent.filter(r => r._id !== prod._id)].slice(0, 6);
                     localStorage.setItem('gavran_recently_viewed', JSON.stringify(updated));
                 } catch(e) {}
 
-                const allRes = await axios.get(`${API_BASE_URL}/api/products/`);
-                const others = allRes.data.filter(p => p._id !== id && p.status !== 'inactive');
-                // Smart sort: same category first
+                // Related Products
+                const others = aRes.data.filter(p => p._id !== id && p.status !== 'inactive');
                 const sameCat = others.filter(p => p.category === prod.category);
                 const diffCat = others.filter(p => p.category !== prod.category);
                 setAllProducts([...sameCat, ...diffCat]);
 
-                const reviewRes = await axios.get(`${API_BASE_URL}/api/products/${id}/reviews`);
-                setReviews(reviewRes.data);
-
+                setReviews(rRes.data);
                 setLoading(false);
             } catch (err) {
                 console.error("Fetch Error:", err);
-                setError("Product not found");
+                if (!cachedProd) setError("Product not found");
                 setLoading(false);
             }
         };
         fetchData();
+        window.scrollTo(0, 0);
     }, [id]);
 
     // Sticky bar: show when buy buttons scroll out of view
