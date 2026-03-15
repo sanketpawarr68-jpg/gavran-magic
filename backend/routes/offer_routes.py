@@ -95,7 +95,7 @@ def update_offer(id):
     if '_id' in data:
         del data['_id']
     if 'code' in data:
-        data['code'] = data['code'].strip().toUpperCase()
+        data['code'] = data['code'].strip().upper()
     db.offers.update_one({'_id': ObjectId(id)}, {'$set': data})
     return jsonify({'message': 'Offer updated successfully'}), 200
 

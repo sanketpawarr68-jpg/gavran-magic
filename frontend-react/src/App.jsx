@@ -32,9 +32,13 @@ function ScrollToTop() {
 }
 
 function App() {
-  const { t } = useLanguage();
   const { settings } = useSettings();
   
+  // Proactively wake up backend on load
+  useEffect(() => {
+    axios.get(`${API_BASE_URL}/`).catch(() => {});
+  }, []);
+
   return (
     <>
       <ScrollToTop />
