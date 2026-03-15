@@ -39,7 +39,7 @@ def get_shipping_cost():
     if not is_maharashtra_pincode(pincode):
          return jsonify({'message': 'Delivery available only in Maharashtra'}), 400
 
-    # User's 1st and 2nd orders are FREE
+    # User's 1st order is FREE
     is_free_delivery = False
     db = get_db()
     
@@ -49,7 +49,7 @@ def get_shipping_cost():
             'user_id': str(user_id),
             'order_status': {'$ne': 'Cancelled'}
         })
-        if order_count < 2:
+        if order_count < 1:
             is_free_delivery = True
     
     # Check by device_id (Anti-fraud)
@@ -58,28 +58,29 @@ def get_shipping_cost():
             'device_id': str(device_id),
             'order_status': {'$ne': 'Cancelled'}
         })
-        if device_order_count < 2:
+        if device_order_count < 1:
             is_free_delivery = True
     elif is_free_delivery and device_id:
-        # even if user is new, if device has 2 orders, block free delivery
+        # even if user is new, if device has an order, block free delivery
         device_order_count = db.orders.count_documents({
             'device_id': str(device_id),
             'order_status': {'$ne': 'Cancelled'}
         })
-        if device_order_count >= 2:
+        if device_order_count >= 1:
             is_free_delivery = False
 
     if is_free_delivery:
-        # We need the count for the message
-        # But wait, if they are using a new account on an old device, device_order_count might be relevant
-        # For simplicity, let's just use the max of both for the congrats message? No, let's be strict.
-        final_count = 0
-        if user_id and user_id != 'guest':
-             final_count = db.orders.count_documents({'user_id': str(user_id), 'order_status': {'$ne': 'Cancelled'}})
-        
         return jsonify({
             'total_shipping': 0,
             'message': f'Congratulations! Your order qualifies for FREE delivery.'
+        }), 200
+
+    # NEW: Free Shipping if Order Total > 500
+    order_total = data.get('order_total', 0)
+    if float(order_total) >= 500:
+        return jsonify({
+            'total_shipping': 0,
+            'message': 'Free shipping applied for order above ₹500'
         }), 200
 
     # Pickup location: Shrigonda (413701)
@@ -109,13 +110,13 @@ def check_eligibility():
     user_eligible = True
     if user_id and user_id != 'guest':
         count = db.orders.count_documents({'user_id': str(user_id), 'order_status': {'$ne': 'Cancelled'}})
-        if count >= 2:
+        if count >= 1:
             user_eligible = False
             
     device_eligible = True
     if device_id:
         count = db.orders.count_documents({'device_id': str(device_id), 'order_status': {'$ne': 'Cancelled'}})
-        if count >= 2:
+        if count >= 1:
             device_eligible = False
             
     return jsonify({

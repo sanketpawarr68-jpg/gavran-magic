@@ -152,6 +152,7 @@ export default function Checkout() {
                 pincode: pincode,
                 weight: totalWeight,
                 cod: isCOD ? 1 : 0,
+                order_total: total, // Pass current order total to check for free shipping above threshold
                 user_id: user ? (user._id || user.id) : 'guest',
                 device_id: visitorId
             });
