@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://gavran-magic-k1ae.onrender.com';
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);

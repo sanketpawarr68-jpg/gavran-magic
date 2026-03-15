@@ -193,8 +193,9 @@ export default function Checkout() {
                     products: cart.map(item => ({
                         product_id: item._id,
                         quantity: item.quantity,
-                        price: getEffectivePrice(item) * item.quantity, // Send line total as expected by Admin Invoice logic
+                        price: getEffectivePrice(item) * item.quantity,
                         name: item.name,
+                        category: item.category || 'Others',
                         selected_size: item.selectedSize || item.weight || '500g'
                     })),
                     total_price: finalTotal,

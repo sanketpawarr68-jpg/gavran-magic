@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { API_BASE_URL } from './config';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
@@ -36,7 +36,7 @@ function App() {
   
   // Proactively wake up backend on load
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/`).catch(() => {});
+    fetch(`${API_BASE_URL}/`).catch(() => {});
   }, []);
 
   return (

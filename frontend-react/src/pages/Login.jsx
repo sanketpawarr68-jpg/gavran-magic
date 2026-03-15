@@ -138,11 +138,14 @@ export default function Login() {
                 if (res?.success) {
                     // If profile already complete, go home. Otherwise fill profile.
                     const userData = res.user;
-                    if (userData?.name && userData.name.trim() && !userData.name.startsWith('User ')) {
-                        navigate('/');
-                    } else {
-                        navigate('/profile');
-                    }
+                const params = new URLSearchParams(window.location.search);
+                const redirect = params.get('redirect') || '/';
+
+                if (userData?.name && userData.name.trim() && !userData.name.startsWith('User ')) {
+                    navigate(redirect);
+                } else {
+                    navigate(`/profile${redirect !== '/' ? `?redirect=${encodeURIComponent(redirect)}` : ''}`);
+                }
                 } else {
                     setError(res?.error || 'Login failed. Please try again.');
                 }
@@ -165,10 +168,13 @@ export default function Login() {
                 loginWithToken(res.data.token, res.data.user);
                 // Smart redirect: if name is already filled, skip profile page
                 const userData = res.data.user;
+                const params = new URLSearchParams(window.location.search);
+                const redirect = params.get('redirect') || '/';
+
                 if (userData?.name && userData.name.trim() && !userData.name.startsWith('User ')) {
-                    navigate('/');
+                    navigate(redirect);
                 } else {
-                    navigate('/profile');
+                    navigate(`/profile${redirect !== '/' ? `?redirect=${encodeURIComponent(redirect)}` : ''}`);
                 }
             } catch (err) {
                 setError(err.response?.data?.message || 'Incorrect OTP. Please try again.');

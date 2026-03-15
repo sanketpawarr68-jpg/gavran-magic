@@ -188,6 +188,49 @@ def create_order():
             # Allow through for demo - in production, uncomment the line below:
             # return jsonify({'message': 'Service not available for this pincode'}), 400
 
+    # Promo Code Validation
+    db = get_db()
+    promo_code = data.get('promo_code')
+    if promo_code:
+        offer = db.offers.find_one({'code': promo_code.strip().upper()})
+        if not offer:
+            return jsonify({'message': 'Invalid promotional code.'}), 400
+        
+        # Check Status
+        if offer.get('status') != 'active':
+             return jsonify({'message': 'This promotional campaign is no longer active.'}), 400
+        
+        # Check Dates
+        current_time = datetime.datetime.utcnow()
+        try:
+            s_val = offer.get('start_date')
+            if s_val:
+                start_date = datetime.datetime.fromisoformat(s_val.replace('Z', '+00:00')).replace(tzinfo=None) if 'T' in s_val else datetime.datetime.strptime(s_val, '%Y-%m-%d')
+                if current_time < start_date:
+                    return jsonify({'message': f'This code will be valid from {start_date.strftime("%d %b %Y")}.'}), 400
+            
+            e_val = offer.get('end_date')
+            if e_val:
+                end_date = datetime.datetime.fromisoformat(e_val.replace('Z', '+00:00')).replace(tzinfo=None) if 'T' in e_val else datetime.datetime.strptime(e_val, '%Y-%m-%d').replace(hour=23, minute=59, second=59)
+                if current_time > end_date:
+                    return jsonify({'message': 'This promotional code has expired.'}), 400
+        except:
+            pass # Fallback to status check if date parsing fails
+
+        # Check Usage Limit
+        usage_limit = offer.get('usage_limit')
+        if usage_limit is not None and str(usage_limit).strip() != '':
+            try:
+                usage_limit = int(usage_limit)
+                used_count = db.orders.count_documents({
+                    'promo_code': offer.get('code'),
+                    'order_status': {'$nin': ['Cancelled', 'Declined']}
+                })
+                if used_count >= usage_limit:
+                    return jsonify({'message': 'This promotional code is sold out (usage limit reached).'}), 400
+            except:
+                pass
+
     # Stock Check & Update
     db = get_db()
     products_to_update = []
