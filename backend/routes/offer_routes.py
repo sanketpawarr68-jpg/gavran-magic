@@ -54,6 +54,23 @@ def get_offers():
                 o['is_currently_valid'] = False
                 o['validity_reason'] = "Expired"
                 
+            # Handle Usage Limit (Stock)
+            usage_limit = o.get('usage_limit')
+            if usage_limit is not None:
+                try:
+                    usage_limit = int(usage_limit)
+                    # Count successful orders using this code
+                    used_count = db.orders.count_documents({
+                        'promo_code': o.get('code'),
+                        'order_status': {'$nin': ['Cancelled', 'Declined']}
+                    })
+                    o['used_count'] = used_count
+                    if used_count >= usage_limit:
+                        o['is_currently_valid'] = False
+                        o['validity_reason'] = "Usage limit reached (Sold Out)"
+                except (ValueError, TypeError):
+                    pass
+
         except Exception as e:
             # If parsing fails, we fallback to just status check but keep it valid
             print(f"Date parsing error: {e}")

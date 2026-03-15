@@ -232,6 +232,7 @@ def create_order():
         "razorpay_order_id": data.get('razorpay_order_id', ''),
         "razorpay_signature": data.get('razorpay_signature', ''),
         "created_at": datetime.datetime.utcnow(),
+        "promo_code": data.get('promo_code', ''),
         "tracking_id": "PENDING"
     }
     

@@ -198,6 +198,7 @@ export default function Checkout() {
                         selected_size: item.selectedSize || item.weight || '500g'
                     })),
                     total_price: finalTotal,
+                    promo_code: appliedDiscount.code || '',
                     payment_status: values.paymentMethod === 'UPI' ? 'Paid' : 'Pending'
                 };
 
