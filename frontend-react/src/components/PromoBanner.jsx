@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
 import { getVisitorId } from '../utils/visitor';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const PromoBanner = () => {
     const [offer, setOffer] = useState(null);
     const [eligible, setEligible] = useState(true);
     const { user } = useAuth();
+    const { language, t } = useLanguage();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,30 +24,49 @@ const PromoBanner = () => {
                     user_id: uid,
                     device_id: vid
                 });
-                setEligible(eligibilityRes.data.eligible_for_free_delivery);
+                const isEligible = eligibilityRes.data.eligible_for_free_delivery;
+                setEligible(isEligible);
 
                 const res = await axios.get(`${API_BASE_URL}/api/offers/`);
                 // Find first offer that is active and flagged for banner
                 const activeBannerOffer = res.data.find(o => o.status === 'active' && o.is_banner_offer && o.is_currently_valid);
+                
                 if (activeBannerOffer) {
-                    // Specific logic: if it's the free delivery offer text, check eligibility
-                    const isFreeDeliveryOffer = activeBannerOffer.title.toLowerCase().includes('free delivery') || 
-                                              activeBannerOffer.description.toLowerCase().includes('free delivery');
+                    // Check if this banner is about free delivery
+                    const titleText = activeBannerOffer.title.toLowerCase();
+                    const descText = activeBannerOffer.description.toLowerCase();
+                    const isFreeDeliveryOffer = titleText.includes('free delivery') || 
+                                              descText.includes('free delivery') ||
+                                              titleText.includes('मोफत डिलिव्हरी') ||
+                                              descText.includes('मोफत डिलिव्हरी');
                     
-                    if (isFreeDeliveryOffer && !eligibilityRes.data.eligible_for_free_delivery) {
+                    if (isFreeDeliveryOffer && !isEligible) {
                         setOffer(null);
                     } else {
                         setOffer(activeBannerOffer);
                     }
+                } else if (isEligible) {
+                    // FALLBACK: Auto-show free delivery banner for new customers
+                    setOffer({
+                        title: t('special_offer'),
+                        description: t('promo_msg_offer'),
+                        redirect_url: '/shop',
+                        is_fallback: true
+                    });
+                } else {
+                    setOffer(null);
                 }
             } catch (err) {
                 console.error("Banner offer fetch error:", err);
             }
         };
         checkEligibilityAndFetchOffer();
-    }, [user]);
+    }, [user, language]);
 
-    if (!offer || !eligible && (offer.title.toLowerCase().includes('free delivery') || offer.description.toLowerCase().includes('free delivery'))) return null;
+    if (!offer) return null;
+    
+    // Safety check again for fallback text
+    if (!eligible && (offer.title.toLowerCase().includes('free delivery') || offer.description.toLowerCase().includes('free delivery'))) return null;
 
     return (
         <div 
