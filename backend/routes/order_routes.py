@@ -219,16 +219,13 @@ def cancel_order(order_id):
         get_db().orders.update_one(
             {'_id': ObjectId(order_id)},
             {'$set': {
-                'order_status': 'Cancelled',
+                'order_status': 'Cancellation Requested',
                 'cancellation_reason': cancellation_reason,
-                'cancelled_at': datetime.datetime.utcnow()
+                'cancellation_requested_at': datetime.datetime.utcnow()
             }}
         )
         
-        # Optionally, notify Shiprocket to cancel shipment here
-        # shiprocket.cancel_order(order['tracking_id'])
-        
-        return jsonify({'message': 'Order cancelled successfully'}), 200
+        return jsonify({'message': 'Cancellation request submitted for approval'}), 200
     except Exception as e:
         print(f"Error cancelling order: {e}")
         return jsonify({'message': 'Failed to cancel order'}), 500

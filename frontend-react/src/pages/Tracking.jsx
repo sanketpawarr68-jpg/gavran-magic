@@ -151,13 +151,13 @@ export default function Tracking() {
 
         setCancelling(true);
         try {
-            await axios.post(`${API_BASE_URL}/api/orders/${orderStatus._id}/cancel`, {
+            const response = await axios.post(`${API_BASE_URL}/api/orders/${orderStatus._id}/cancel`, {
                 reason: cancelReason
             });
             setShowCancelModal(false);
             // Refresh Order Data
             fetchOrder(orderStatus._id);
-            alert("Order cancelled successfully.");
+            alert(response.data.message || "Cancellation request submitted.");
         } catch (error) {
             console.error("Cancellation Error:", error);
             alert(error.response?.data?.message || "Failed to cancel order.");
@@ -359,7 +359,7 @@ export default function Tracking() {
                         )}
 
                         {/* Timeline */}
-                        {orderStatus.order_status !== 'Cancelled' && orderStatus.order_status !== 'Declined' ? (
+                        {orderStatus.order_status !== 'Cancelled' && orderStatus.order_status !== 'Declined' && orderStatus.order_status !== 'Cancellation Requested' ? (
                             <div className="status-timeline" style={{ position: 'relative', marginBottom: '25px' }}>
                                 <div style={{ position: 'absolute', top: '15px', left: '0', height: '4px', width: '100%', background: '#eee', zIndex: 0, borderRadius: '4px' }}></div>
                                 <div style={{
@@ -387,8 +387,13 @@ export default function Tracking() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="alert alert-error" style={{ marginBottom: '30px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff1f0', border: '1px solid #ffa39e', color: '#cf1322' }}>
-                                <span><i className="fas fa-times-circle"></i> This Order has been {orderStatus.order_status}.</span>
+                            <div className="alert alert-error" style={{ marginBottom: '30px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: orderStatus.order_status === 'Cancellation Requested' ? '#fffbe6' : '#fff1f0', border: '1px solid ' + (orderStatus.order_status === 'Cancellation Requested' ? '#ffe58f' : '#ffa39e'), color: orderStatus.order_status === 'Cancellation Requested' ? '#856404' : '#cf1322' }}>
+                                <span>
+                                    <i className={orderStatus.order_status === 'Cancellation Requested' ? "fas fa-clock" : "fas fa-times-circle"}></i> 
+                                    {orderStatus.order_status === 'Cancellation Requested' 
+                                        ? " Your cancellation request is pending admin approval." 
+                                        : ` This Order has been ${orderStatus.order_status}.`}
+                                </span>
                                 {orderStatus.cancellation_reason && (
                                     <span style={{ fontSize: '0.9rem', fontWeight: '600' }}>Reason: {orderStatus.cancellation_reason}</span>
                                 )}
