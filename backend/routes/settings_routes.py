@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from extensions import get_db
 from bson import ObjectId
+import os
 
 settings_bp = Blueprint('settings', __name__)
 
@@ -25,6 +26,10 @@ def get_settings():
         "store_address": "Pune, Maharashtra, India"
     }
     return jsonify(default_settings), 200
+
+@settings_bp.route('/keys/razorpay', methods=['GET'])
+def get_razorpay_key():
+    return jsonify({'key': os.getenv('RAZORPAY_KEY_ID')}), 200
 
 @settings_bp.route('/', methods=['POST'])
 def update_settings():

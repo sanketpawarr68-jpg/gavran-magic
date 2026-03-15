@@ -3,9 +3,16 @@ from extensions import get_db
 from shiprocket import ShiprocketAPI
 from bson import ObjectId
 import datetime
+import razorpay
+import os
 
 order_bp = Blueprint('order_bp', __name__)
 shiprocket = ShiprocketAPI()
+
+# Initialize Razorpay
+client = None
+if os.getenv('RAZORPAY_KEY_ID') and os.getenv('RAZORPAY_KEY_SECRET'):
+    client = razorpay.Client(auth=(os.getenv('RAZORPAY_KEY_ID'), os.getenv('RAZORPAY_KEY_SECRET')))
 
 def send_sms(phone, message):
     """Order confirmation SMS — uses MSG91 if configured, else prints to console."""
@@ -115,6 +122,30 @@ def check_eligibility():
         'eligible_for_free_delivery': user_eligible and device_eligible
     }), 200
 
+@order_bp.route('/razorpay/create', methods=['POST'])
+def create_razorpay_order():
+    """Step 1: Create a formal Razorpay Order for the payment modal."""
+    if not client:
+        return jsonify({'message': 'Razorpay not configured on server'}), 500
+        
+    try:
+        data = request.json
+        amount = float(data.get('amount', 0))
+        if amount <= 0:
+            return jsonify({'message': 'Invalid amount'}), 400
+            
+        # Razorpay expects amount in paise (1 INR = 100 Paise)
+        razorpay_order = client.order.create({
+            "amount": int(amount * 100),
+            "currency": "INR",
+            "payment_capture": "1" # Auto-capture
+        })
+        
+        return jsonify(razorpay_order), 200
+    except Exception as e:
+        print(f"Razorpay Order Error: {e}")
+        return jsonify({'message': str(e)}), 400
+
 @order_bp.route('/', methods=['POST'])
 def create_order():
     data = request.json
@@ -194,6 +225,11 @@ def create_order():
         "name": data['name'],
         "device_id": data.get('device_id', ''),
         "order_status": "Placed",
+        "payment_status": data.get('payment_status', 'Pending'),
+        "payment_method": data.get('payment_method', 'COD'),
+        "razorpay_payment_id": data.get('razorpay_payment_id', ''),
+        "razorpay_order_id": data.get('razorpay_order_id', ''),
+        "razorpay_signature": data.get('razorpay_signature', ''),
         "created_at": datetime.datetime.utcnow(),
         "tracking_id": "PENDING"
     }

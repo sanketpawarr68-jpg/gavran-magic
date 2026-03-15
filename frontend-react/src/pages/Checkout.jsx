@@ -9,7 +9,15 @@ import { useNavigate, Link } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
 import { getVisitorId } from '../utils/visitor';
 
-
+const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+    });
+};
 const CheckoutSchema = Yup.object().shape({
     name: Yup.string().required('Required'),
     phone: Yup.string().matches(/^[0-9]{10}$/, 'Must be 10 digits').required('Required'),
@@ -210,15 +218,83 @@ export default function Checkout() {
                     }
                 }
 
-                // If UPI, open Razorpay in new window first
+                // If UPI, use Razorpay Standard Integration
                 if (values.paymentMethod === 'UPI') {
-                    // Try to pass amount to Razorpay.Me (varies by their platform, but usually type amt manually)
-                    const razorPayUrl = `https://razorpay.me/@sanketsambhajipawar`;
-                    window.open(razorPayUrl, '_blank');
-                    // Alert the user to type the amount
-                    alert(t('nav_home') === 'होम' 
-                        ? `Razorpay उघडत आहे. कृपया तुमची ऑर्डर पूर्ण करण्यासाठी ₹${finalTotal.toFixed(2)} भरा.` 
-                        : `Opening Razorpay. Please pay ₹${finalTotal.toFixed(2)} to confirm your order.`);
+                    const resLoader = await loadRazorpayScript();
+                    if (!resLoader) {
+                        alert("Razorpay SDK failed to load. Are you online?");
+                        setSubmitting(false);
+                        return;
+                    }
+
+                    try {
+                        // 1. Create Order on Backend
+                        const razorOrderRes = await axios.post(`${API_BASE_URL}/api/orders/razorpay/create`, {
+                            amount: finalTotal
+                        });
+                        const razorOrder = razorOrderRes.data;
+
+                        // 2. Fetch Razorpay Key
+                        const keyRes = await axios.get(`${API_BASE_URL}/api/settings/keys/razorpay`);
+                        const razorKey = keyRes.data.key;
+
+                        if (!razorKey) {
+                            alert("Razorpay Key not found. Please contact admin.");
+                            setSubmitting(false);
+                            return;
+                        }
+
+                        // 3. Open Razorpay Modal
+                        return new Promise((resolve, reject) => {
+                            const options = {
+                                key: razorKey,
+                                amount: razorOrder.amount,
+                                currency: razorOrder.currency,
+                                name: "Gavran Magic",
+                                description: "Order Payment",
+                                order_id: razorOrder.id,
+                                handler: async (response) => {
+                                    // Payment success! Now create order in our DB
+                                    try {
+                                        const finalOrderData = {
+                                            ...orderData,
+                                            razorpay_payment_id: response.razorpay_payment_id,
+                                            razorpay_order_id: response.razorpay_order_id,
+                                            razorpay_signature: response.razorpay_signature,
+                                            payment_status: 'Paid'
+                                        };
+                                        const dbRes = await axios.post(`${API_BASE_URL}/api/orders/`, finalOrderData);
+                                        clearCart();
+                                        navigate(`/tracking/${dbRes.data.order_id}`);
+                                        resolve();
+                                    } catch (err) {
+                                        console.error("DB Order Error after Payment:", err);
+                                        alert("Payment successful but order recording failed. Please contact support.");
+                                        reject(err);
+                                    }
+                                },
+                                prefill: {
+                                    name: values.name,
+                                    contact: values.phone
+                                },
+                                theme: {
+                                    color: "#d35400"
+                                },
+                                modal: {
+                                    ondismiss: () => {
+                                        setSubmitting(false);
+                                    }
+                                }
+                            };
+                            const rzp1 = new window.Razorpay(options);
+                            rzp1.open();
+                        });
+                    } catch (err) {
+                        console.error("Razorpay Flow Error:", err);
+                        setStatus("Failed to initialize payment. Please check your connection.");
+                        setSubmitting(false);
+                        return;
+                    }
                 }
 
                 const response = await axios.post(`${API_BASE_URL}/api/orders/`, orderData);
