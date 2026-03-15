@@ -11,8 +11,8 @@ from routes.settings_routes import settings_bp
 app = Flask(__name__)
 CORS(app)
 
-# Connect to MongoDB at startup
-connect_db()
+# Connect to MongoDB on first request (lazy load)
+# Removed explicit connect_db() call to speed up Render startup
 
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(product_bp, url_prefix='/api/products')

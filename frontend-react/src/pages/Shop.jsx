@@ -30,12 +30,23 @@ export default function Shop() {
     const { t } = useLanguage();
     const [recentlyViewed, setRecentlyViewed] = React.useState([]);
 
-    // Load recently viewed from localStorage
+    // Load products from cache and recently viewed items
     React.useEffect(() => {
         try {
+            // 1. Initial hydration from cache for instant load
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
+            if (cachedData && cachedVersion === CURRENT_VERSION) {
+                setProducts(JSON.parse(cachedData));
+                setLoading(false); // We have cached data, so we don't need skeleton loader
+            }
+
+            // 2. Load recently viewed
             const stored = JSON.parse(localStorage.getItem('gavran_recently_viewed') || '[]');
             setRecentlyViewed(stored);
-        } catch(e) {}
+        } catch(e) {
+            console.warn("Cache hydration error:", e);
+        }
     }, []);
 
     const categoryOptions = [
@@ -196,6 +207,13 @@ export default function Shop() {
                     <div>
                         <strong>{t('server_waking')}</strong>
                         <p>{t('server_waking_msg')}</p>
+                        <button 
+                            className="btn btn-sm" 
+                            style={{ marginTop: '10px', background: 'var(--secondary)', color: 'white', padding: '8px 20px' }}
+                            onClick={() => window.location.reload()}
+                        >
+                            {t('nav_home') === 'होम' ? 'पुन्हा प्रयत्न करा' : 'Retry Now'}
+                        </button>
                     </div>
                 </div>
             ) : null}
