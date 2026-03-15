@@ -566,21 +566,45 @@ export default function Checkout() {
                                     </label>
                                 </div>
 
+                                {formik.submitCount > 0 && Object.keys(formik.errors).length > 0 && (
+                                    <div style={{ padding: '12px', background: '#fff1f2', borderRadius: '10px', color: '#e11d48', fontSize: '0.85rem', marginBottom: '15px', border: '1px solid #fda4af', fontWeight: '500' }}>
+                                        <i className="fas fa-exclamation-circle" style={{ marginRight: '8px' }}></i>
+                                        {t('nav_home') === 'होम' 
+                                            ? 'कृपया वरील सर्व आवश्यक माहिती भरा.' 
+                                            : 'Please fill in all required fields above.'}
+                                    </div>
+                                )}
+
                                 <button
                                     type="submit"
                                     className="btn btn-primary"
-                                    disabled={formik.isSubmitting || (formik.values.pincode.length === 6 && !shippingInfo) || !formik.values.acceptTerms}
+                                    disabled={formik.isSubmitting || !formik.values.acceptTerms}
                                     style={{ 
                                         width: '100%', 
-                                        marginTop: '20px', 
+                                        marginTop: '10px', 
                                         padding: '18px', 
                                         fontSize: '1rem', 
                                         borderRadius: '15px',
-                                        opacity: formik.values.acceptTerms ? 1 : 0.6,
-                                        cursor: formik.values.acceptTerms ? 'pointer' : 'not-allowed'
+                                        opacity: (formik.isSubmitting || !formik.values.acceptTerms) ? 0.6 : 1,
+                                        cursor: (formik.isSubmitting || !formik.values.acceptTerms) ? 'not-allowed' : 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '12px',
+                                        transition: 'all 0.3s ease'
                                     }}
                                 >
-                                    {formik.isSubmitting ? t('confirming_order') : t('place_order')}
+                                    {formik.isSubmitting ? (
+                                        <>
+                                            <i className="fas fa-circle-notch fa-spin"></i>
+                                            {t('nav_home') === 'होम' ? 'प्रक्रिया सुरू आहे...' : 'Processing...'}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fas fa-shield-alt"></i>
+                                            {t('place_order')}
+                                        </>
+                                    )}
                                 </button>
 
                                 {formik.status && <div style={{ color: '#ef4444', textAlign: 'center', marginTop: '16px', fontSize: '0.95rem', padding: '12px', background: '#fff5f5', borderRadius: '10px', border: '1px solid #fed7d7' }}>{formik.status}</div>}
