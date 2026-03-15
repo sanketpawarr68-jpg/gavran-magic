@@ -160,8 +160,8 @@ def create_order():
          return jsonify({'message': 'Delivery available only in Maharashtra (Pincode 400xxx-44xxxx)'}), 400
 
     # Check Shiprocket Serviceability
-    # For demo, use a dummy pickup code or config
-    pickup_pincode = "411001" # Pune default example
+    # Factory location: Shrigonda (413701)
+    pickup_pincode = "413701" 
     serviceability = shiprocket.check_serviceability(pickup_pincode, pincode)
     
     # Analyze serviceability response (mock logic if API fails or returns specific structure)
@@ -425,8 +425,22 @@ def update_order_status(order_id):
             update_data['cancellation_reason'] = reason
         if admin_note:
             update_data['admin_note'] = admin_note
-        if new_status == 'Cancelled' or new_status == 'Declined':
+        # If status is changing to Cancelled or Declined, return stock!
+        if new_status in ['Cancelled', 'Declined']:
             update_data['cancelled_at'] = datetime.datetime.utcnow()
+            
+            # Fetch order to get products
+            order = get_db().orders.find_one({'_id': ObjectId(order_id)})
+            if order and order.get('order_status') not in ['Cancelled', 'Declined']:
+                # Return items to stock
+                for item in order.get('products', []):
+                    p_id = item.get('product_id')
+                    qty = item.get('quantity', 0)
+                    if p_id and qty > 0:
+                        get_db().products.update_one(
+                            {'_id': ObjectId(p_id)},
+                            {'$inc': {'stock': int(qty)}}
+                        )
 
         result = get_db().orders.update_one(
             {'_id': ObjectId(order_id)},

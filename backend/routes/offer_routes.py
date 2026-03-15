@@ -10,26 +10,54 @@ def get_offers():
     """Fetch all offers."""
     db = get_db()
     offers_coll = db.offers
-    offers = list(offers_coll.find())
+    offers = list(offers_coll.find().sort('created_at', -1))
     
-    current_time = datetime.now()
+    current_time = datetime.utcnow()
     
     for o in offers:
         o['_id'] = str(o['_id'])
-        # Add a derived 'is_active_now' field based on dates
+        is_active = o.get('status') == 'active'
+        o['is_currently_valid'] = is_active
+        o['validity_reason'] = ""
+
+        if not is_active:
+            o['is_currently_valid'] = False
+            o['validity_reason'] = "Campaign is inactive"
+            continue
+
         try:
-            start_date = datetime.fromisoformat(o.get('start_date').replace('Z', '+00:00')) if o.get('start_date') else None
-            end_date = datetime.fromisoformat(o.get('end_date').replace('Z', '+00:00')) if o.get('end_date') else None
+            # Handle start_date
+            s_val = o.get('start_date')
+            start_date = None
+            if s_val:
+                if 'T' in s_val:
+                    start_date = datetime.fromisoformat(s_val.replace('Z', '+00:00')).replace(tzinfo=None)
+                else:
+                    start_date = datetime.strptime(s_val, '%Y-%m-%d')
             
-            is_active = o.get('status') == 'active'
+            # Handle end_date
+            e_val = o.get('end_date')
+            end_date = None
+            if e_val:
+                if 'T' in e_val:
+                    end_date = datetime.fromisoformat(e_val.replace('Z', '+00:00')).replace(tzinfo=None)
+                else:
+                    end_date = datetime.strptime(e_val, '%Y-%m-%d')
+                    # If it's just a date, set it to the end of that day (23:59:59)
+                    end_date = end_date.replace(hour=23, minute=59, second=59)
+
             if start_date and current_time < start_date:
-                is_active = False
+                o['is_currently_valid'] = False
+                o['validity_reason'] = f"Starts on {start_date.strftime('%d %b %Y')}"
+            
             if end_date and current_time > end_date:
-                is_active = False
+                o['is_currently_valid'] = False
+                o['validity_reason'] = "Expired"
                 
-            o['is_currently_valid'] = is_active
-        except Exception:
-            o['is_currently_valid'] = o.get('status') == 'active'
+        except Exception as e:
+            # If parsing fails, we fallback to just status check but keep it valid
+            print(f"Date parsing error: {e}")
+            pass
             
     return jsonify(offers), 200
 
@@ -37,7 +65,9 @@ def get_offers():
 def add_offer():
     db = get_db()
     data = request.json
-    data['created_at'] = datetime.now().isoformat()
+    if 'code' in data:
+        data['code'] = data['code'].strip().upper()
+    data['created_at'] = datetime.utcnow().isoformat()
     db.offers.insert_one(data)
     return jsonify({'message': 'Offer created successfully'}), 201
 
@@ -47,6 +77,8 @@ def update_offer(id):
     data = request.json
     if '_id' in data:
         del data['_id']
+    if 'code' in data:
+        data['code'] = data['code'].strip().toUpperCase()
     db.offers.update_one({'_id': ObjectId(id)}, {'$set': data})
     return jsonify({'message': 'Offer updated successfully'}), 200
 

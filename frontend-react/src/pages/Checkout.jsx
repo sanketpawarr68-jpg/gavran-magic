@@ -193,9 +193,9 @@ export default function Checkout() {
                     products: cart.map(item => ({
                         product_id: item._id,
                         quantity: item.quantity,
-                        price: getEffectivePrice(item),
+                        price: getEffectivePrice(item) * item.quantity, // Send line total as expected by Admin Invoice logic
                         name: item.name,
-                        selected_size: item.selectedSize
+                        selected_size: item.selectedSize || item.weight || '500g'
                     })),
                     total_price: finalTotal,
                     payment_status: values.paymentMethod === 'UPI' ? 'Paid' : 'Pending'
@@ -467,13 +467,17 @@ export default function Checkout() {
                                                 if (!code) return;
                                                 try {
                                                     const res = await axios.get(`${API_BASE_URL}/api/offers/`);
-                                                    const offer = res.data.find(o => o.code === code && o.status === 'active' && o.is_currently_valid);
+                                                    const offer = res.data.find(o => o.code === code);
                                                     if (offer) {
-                                                        applyDiscount(offer);
-                                                        alert(`Success! Code "${code}" applied.`);
-                                                        promoInput.value = '';
+                                                        if (offer.is_currently_valid) {
+                                                            applyDiscount(offer);
+                                                            alert(`Success! Code "${code}" applied.`);
+                                                            promoInput.value = '';
+                                                        } else {
+                                                            alert(`Promo code: ${offer.validity_reason || 'Invalid or expired.'}`);
+                                                        }
                                                     } else {
-                                                        alert("Invalid or expired promo code.");
+                                                        alert("Invalid promo code. Please check for typos.");
                                                     }
                                                 } catch(e) {
                                                     alert("Could not validate promo code.");
@@ -490,7 +494,10 @@ export default function Checkout() {
                                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
                                             <div style={{ display: 'flex', gap: '15px' }}>
                                                 <div style={{ background: '#f1f5f9', padding: '5px 10px', borderRadius: '8px', height: 'fit-content', fontWeight: '700', fontSize: '0.8rem' }}>{item.quantity}x</div>
-                                                <div style={{ fontWeight: '500', fontSize: '0.95rem' }}>{item.name}</div>
+                                                <div>
+                                                    <div style={{ fontWeight: '500', fontSize: '0.95rem' }}>{item.name}</div>
+                                                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{item.selectedSize || item.weight || '500g'}</div>
+                                                </div>
                                             </div>
                                             <div style={{ fontWeight: '700' }}>₹{(getEffectivePrice(item) * item.quantity).toFixed(0)}</div>
                                         </div>

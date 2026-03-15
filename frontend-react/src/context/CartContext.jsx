@@ -25,6 +25,8 @@ export function CartProvider({ children }) {
 
     // Helper to get discounted price
     const getEffectivePrice = (item) => {
+        // If a specific size was selected, the item.price should already be the variant price (if set in addToCart)
+        // However, we want to be safe and ensure we apply discount correctly to the variant price
         if (item.discount > 0) {
             return Math.round(item.price * (1 - item.discount / 100));
         }
@@ -45,14 +47,23 @@ export function CartProvider({ children }) {
                 return prevCart;
             }
 
+            // Determine correct price based on variant
+            let finalPrice = product.price;
+            if (selectedSize && product.pack_sizes && product.pack_sizes.length > 0) {
+                const variant = product.pack_sizes.find(v => v.size === selectedSize);
+                if (variant) {
+                    finalPrice = variant.price;
+                }
+            }
+
             if (existing) {
                 return prevCart.map(item =>
                     (item.selectedSize ? `${item._id}-${item.selectedSize}` : item._id) === itemKey 
-                        ? { ...item, quantity: newQty } 
+                        ? { ...item, quantity: newQty, price: finalPrice } 
                         : item
                 );
             }
-            return [...prevCart, { ...product, quantity: qty, selectedSize }];
+            return [...prevCart, { ...product, price: finalPrice, quantity: qty, selectedSize }];
         });
     }
 

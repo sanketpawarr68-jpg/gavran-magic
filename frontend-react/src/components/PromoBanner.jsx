@@ -27,26 +27,8 @@ const PromoBanner = () => {
                 const isEligible = eligibilityRes.data.eligible_for_free_delivery;
                 setEligible(isEligible);
 
-                const res = await axios.get(`${API_BASE_URL}/api/offers/`);
-                // Find first offer that is active and flagged for banner
-                const activeBannerOffer = res.data.find(o => o.status === 'active' && o.is_banner_offer && o.is_currently_valid);
-                
-                if (activeBannerOffer) {
-                    // Check if this banner is about free delivery
-                    const titleText = activeBannerOffer.title.toLowerCase();
-                    const descText = activeBannerOffer.description.toLowerCase();
-                    const isFreeDeliveryOffer = titleText.includes('free delivery') || 
-                                              descText.includes('free delivery') ||
-                                              titleText.includes('मोफत डिलिव्हरी') ||
-                                              descText.includes('मोफत डिलिव्हरी');
-                    
-                    if (isFreeDeliveryOffer && !isEligible) {
-                        setOffer(null);
-                    } else {
-                        setOffer(activeBannerOffer);
-                    }
-                } else if (isEligible) {
-                    // FALLBACK: Auto-show free delivery banner for new customers
+                if (isEligible) {
+                    // ONLY show free delivery banner for new customers
                     setOffer({
                         title: t('special_offer'),
                         description: t('promo_msg_offer'),
@@ -64,9 +46,6 @@ const PromoBanner = () => {
     }, [user, language]);
 
     if (!offer) return null;
-    
-    // Safety check again for fallback text
-    if (!eligible && (offer.title.toLowerCase().includes('free delivery') || offer.description.toLowerCase().includes('free delivery'))) return null;
 
     return (
         <div 
