@@ -18,6 +18,8 @@ import Terms from './pages/Terms';
 import ContactUs from './pages/ContactUs';
 import PromoBanner from './components/PromoBanner';
 import Footer from './components/Footer';
+import { useLanguage } from './context/LanguageContext';
+import { useSettings } from './context/SettingsContext';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
