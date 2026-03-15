@@ -3007,3 +3007,37 @@ body {
 .feature-card:hover .illustration-icon {
     transform: scale(1.1) translateY(-5px);
 }
+/* Dynamic Promo Banner Styles */
+.promo-banner-container {
+    background: #000;
+    color: #fff;
+    padding: 10px 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 1000;
+    width: 100%;
+}
+.promo-marquee-flex {
+    display: flex;
+    white-space: nowrap;
+    animation: marquee_new 40s linear infinite;
+    width: max-content;
+}
+.promo-item {
+    padding: 0 50px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.clickable-banner:hover {
+    background: #111;
+}
+.clickable-banner:hover b,
+.clickable-banner:hover strong {
+    color: var(--primary-light);
+}
+@keyframes marquee_new {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-33.33%); }
+}

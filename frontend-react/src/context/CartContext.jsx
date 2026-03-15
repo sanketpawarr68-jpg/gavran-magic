@@ -13,6 +13,12 @@ export function CartProvider({ children }) {
         return savedCart ? JSON.parse(savedCart) : [];
     });
 
+    const [appliedDiscount, setAppliedDiscount] = useState({
+        code: '',
+        type: 'percentage',
+        value: 0
+    });
+
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(cart));
     }, [cart]);
@@ -79,9 +85,28 @@ export function CartProvider({ children }) {
 
     function clearCart() {
         setCart([]);
+        setAppliedDiscount({ code: '', type: 'percentage', value: 0 });
     }
 
-    const total = cart.reduce((sum, item) => sum + (getEffectivePrice(item) * item.quantity), 0);
+    function applyDiscount(offer) {
+        setAppliedDiscount({
+            code: offer.code,
+            type: offer.discount_type,
+            value: parseFloat(offer.discount_value)
+        });
+    }
+
+    const subtotal = cart.reduce((sum, item) => sum + (getEffectivePrice(item) * item.quantity), 0);
+    
+    let totalAfterDiscount = subtotal;
+    if (appliedDiscount.value > 0) {
+        if (appliedDiscount.type === 'percentage') {
+            totalAfterDiscount = subtotal * (1 - appliedDiscount.value / 100);
+        } else {
+            totalAfterDiscount = Math.max(0, subtotal - appliedDiscount.value);
+        }
+    }
+
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
@@ -92,7 +117,10 @@ export function CartProvider({ children }) {
             removeFromCart,
             updateQuantity,
             clearCart,
-            total,
+            total: totalAfterDiscount,
+            subtotal,
+            appliedDiscount,
+            applyDiscount,
             cartCount,
             getEffectivePrice
         }}>

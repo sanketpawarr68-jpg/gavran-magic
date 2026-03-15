@@ -24,6 +24,7 @@ def get_shipping_cost():
     weight = data.get('weight', 0.5)
     cod = data.get('cod', 0)
     user_id = data.get('user_id')
+    device_id = data.get('device_id')
     
     if not pincode:
         return jsonify({'message': 'Pincode is required'}), 400
@@ -33,20 +34,45 @@ def get_shipping_cost():
 
     # User's 1st and 2nd orders are FREE
     is_free_delivery = False
+    db = get_db()
+    
+    # Check by user_id
     if user_id and user_id != 'guest':
-        db = get_db()
-        # Count non-cancelled orders
         order_count = db.orders.count_documents({
             'user_id': str(user_id),
             'order_status': {'$ne': 'Cancelled'}
         })
         if order_count < 2:
             is_free_delivery = True
+    
+    # Check by device_id (Anti-fraud)
+    if not is_free_delivery and device_id:
+        device_order_count = db.orders.count_documents({
+            'device_id': str(device_id),
+            'order_status': {'$ne': 'Cancelled'}
+        })
+        if device_order_count < 2:
+            is_free_delivery = True
+    elif is_free_delivery and device_id:
+        # even if user is new, if device has 2 orders, block free delivery
+        device_order_count = db.orders.count_documents({
+            'device_id': str(device_id),
+            'order_status': {'$ne': 'Cancelled'}
+        })
+        if device_order_count >= 2:
+            is_free_delivery = False
 
     if is_free_delivery:
+        # We need the count for the message
+        # But wait, if they are using a new account on an old device, device_order_count might be relevant
+        # For simplicity, let's just use the max of both for the congrats message? No, let's be strict.
+        final_count = 0
+        if user_id and user_id != 'guest':
+             final_count = db.orders.count_documents({'user_id': str(user_id), 'order_status': {'$ne': 'Cancelled'}})
+        
         return jsonify({
             'total_shipping': 0,
-            'message': f'Congratulations! Your order #{order_count + 1} qualifies for FREE delivery.'
+            'message': f'Congratulations! Your order qualifies for FREE delivery.'
         }), 200
 
     # Pickup location: Shrigonda (413701)
@@ -63,6 +89,31 @@ def is_maharashtra_pincode(pincode):
         return 400000 <= pin <= 445999
     except:
         return False
+
+@order_bp.route('/eligibility', methods=['POST'])
+def check_eligibility():
+    data = request.json
+    user_id = data.get('user_id')
+    device_id = data.get('device_id')
+    
+    db = get_db()
+    
+    # Strict check: Must be eligible on BOTH user and device
+    user_eligible = True
+    if user_id and user_id != 'guest':
+        count = db.orders.count_documents({'user_id': str(user_id), 'order_status': {'$ne': 'Cancelled'}})
+        if count >= 2:
+            user_eligible = False
+            
+    device_eligible = True
+    if device_id:
+        count = db.orders.count_documents({'device_id': str(device_id), 'order_status': {'$ne': 'Cancelled'}})
+        if count >= 2:
+            device_eligible = False
+            
+    return jsonify({
+        'eligible_for_free_delivery': user_eligible and device_eligible
+    }), 200
 
 @order_bp.route('/', methods=['POST'])
 def create_order():
@@ -141,6 +192,7 @@ def create_order():
         "pincode": pincode,
         "phone": data['phone'],
         "name": data['name'],
+        "device_id": data.get('device_id', ''),
         "order_status": "Placed",
         "created_at": datetime.datetime.utcnow(),
         "tracking_id": "PENDING"

@@ -7,6 +7,7 @@ import { useLanguage } from '../context/LanguageContext';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
+import { getVisitorId } from '../utils/visitor';
 
 
 const CheckoutSchema = Yup.object().shape({
@@ -19,7 +20,7 @@ const CheckoutSchema = Yup.object().shape({
 });
 
 export default function Checkout() {
-    const { cart, total, clearCart, getEffectivePrice } = useCart();
+    const { cart, total, subtotal, appliedDiscount, applyDiscount, clearCart, getEffectivePrice } = useCart();
     const { user, isSignedIn, loading } = useAuth();
     const navigate = useNavigate();
     const { t } = useLanguage();
@@ -138,11 +139,13 @@ export default function Checkout() {
         const totalWeight = calculateTotalWeight();
 
         try {
+            const visitorId = getVisitorId();
             const response = await axios.post(`${API_BASE_URL}/api/orders/shipping-cost`, {
                 pincode: pincode,
                 weight: totalWeight,
                 cod: isCOD ? 1 : 0,
-                user_id: user ? (user._id || user.id) : 'guest'
+                user_id: user ? (user._id || user.id) : 'guest',
+                device_id: visitorId
             });
             setShippingInfo(response.data);
         } catch (error) {
@@ -171,6 +174,7 @@ export default function Checkout() {
                 const finalTotal = total + (shippingInfo ? shippingInfo.total_shipping : 0);
                 const orderData = {
                     user_id: user ? (user._id || user.id) : 'guest',
+                    device_id: getVisitorId(),
                     name: values.name,
                     phone: values.phone,
                     address: values.address,
@@ -362,6 +366,48 @@ export default function Checkout() {
                             <div className="checkout-card" style={{ position: 'sticky', top: '120px' }}>
                                 <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '25px' }}>{t('bag_summary')}</h3>
 
+                                {/* Promo Code Section */}
+                                <div style={{ 
+                                    padding: '15px', 
+                                    background: '#f1f5f9', 
+                                    borderRadius: '12px', 
+                                    marginBottom: '20px',
+                                    border: '1px dashed #cbd5e1'
+                                }}>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '8px', color: '#475569' }}>PROMO CODE</label>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <input 
+                                            type="text" 
+                                            placeholder="Enter Code"
+                                            id="promo-input"
+                                            style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.9rem', textTransform: 'uppercase' }}
+                                        />
+                                        <button 
+                                            type="button"
+                                            onClick={async () => {
+                                                const promoInput = document.getElementById('promo-input');
+                                                const code = promoInput.value.trim().toUpperCase();
+                                                if (!code) return;
+                                                try {
+                                                    const res = await axios.get(`${API_BASE_URL}/api/offers/`);
+                                                    const offer = res.data.find(o => o.code === code && o.status === 'active' && o.is_currently_valid);
+                                                    if (offer) {
+                                                        applyDiscount(offer);
+                                                        alert(`Success! Code "${code}" applied.`);
+                                                        promoInput.value = '';
+                                                    } else {
+                                                        alert("Invalid or expired promo code.");
+                                                    }
+                                                } catch(e) {
+                                                    alert("Could not validate promo code.");
+                                                }
+                                            }}
+                                            className="btn btn-primary"
+                                            style={{ padding: '8px 15px', fontSize: '0.8rem', whiteSpace: 'nowrap' }}
+                                        >Apply</button>
+                                    </div>
+                                </div>
+
                                 <div style={{ maxHeight: '300px', overflowY: 'auto', marginBottom: '25px' }}>
                                     {cart.map((item, idx) => (
                                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
@@ -398,6 +444,13 @@ export default function Checkout() {
                                             marginTop: '5px'
                                         }}>
                                             🎁 {shippingInfo.message}
+                                        </div>
+                                    )}
+
+                                    {appliedDiscount.value > 0 && (
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#27ae60', fontWeight: '700' }}>
+                                            <span>Discount ({appliedDiscount.code})</span>
+                                            <span>-₹{(subtotal - total).toFixed(0)}</span>
                                         </div>
                                     )}
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', fontSize: '1.4rem', fontWeight: '800' }}>

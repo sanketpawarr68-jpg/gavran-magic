@@ -16,10 +16,8 @@ import RefundPolicy from './pages/RefundPolicy';
 import ShippingPolicy from './pages/ShippingPolicy';
 import Terms from './pages/Terms';
 import ContactUs from './pages/ContactUs';
+import PromoBanner from './components/PromoBanner';
 import Footer from './components/Footer';
-import { useLanguage } from './context/LanguageContext';
-import { useSettings } from './context/SettingsContext';
-import './index.css';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -38,15 +36,7 @@ function App() {
   return (
     <>
       <ScrollToTop />
-      {/* Seamless Promo Banner */}
-      <div className="promo-banner-container">
-        <div className="promo-marquee-flex">
-          <div className="promo-item">✨ <span>{t('special_offer')}:</span> {t('promo_msg_offer')} 🚚</div>
-          <div className="promo-item">✨ <span>{t('special_offer')}:</span> {t('promo_msg_offer')} 🚚</div>
-          <div className="promo-item">✨ <span>{t('special_offer')}:</span> {t('promo_msg_offer')} 🚚</div>
-          <div className="promo-item">✨ <span>{t('special_offer')}:</span> {t('promo_msg_offer')} 🚚</div>
-        </div>
-      </div>
+      <PromoBanner />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
