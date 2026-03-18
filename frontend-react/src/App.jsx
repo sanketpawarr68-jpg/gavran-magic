@@ -33,6 +33,8 @@ function ScrollToTop() {
 
 function App() {
   const { settings } = useSettings();
+  const location = useLocation();
+  const isProductPage = location.pathname.startsWith('/product/');
   
   // Proactively wake up backend on load
   useEffect(() => {
@@ -65,7 +67,7 @@ function App() {
       {/* Floating WhatsApp Support */}
       <a
         href={`https://wa.me/91${settings.store_phone?.replace(/[^0-9]/g, '').slice(-10)}?text=Hello ${encodeURIComponent(settings.store_name)}! I have a question about my order.`}
-        className="whatsapp-float"
+        className={`whatsapp-float ${isProductPage ? 'product-page-wa' : ''}`}
         target="_blank"
         rel="noopener noreferrer"
         title="Chat with us on WhatsApp"

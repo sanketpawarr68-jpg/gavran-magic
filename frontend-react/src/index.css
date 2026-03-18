@@ -127,6 +127,17 @@ button {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
+.whatsapp-float.product-page-wa {
+    bottom: 95px !important;
+}
+
+@media (max-width: 768px) {
+    .whatsapp-float.product-page-wa {
+        bottom: 125px !important;
+    }
+}
+
+
 @keyframes marquee-seamless {
     0% {
         transform: translateX(0);
