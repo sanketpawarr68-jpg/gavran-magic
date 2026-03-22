@@ -381,6 +381,13 @@ def ship_order(order_id):
         if not order:
             return jsonify({'message': 'Order not found'}), 404
             
+        data = request.json if request.is_json else {}
+        pickup_location = data.get('pickup_location', 'Primary')
+        weight = float(data.get('weight', 0.5))
+        length = float(data.get('length', 10))
+        breadth = float(data.get('breadth', 10))
+        height = float(data.get('height', 10))
+
         # Prepare Shiprocket Order Payload
         sr_order_items = []
         for item in order['products']:
@@ -397,7 +404,7 @@ def ship_order(order_id):
         sr_order_payload = {
             "order_id": str(order['_id']),
             "order_date": order['created_at'].strftime("%Y-%m-%d %H:%M"),
-            "pickup_location": "warehouse",
+            "pickup_location": pickup_location,
             "billing_customer_name": order['name'],
             "billing_last_name": "",
             "billing_address": order['address'],
@@ -411,7 +418,7 @@ def ship_order(order_id):
             "order_items": sr_order_items,
             "payment_method": "COD", # Map this based on actual payment if needed
             "sub_total": order['total_price'],
-            "length": 10, "breadth": 10, "height": 10, "weight": 0.5 
+            "length": length, "breadth": breadth, "height": height, "weight": weight 
         }
 
         sr_response = shiprocket.create_order(sr_order_payload)
