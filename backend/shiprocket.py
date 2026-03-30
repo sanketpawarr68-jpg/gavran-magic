@@ -63,8 +63,15 @@ class ShiprocketAPI:
         if 'data' in serviceability and 'available_courier_companies' in serviceability['data']:
             couriers = serviceability['data']['available_courier_companies']
             if len(couriers) > 0:
-                # Find the cheapest courier
-                best_courier = min(couriers, key=lambda x: float(x.get('rate', 9999)))
+                # Filter out terrible couriers (under 3 stars) so we charge the customer based on reliable ones
+                reliable_couriers = [c for c in couriers if float(c.get('rating', 0)) >= 3.0]
+                
+                # If ALL couriers are bad that day, fallback to the full list just so checkout doesn't break
+                if not reliable_couriers:
+                    reliable_couriers = couriers
+
+                # Find the cheapest RELIABLE courier to show the customer realistically
+                best_courier = min(reliable_couriers, key=lambda x: float(x.get('rate', 9999)))
                 
                 net_rate = float(best_courier.get('rate', 0))
                 # Shiprocket rates usually include base freight. 
