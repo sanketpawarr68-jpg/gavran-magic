@@ -39,8 +39,8 @@ def get_shipping_cost():
     if not is_maharashtra_pincode(pincode):
          return jsonify({'message': 'Delivery available only in Maharashtra'}), 400
 
-    # User's 1st order is FREE
-    is_free_delivery = False
+    # Check if this is the user's first order
+    is_first_order = False
     db = get_db()
     
     # Check by user_id
@@ -50,37 +50,32 @@ def get_shipping_cost():
             'order_status': {'$ne': 'Cancelled'}
         })
         if order_count < 1:
-            is_free_delivery = True
+            is_first_order = True
     
     # Check by device_id (Anti-fraud)
-    if not is_free_delivery and device_id:
+    if not is_first_order and device_id:
         device_order_count = db.orders.count_documents({
             'device_id': str(device_id),
             'order_status': {'$ne': 'Cancelled'}
         })
         if device_order_count < 1:
-            is_free_delivery = True
-    elif is_free_delivery and device_id:
+            is_first_order = True
+    elif is_first_order and device_id:
         # even if user is new, if device has an order, block free delivery
         device_order_count = db.orders.count_documents({
             'device_id': str(device_id),
             'order_status': {'$ne': 'Cancelled'}
         })
         if device_order_count >= 1:
-            is_free_delivery = False
+            is_first_order = False
 
-    if is_free_delivery:
-        return jsonify({
-            'total_shipping': 0,
-            'message': f'Congratulations! Your order qualifies for FREE delivery.'
-        }), 200
-
-    # NEW: Free Shipping if Order Total > 500
     order_total = data.get('order_total', 0)
-    if float(order_total) >= 500:
+    
+    # NEW RULE: Choice 3. Free Shipping ONLY if First Order AND Cart > 1000
+    if is_first_order and float(order_total) >= 1000:
         return jsonify({
             'total_shipping': 0,
-            'message': 'Free shipping applied for order above ₹500'
+            'message': 'Congratulations! Free Shipping applied for your first order over ₹1000.'
         }), 200
 
     # Pickup location: Shrigonda (413701)
