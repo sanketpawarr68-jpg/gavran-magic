@@ -377,7 +377,7 @@ def ship_order(order_id):
             return jsonify({'message': 'Order not found'}), 404
             
         data = request.json if request.is_json else {}
-        pickup_location = data.get('pickup_location', 'Primary')
+        pickup_location = data.get('pickup_location', 'warehouse')
         weight = float(data.get('weight', 0.5))
         length = float(data.get('length', 10))
         breadth = float(data.get('breadth', 10))
